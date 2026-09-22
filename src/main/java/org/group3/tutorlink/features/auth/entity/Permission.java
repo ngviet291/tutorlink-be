@@ -16,15 +16,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class Permission extends BaseEntity {
-
     @Id
     private UUID id;
-
     @Column(nullable = false, unique = true)
     private String name;
-
     private String description;
-
     @ManyToMany(mappedBy = "permissions")
     @Builder.Default
     private Set<Role> roles = new HashSet<>();

@@ -24,30 +24,20 @@ import java.util.UUID;
 @AllArgsConstructor
 @SuperBuilder
 public abstract class User extends BaseEntity {
-
     @Id
     private UUID id;
-
     @Column(nullable = false)
     private String fullname;
-
     @Column(nullable = false, unique = true)
     private String email;
-
     @Column(nullable = false)
     private String password;
-
     private String phone;
-
     private String avatarUrl;
-
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
     private LocalDate dateOfBirth;
-
     private String address;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserStatus userStatus;

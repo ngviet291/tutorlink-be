@@ -16,15 +16,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class Role extends BaseEntity {
-
     @Id
     private UUID id;
-
-    @Column(nullable = false, unique = true)
+    @Column(length = 20)
     private String name;
-
     private String description;
-
     // Role n -- n Permission
     @ManyToMany
     @JoinTable(
@@ -33,7 +29,6 @@ public class Role extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<Permission> permissions ;
-
     // Role 1 -- n User
     @OneToMany(mappedBy = "role")
     private Set<User> users  ;
