@@ -1,5 +1,6 @@
 package org.group3.tutorlink.features.auth.service;
 
+import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.exception.AppException;
@@ -7,8 +8,12 @@ import org.group3.tutorlink.common.exception.ErrorCode;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.dto.request.*;
 import org.group3.tutorlink.features.auth.dto.response.AuthenticateResponse;
+import org.group3.tutorlink.features.auth.dto.response.IntrospectResponse;
 import org.group3.tutorlink.features.auth.dto.response.UserResponse;
 import org.group3.tutorlink.features.auth.entity.Role;
+import org.group3.tutorlink.features.auth.exception.TokenExpiredException;
+import org.group3.tutorlink.features.auth.exception.UnauthenticatedException;
+import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.auth.repository.RoleRepository;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.subject.repository.SubjectRepository;
@@ -20,14 +25,19 @@ import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.user.repository.StudentRepository;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
 import org.group3.tutorlink.features.user.repository.UserRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.time.Instant;
+import java.util.Date;
+
 @RequiredArgsConstructor
 @Slf4j
 @Service
-public class AuthenticateService {
+public class AuthenticationService {
 
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
@@ -37,7 +47,8 @@ public class AuthenticateService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
-    private final TokenBlacklistService tokenBlacklistService;
+    private final TokenBlackListService tokenBlacklistService;
+    private final TokenBlackListService tokenBlackListService;
 
     @Transactional
     public AuthenticateResponse registerStudent(RegisterStudentRequest req) {
@@ -57,7 +68,6 @@ public class AuthenticateService {
                 .userStatus(UserStatus.ACTIVE)
                 .role(role)
                 .grade(req.getGrade())
-                .school(req.getSchool())
                 .learningGoal(req.getLearningGoal())
                 .build();
 
@@ -103,7 +113,7 @@ public class AuthenticateService {
     }
 
     @Transactional(readOnly = true)
-    public AuthenticateResponse login(LoginRequest req) {
+    public AuthenticateResponse authenticate(LoginRequest req) {
         User user = userRepository.findByEmail(req.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_CREDENTIALS));
 
@@ -114,44 +124,61 @@ public class AuthenticateService {
         if (user.getUserStatus() == UserStatus.BANNED) {
             throw new AppException(ErrorCode.ACCOUNT_BANNED);
         }
-        String refreshToken = jwtService.generateRefreshToken();
+        String refreshToken = jwtService.generateRefreshToken(user);
 
-        refreshTokenService.save(refreshToken, user.getEmail());
+        refreshTokenService.saveRefreshToken(refreshToken, user.getEmail());
 
         log.info("User {} logged in", user.getEmail());
 
         return buildAuthResponse(user, refreshToken);
     }
 
-    @Transactional
-    public AuthenticateResponse refreshToken(RefreshTokenRequest req) {
-        String refreshToken = req.getRefreshToken();
+    @Transactional(readOnly = true)
+    public AuthenticateResponse refreshToken(RefreshTokenRequest refreshToken) {
 
-        if (!refreshTokenService.exists(refreshToken)) {
-            throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
+        String refreshTokenStr = refreshToken.getRefreshToken();
+
+        if (!refreshTokenService.isRefreshTokenExists(refreshTokenStr)) {
+            throw new TokenExpiredException();
         }
 
-        String email = refreshTokenService.getEmail(refreshToken);
+        String username = refreshTokenService.getUser(refreshTokenStr);
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        refreshTokenService.delete(refreshToken);
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(UserNotFoundException::new);
 
-        String newRefreshToken = jwtService.generateRefreshToken();
-        refreshTokenService.save(newRefreshToken, email);
+        String newRefreshToken = jwtService.generateRefreshToken(user);
+
+        refreshTokenService.deleteRefreshToken(refreshTokenStr);
+        refreshTokenService.saveRefreshToken(newRefreshToken, username);
 
         return buildAuthResponse(user, newRefreshToken);
+
     }
 
-    public void logout(LogoutRequest req) {
+
+    public void logout(LogoutRequest request) {
+        String token = request.getAccessToken();
+        String refreshToken = request.getRefreshToken();
+        SignedJWT signedJWT = jwtService.verifyToken(token);
+
         try {
-            long remainingSeconds = jwtService.getRemainingSeconds(req.getAccessToken());
-            String jwtId = jwtService.getJwtId(req.getAccessToken());
-            tokenBlacklistService.blacklist(jwtId, remainingSeconds);
-        } catch (AppException e) {
-            log.debug("Access token already invalid during logout, skipping blacklist: {}", e.getMessage());
+            String jitToken = signedJWT.getJWTClaimsSet().getJWTID();
+            long expirationTime = getSecondsUntilExpiration(signedJWT.getJWTClaimsSet().getExpirationTime());
+
+            // store blacklist with time to live equals to the remaining time of the token
+            tokenBlackListService.blacklistToken(jitToken, expirationTime);
+
+            refreshTokenService.deleteRefreshToken(refreshToken);
+        } catch (ParseException e) {
+            throw new UnauthenticatedException();
         }
-        refreshTokenService.delete(req.getRefreshToken());
+
+    }
+    private long getSecondsUntilExpiration(Date expirationDate) {
+        long expirationEpoch = expirationDate.toInstant().getEpochSecond();
+        long nowEpoch = Instant.now().getEpochSecond();
+        return expirationEpoch - nowEpoch;
     }
 
     private void assertEmailNotTaken(String email) {
@@ -188,14 +215,14 @@ public class AuthenticateService {
         return AuthenticateResponse.builder()
                 .accessToken(jwtService.generateAccessToken(user))
                 .refreshToken(refreshToken)
-                .expiresIn(jwtService.getExpirationSeconds())
+                .expiresIn(jwtService.getExpiration())
                 .user(userResponse)
                 .build();
     }
 
     private AuthenticateResponse buildAuthResponse(User user) {
-        String refreshToken = jwtService.generateRefreshToken();
-        refreshTokenService.save(
+        String refreshToken = jwtService.generateRefreshToken(user);
+        refreshTokenService.saveRefreshToken(
                 refreshToken,
                 user.getEmail()
         );
@@ -203,5 +230,28 @@ public class AuthenticateService {
                 user,
                 refreshToken
         );
+    }
+
+    /**
+     * TODO: KHI NÀO LÀM BAN THÌ MỞ LÀM Ở CHỖ COMMENT
+     *
+     */
+    public IntrospectResponse introspect(IntrospectRequest request) {
+        IntrospectResponse introspectResponse = jwtService.introspect(request.getAccessToken());
+
+//        if (introspectResponse.isActive() && introspectResponse.getUserId() != null) {
+//            banService.findActiveBanForUser(UUID.fromString(introspectResponse.getUserId()))
+//                    .ifPresent(ban -> {
+//                        throw new AccountBanException(ban.getEndDate());
+//                    });
+//        }
+        return introspectResponse;
+    }
+
+
+
+    @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_TUTOR') or hasRole('ROLE_ADMIN')")
+    public String testAccessDenied() {
+        return "DATA";
     }
 }

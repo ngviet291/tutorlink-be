@@ -27,6 +27,5 @@ public class RegisterStudentRequest {
     private String address;
 
     private String grade;
-    private String school;
     private String learningGoal;
 }

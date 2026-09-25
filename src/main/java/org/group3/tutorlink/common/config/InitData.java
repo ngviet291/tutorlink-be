@@ -117,7 +117,6 @@ public class InitData implements CommandLineRunner {
                 .userStatus(UserStatus.ACTIVE)
                 .role(studentRole)
                 .grade("12")
-                .school("Industrial University of Ho Chi Minh City")
                 .learningGoal("Improve programming skills")
                 .build();
 
@@ -133,7 +132,6 @@ public class InitData implements CommandLineRunner {
                 .userStatus(UserStatus.ACTIVE)
                 .role(studentRole)
                 .grade("11")
-                .school("Nguyen Du High School")
                 .learningGoal("Improve English")
                 .build();
 

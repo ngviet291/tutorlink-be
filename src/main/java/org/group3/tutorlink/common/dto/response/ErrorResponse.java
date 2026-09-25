@@ -1,16 +1,23 @@
 package org.group3.tutorlink.common.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
+@SuperBuilder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
-    private String code;
-    private String message;
     private LocalDateTime timestamp;
+    private int status;
+    private String error;
+    private String message;
+    private String path;
+    private Map<String, String> errors;
+
 }
