@@ -5,24 +5,24 @@ import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.features.auth.dto.request.*;
 import org.group3.tutorlink.features.auth.dto.response.AuthenticateResponse;
-import org.group3.tutorlink.features.auth.exception.AuthResponseCode;
-import org.group3.tutorlink.features.auth.service.AuthenticateService;
+import org.group3.tutorlink.features.auth.enums.AuthResponseCode;
+import org.group3.tutorlink.features.auth.service.AuthenticationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
-public class AuthenticateController {
+public class AuthenticationController {
 
-    private final AuthenticateService authService;
+    private final AuthenticationService authService;
 
     // POST /v1/auth/login
     @PostMapping("/login")
     public ApiResponse<AuthenticateResponse> login(
             @Valid @RequestBody LoginRequest req) {
 
-        AuthenticateResponse response = authService.login(req);
+        AuthenticateResponse response = authService.authenticate(req);
 
         return ApiResponse.<AuthenticateResponse>builder()
                 .code(AuthResponseCode.LOGIN_SUCCESS.getCode())
@@ -61,6 +61,7 @@ public class AuthenticateController {
                 .build();
     }
 
+
     // POST /v1/auth/refresh-token
     @PostMapping("/refresh-token")
     public ApiResponse<AuthenticateResponse> refreshToken(
@@ -85,6 +86,15 @@ public class AuthenticateController {
         return ApiResponse.<Void>builder()
                 .code(AuthResponseCode.LOGOUT_SUCCESS.getCode())
                 .message(AuthResponseCode.LOGOUT_SUCCESS.getMessage())
+                .build();
+    }
+
+    @GetMapping("/test")
+    public ApiResponse<String> test() {
+        return ApiResponse.<String>builder()
+                .code(AuthResponseCode.LOGIN_SUCCESS.getCode())
+                .message(AuthResponseCode.LOGIN_SUCCESS.getMessage())
+                .data(authService.testAccessDenied())
                 .build();
     }
 }

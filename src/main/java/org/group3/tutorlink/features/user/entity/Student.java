@@ -20,8 +20,6 @@ public class Student extends User {
 
     private String grade;
 
-    private String school;
-
     @Column(columnDefinition = "TEXT")
     private String learningGoal;
 

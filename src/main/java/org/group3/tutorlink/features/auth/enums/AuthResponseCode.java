@@ -1,11 +1,12 @@
-package org.group3.tutorlink.features.auth.exception;
+package org.group3.tutorlink.features.auth.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.group3.tutorlink.common.enums.ResponseCode;
 
 @Getter
 @RequiredArgsConstructor
-public enum AuthResponseCode {
+public enum AuthResponseCode implements ResponseCode {
 
     REGISTER_SUCCESS("AUTH_201", "Register successfully"),
     LOGIN_SUCCESS("AUTH_200", "Login successfully"),

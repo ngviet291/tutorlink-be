@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum ErrorCode {
+public enum ErrorCode implements BaseErrorCode{
 
     UNAUTHENTICATED("AUTH_001", "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED("AUTH_002", "You do not have permission to perform this action", HttpStatus.FORBIDDEN),
@@ -16,7 +16,17 @@ public enum ErrorCode {
     ACCOUNT_BANNED("USER_004", "Your account has been banned", HttpStatus.FORBIDDEN),
     ROLE_NOT_FOUND("ROLE_001", "Role not found", HttpStatus.NOT_FOUND),
     SUBJECT_NOT_FOUND("SUBJECT_001", "Subject not found", HttpStatus.NOT_FOUND),
-    INVALID_REFRESH_TOKEN("AUTH_005", "Refresh token is invalid or has expired", HttpStatus.UNAUTHORIZED);
+    INVALID_REFRESH_TOKEN("AUTH_005", "Refresh token is invalid or has expired", HttpStatus.UNAUTHORIZED),
+    UNCATEGORIZED_EXCEPTION("GEN_001", "An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR),
+    VALIDATION_FAILED("VAL_001", "Validation failed", HttpStatus.BAD_REQUEST),
+    INVALID_PARAMETER_TYPE("VAL_002", "Invalid parameter type", HttpStatus.BAD_REQUEST),
+    INVALID_DATE_FORMAT("VAL_003", "Invalid date format", HttpStatus.BAD_REQUEST),
+    INVALID_NUMBER_FORMAT("VAL_004", "Invalid number format", HttpStatus.BAD_REQUEST),
+    FILE_SIZE_EXCEEDED("VAL_005", "File size exceeded the limit", HttpStatus.BAD_REQUEST),
+    FORBIDDEN("GEN_002", "Forbidden", HttpStatus.FORBIDDEN),
+    BAD_REQUEST("GEN_003", "Bad request", HttpStatus.BAD_REQUEST),
+    TOKEN_EXPIRED("AUTH_006", "Token has expired", HttpStatus.UNAUTHORIZED),
+    ;
     private final String code;
     private final String message;
     private final HttpStatus httpStatus;

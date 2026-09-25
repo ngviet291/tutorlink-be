@@ -1,5 +1,6 @@
 package org.group3.tutorlink.common.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 @Getter
@@ -7,6 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
     @Builder.Default
@@ -17,11 +19,5 @@ public class ApiResponse<T> {
 
     private T data;
 
-    public static <T> ApiResponse<T> success(T data) {
-        return ApiResponse.<T>builder().data(data).build();
-    }
 
-    public static ApiResponse<Void> success() {
-        return ApiResponse.<Void>builder().build();
-    }
 }
