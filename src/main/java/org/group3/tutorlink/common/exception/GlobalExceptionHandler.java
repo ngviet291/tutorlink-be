@@ -20,8 +20,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class GlobalExceptionHandler {
         ErrorResponse response = ErrorResponse.builder()
                 .status(ErrorCode.UNCATEGORIZED_EXCEPTION.getHttpStatus().value())
                 .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
-                .timestamp(LocalDateTime.now())
+                .timestamp(Instant.now())
                 .error(ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
@@ -78,7 +79,7 @@ public class GlobalExceptionHandler {
                         ));
 
         ErrorResponse response = new ErrorResponse(
-                LocalDateTime.now(),
+                Instant.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 ErrorCode.VALIDATION_FAILED.getMessage(),
@@ -95,7 +96,7 @@ public class GlobalExceptionHandler {
                 .status(ex.getErrorCode().getHttpStatus().value())
                 .message(ex.getErrorCode().getMessage())
                 .error(HttpStatus.valueOf(ex.getErrorCode().getHttpStatus().value()).getReasonPhrase())
-                .timestamp(LocalDateTime.now())
+                .timestamp(Instant.now())
                 .path(request.getRequestURI())
                 .build();
 
@@ -107,7 +108,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e, HttpServletRequest request) {
         return ResponseEntity.status(ErrorCode.FORBIDDEN.getHttpStatus())
                 .body(ErrorResponse.builder()
-                        .timestamp(LocalDateTime.now())
+                        .timestamp(Instant.now())
                         .status(ErrorCode.FORBIDDEN.getHttpStatus().value())
                         .error(HttpStatus.valueOf(ErrorCode.FORBIDDEN.getHttpStatus().value()).getReasonPhrase())
                         .message(ErrorCode.FORBIDDEN.getMessage())
@@ -163,7 +164,7 @@ public class GlobalExceptionHandler {
         }
 
         ErrorResponse response = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(Instant.now())
                 .status(errorCode.getHttpStatus().value())
                 .error(HttpStatus.valueOf(errorCode.getHttpStatus().value()).getReasonPhrase())
                 .message(message)
@@ -184,7 +185,7 @@ public class GlobalExceptionHandler {
         }
 
         ErrorResponse response = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(Instant.now())
                 .status(e.getErrorCode().getHttpStatus().value())
                 .error(HttpStatus.valueOf(e.getErrorCode().getHttpStatus().value()).getReasonPhrase())
                 .message(message)
@@ -209,7 +210,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<AccountBanErrorResponse> handleAccountLocked(
             AccountBanException ex, HttpServletRequest request) {
 
-        LocalDateTime now = LocalDateTime.now();
+        Instant now = Instant.now();
         long remainingSeconds = Math.max(
                 Duration.between(now, ex.getLockedUntil()).getSeconds(), 0
         );
@@ -259,7 +260,7 @@ public class GlobalExceptionHandler {
         }
 
         ErrorResponse response = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(Instant.now())
                 .status(errorCode.getHttpStatus().value())
                 .error(HttpStatus.valueOf(errorCode.getHttpStatus().value()).getReasonPhrase())
                 .message(message)

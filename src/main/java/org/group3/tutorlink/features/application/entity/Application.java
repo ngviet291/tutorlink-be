@@ -9,6 +9,7 @@ import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Student;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -31,7 +32,7 @@ public class Application extends BaseEntity {
     private String message;
     //Sửa Instant
     @Column(nullable = false, updatable = false)
-    private LocalDateTime appliedAt;
+    private Instant appliedAt;
 
     // Application n -- 1 Post
     @ManyToOne(fetch = FetchType.LAZY)
