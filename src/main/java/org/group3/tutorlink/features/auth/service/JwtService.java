@@ -88,8 +88,7 @@ public class JwtService {
     public IntrospectResponse introspect(String token) {
 
         try {
-            SignedJWT
-                    signedJWT = verifyToken(token);
+            SignedJWT signedJWT = verifyToken(token);
             JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
             return IntrospectResponse.builder()
                     .active(true)
