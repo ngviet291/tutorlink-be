@@ -47,7 +47,6 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
-    private final TokenBlackListService tokenBlacklistService;
     private final TokenBlackListService tokenBlackListService;
 
     @Transactional

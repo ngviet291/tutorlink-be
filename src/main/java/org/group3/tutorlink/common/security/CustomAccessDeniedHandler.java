@@ -25,7 +25,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setStatus(errorCode.getHttpStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-
         ErrorResponse errorResponse = AppUtil.generateErrorResponse(request, errorCode);
 
         ObjectMapper objectMapper = new ObjectMapper();
