@@ -19,5 +19,4 @@ public class ApiResponse<T> {
 
     private T data;
 
-
 }

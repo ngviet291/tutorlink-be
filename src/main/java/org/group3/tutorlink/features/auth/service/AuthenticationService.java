@@ -22,6 +22,7 @@ import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.enums.UserStatus;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
+import org.group3.tutorlink.features.user.mapper.UserMapper;
 import org.group3.tutorlink.features.user.repository.StudentRepository;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
 import org.group3.tutorlink.features.user.repository.UserRepository;
@@ -48,28 +49,19 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final TokenBlackListService tokenBlackListService;
-    private final AppUtil appUtil;
+    private final UserMapper userMapper;
 
     @Transactional
     public AuthenticateResponse registerStudent(RegisterStudentRequest req) {
         assertEmailNotTaken(req.getEmail());
 
-        Role role = getRoleOrThrow(org.group3.tutorlink.features.auth.enums.Role.STUDENT);
+        Role role = getRoleOrThrow("ROLE_STUDENT");
 
-        Student student = Student.builder()
-                .id(appUtil.generateUUID())
-                .fullname(req.getFullname())
-                .email(req.getEmail())
-                .password(passwordEncoder.encode(req.getPassword()))
-                .phone(req.getPhone())
-                .gender(req.getGender())
-                .dateOfBirth(req.getDateOfBirth())
-                .address(req.getAddress())
-                .userStatus(UserStatus.ACTIVE)
-                .role(role)
-                .grade(req.getGrade())
-                .learningGoal(req.getLearningGoal())
-                .build();
+        Student student = userMapper.toStudent(req);
+        student.setId(AppUtil.generateUUID());
+        student.setPassword(passwordEncoder.encode(req.getPassword()));
+        student.setRole(role);
+        student.setUserStatus(UserStatus.ACTIVE);
 
         studentRepository.save(student);
 
@@ -82,28 +74,19 @@ public class AuthenticationService {
     public AuthenticateResponse registerTutor(RegisterTutorRequest req) {
         assertEmailNotTaken(req.getEmail());
 
-        Role role = getRoleOrThrow(org.group3.tutorlink.features.auth.enums.Role.TUTOR);
+        Role role = getRoleOrThrow("ROLE_TUTOR");
 
         Subject subject = subjectRepository.findById(req.getSubjectId())
                 .orElseThrow(() -> new AppException(ErrorCode.SUBJECT_NOT_FOUND));
 
-        Tutor tutor = Tutor.builder()
-                .id(appUtil.generateUUID())
-                .fullname(req.getFullname())
-                .email(req.getEmail())
-                .password(passwordEncoder.encode(req.getPassword()))
-                .phone(req.getPhone())
-                .gender(req.getGender())
-                .dateOfBirth(req.getDateOfBirth())
-                .address(req.getAddress())
-                .userStatus(UserStatus.ACTIVE)
-                .role(role)
-                .experienceYears(req.getExperienceYears())
-                .education(req.getEducation())
-                .subject(subject)
-                .averageRating(0.0)
-                .verificationStatus(VerificationStatus.PENDING)
-                .build();
+        Tutor tutor = userMapper.toTutor(req);
+        tutor.setId(AppUtil.generateUUID());
+        tutor.setPassword(passwordEncoder.encode(req.getPassword()));
+        tutor.setRole(role);
+        tutor.setUserStatus(UserStatus.ACTIVE);
+        tutor.setSubject(subject);
+        tutor.setAverageRating(0.0);
+        tutor.setVerificationStatus(VerificationStatus.PENDING);
 
         tutorRepository.save(tutor);
 
@@ -158,24 +141,20 @@ public class AuthenticationService {
 
 
     public void logout(LogoutRequest request) {
-        String token = request.getAccessToken();
         String refreshToken = request.getRefreshToken();
-        SignedJWT signedJWT = jwtService.verifyToken(token);
-
         try {
-            String jitToken = signedJWT.getJWTClaimsSet().getJWTID();
-            long expirationTime = getSecondsUntilExpiration(signedJWT.getJWTClaimsSet().getExpirationTime());
+            SignedJWT signedJWT = jwtService.verifyToken(request.getAccessToken());
+            String jwtId = signedJWT.getJWTClaimsSet().getJWTID();
+            long ttlSeconds = getSecondsUntilExpiration(signedJWT.getJWTClaimsSet().getExpirationTime());
 
-            // store blacklist with time to live equals to the remaining time of the token
-            tokenBlackListService.blacklistToken(jitToken, expirationTime);
-
-            refreshTokenService.deleteRefreshToken(refreshToken);
+            tokenBlackListService.blacklistToken(jwtId, ttlSeconds);
+        } catch (AppException e) {
+            log.debug("Access token already invalid during logout, skipping blacklist: {}", e.getMessage());
         } catch (ParseException e) {
-            throw new UnauthenticatedException();
+            throw new AppException(ErrorCode.INTROSPECT_FAILED);
         }
 
     }
-
     private long getSecondsUntilExpiration(Date expirationDate) {
         long expirationEpoch = expirationDate.toInstant().getEpochSecond();
         long nowEpoch = Instant.now().getEpochSecond();
@@ -184,19 +163,12 @@ public class AuthenticationService {
 
     private void assertEmailNotTaken(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new AppException(
-                    ErrorCode.EMAIL_ALREADY_EXISTS
-            );
+            throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
     }
 
-    private Role getRoleOrThrow(org.group3.tutorlink.features.auth.enums.Role roleEnum) {
-        return roleRepository.findByName(roleEnum.name())
-                .orElseThrow(() ->
-                        new AppException(
-                                ErrorCode.ROLE_NOT_FOUND
-                        )
-                );
+    private Role getRoleOrThrow(String roleName) {
+        return roleRepository.findByName(roleName).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
     }
 
     private AuthenticateResponse buildAuthResponse(User user, String refreshToken) {
@@ -223,18 +195,13 @@ public class AuthenticationService {
 
     private AuthenticateResponse buildAuthResponse(User user) {
         String refreshToken = jwtService.generateRefreshToken(user);
-        refreshTokenService.saveRefreshToken(
-                refreshToken,
-                user.getEmail()
-        );
-        return buildAuthResponse(
-                user,
-                refreshToken
-        );
+        refreshTokenService.saveRefreshToken(refreshToken, user.getEmail());
+        return buildAuthResponse(user, refreshToken);
     }
 
     /**
      * TODO: KHI NÀO LÀM BAN THÌ MỞ LÀM Ở CHỖ COMMENT
+     *
      */
     public IntrospectResponse introspect(IntrospectRequest request) {
         IntrospectResponse introspectResponse = jwtService.introspect(request.getAccessToken());
@@ -247,6 +214,7 @@ public class AuthenticationService {
 //        }
         return introspectResponse;
     }
+
 
 
     @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_TUTOR') or hasRole('ROLE_ADMIN')")
