@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
+    private final AppUtil appUtil;
 //    private final MessageUtil messageUtil;
 
     @ExceptionHandler(Exception.class)
@@ -99,6 +100,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .build();
 
+        log.info("AppException at [{}]: {}", request.getRequestURI(), ex.getErrorCode().getMessage());
         return ResponseEntity
                 .status(ex.getErrorCode().getHttpStatus()).body(response);
     }
@@ -199,7 +201,7 @@ public class GlobalExceptionHandler {
 
         ErrorCode errorCode = ErrorCode.FILE_SIZE_EXCEEDED;
 
-        ErrorResponse errorResponse = AppUtil.generateErrorResponse(request, errorCode);
+        ErrorResponse errorResponse = appUtil.generateErrorResponse(request, errorCode);
 
         return ResponseEntity.status(errorCode.getHttpStatus()).body(errorResponse);
 
@@ -214,11 +216,11 @@ public class GlobalExceptionHandler {
                 Duration.between(now, ex.getLockedUntil()).getSeconds(), 0
         );
 
-         String message = mapAttribute(
-                 ex.getErrorCode().getMessage(),
-                 "remainingSeconds",
-                 String.valueOf(remainingSeconds)
-         );
+        String message = mapAttribute(
+                ex.getErrorCode().getMessage(),
+                "remainingSeconds",
+                String.valueOf(remainingSeconds)
+        );
 
         AccountBanErrorResponse error = AccountBanErrorResponse.builder()
                 .timestamp(now)
@@ -232,12 +234,14 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex, HttpServletRequest request) {
 
         Throwable cause = ex.getCause();
         ErrorCode errorCode = ErrorCode.BAD_REQUEST;
+        log.info("HttpMessageNotReadableException at [{}]: {}", request.getRequestURI(), cause != null ? cause.getMessage() : ex.getMessage());
         String message;
 
         if (cause instanceof InvalidFormatException ife && ife.getTargetType() != null && ife.getTargetType().isEnum()) {

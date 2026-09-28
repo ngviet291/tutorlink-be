@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 import org.group3.tutorlink.features.auth.entity.Role;
 import org.group3.tutorlink.features.chat.entity.Media;
 import org.group3.tutorlink.features.notification.entity.Notification;
+import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.user.enums.Gender;
 import org.group3.tutorlink.features.user.enums.UserStatus;
 
@@ -52,5 +53,9 @@ public abstract class User extends BaseEntity {
     private Set<Notification> notifications;
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private Set<Media> media;
+
+    // User 1 -- 0..* Post (author)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Post> posts;
 
 }

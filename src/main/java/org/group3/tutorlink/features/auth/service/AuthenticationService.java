@@ -48,15 +48,16 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final TokenBlackListService tokenBlackListService;
+    private final AppUtil appUtil;
 
     @Transactional
     public AuthenticateResponse registerStudent(RegisterStudentRequest req) {
         assertEmailNotTaken(req.getEmail());
 
-        Role role = getRoleOrThrow("ROLE_STUDENT");
+        Role role = getRoleOrThrow(org.group3.tutorlink.features.auth.enums.Role.STUDENT);
 
         Student student = Student.builder()
-                .id(AppUtil.generateUUID())
+                .id(appUtil.generateUUID())
                 .fullname(req.getFullname())
                 .email(req.getEmail())
                 .password(passwordEncoder.encode(req.getPassword()))
@@ -81,13 +82,13 @@ public class AuthenticationService {
     public AuthenticateResponse registerTutor(RegisterTutorRequest req) {
         assertEmailNotTaken(req.getEmail());
 
-        Role role = getRoleOrThrow("ROLE_TUTOR");
+        Role role = getRoleOrThrow(org.group3.tutorlink.features.auth.enums.Role.TUTOR);
 
         Subject subject = subjectRepository.findById(req.getSubjectId())
                 .orElseThrow(() -> new AppException(ErrorCode.SUBJECT_NOT_FOUND));
 
         Tutor tutor = Tutor.builder()
-                .id(AppUtil.generateUUID())
+                .id(appUtil.generateUUID())
                 .fullname(req.getFullname())
                 .email(req.getEmail())
                 .password(passwordEncoder.encode(req.getPassword()))
@@ -174,6 +175,7 @@ public class AuthenticationService {
         }
 
     }
+
     private long getSecondsUntilExpiration(Date expirationDate) {
         long expirationEpoch = expirationDate.toInstant().getEpochSecond();
         long nowEpoch = Instant.now().getEpochSecond();
@@ -188,8 +190,8 @@ public class AuthenticationService {
         }
     }
 
-    private Role getRoleOrThrow(String roleName) {
-        return roleRepository.findByName(roleName)
+    private Role getRoleOrThrow(org.group3.tutorlink.features.auth.enums.Role roleEnum) {
+        return roleRepository.findByName(roleEnum.name())
                 .orElseThrow(() ->
                         new AppException(
                                 ErrorCode.ROLE_NOT_FOUND
@@ -233,7 +235,6 @@ public class AuthenticationService {
 
     /**
      * TODO: KHI NÀO LÀM BAN THÌ MỞ LÀM Ở CHỖ COMMENT
-     *
      */
     public IntrospectResponse introspect(IntrospectRequest request) {
         IntrospectResponse introspectResponse = jwtService.introspect(request.getAccessToken());
@@ -246,7 +247,6 @@ public class AuthenticationService {
 //        }
         return introspectResponse;
     }
-
 
 
     @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_TUTOR') or hasRole('ROLE_ADMIN')")

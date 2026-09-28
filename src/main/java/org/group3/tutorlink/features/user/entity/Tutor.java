@@ -43,9 +43,6 @@ public class Tutor extends User {
     @OneToMany(mappedBy = "tutor", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Certificate> certificates;
 
-    // Tutor 1 -- 0..* Post
-    @OneToMany(mappedBy = "tutor", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Post> posts ;
 
     // Tutor 1 -- 0..* ChatChannel
     @OneToMany(mappedBy = "tutor")

@@ -6,6 +6,7 @@ import org.group3.tutorlink.common.entity.BaseEntity;
 import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -24,10 +25,8 @@ public class ChatChannel extends BaseEntity {
 
     private String name;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
 
-    private LocalDateTime lastMessageAt;
+    private Instant lastMessageAt;
 
     // ChatChannel n -- 1 Tutor
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,5 +40,5 @@ public class ChatChannel extends BaseEntity {
 
     // ChatChannel 1 -- 0..* Message
     @OneToMany(mappedBy = "chatChannel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Message> messages ;
+    private Set<Message> messages;
 }

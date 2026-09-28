@@ -29,11 +29,13 @@ import java.util.List;
 @Component
 public class InitData implements CommandLineRunner {
 
+    private final AppUtil appUtil;
     private final RoleRepository roleRepository;
     private final SubjectRepository subjectRepository;
     private final StudentRepository studentRepository;
     private final TutorRepository tutorRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SubjectRepository subjectRepo;
 
     @Override
     @Transactional
@@ -44,8 +46,38 @@ public class InitData implements CommandLineRunner {
         initRoles();
         initStudents();
         initTutors();
+        initSubjects();
 
         log.info("========== INIT DATA COMPLETED ==========");
+    }
+
+    private void initSubjects() {
+        if (subjectRepository.count() > 0) {
+            log.info("Subjects already exist. Skip.");
+            return;
+        }
+
+        Subject math = Subject.builder()
+                .id(appUtil.generateUUID())
+                .name("Mathematics")
+                .description("Mathematics subject")
+                .build();
+
+        Subject physics = Subject.builder()
+                .id(appUtil.generateUUID())
+                .name("Physics")
+                .description("Physics subject")
+                .build();
+
+        Subject chemistry = Subject.builder()
+                .id(appUtil.generateUUID())
+                .name("Chemistry")
+                .description("Chemistry subject")
+                .build();
+
+        subjectRepository.saveAll(List.of(math, physics, chemistry));
+
+        log.info("✓ Initialized 3 subjects");
     }
 
     // =========================================================
@@ -60,19 +92,19 @@ public class InitData implements CommandLineRunner {
         }
 
         Role studentRole = Role.builder()
-                .id(AppUtil.generateUUID())
-                .name("ROLE_STUDENT")
+                .id(appUtil.generateUUID())
+                .name(org.group3.tutorlink.features.auth.enums.Role.STUDENT.name())
                 .description("Student role")
                 .build();
 
         Role tutorRole = Role.builder()
-                .id(AppUtil.generateUUID())
-                .name("ROLE_TUTOR")
+                .id(appUtil.generateUUID())
+                .name(org.group3.tutorlink.features.auth.enums.Role.TUTOR.name())
                 .description("Tutor role")
                 .build();
 
         Role adminRole = Role.builder()
-                .id(AppUtil.generateUUID())
+                .id(appUtil.generateUUID())
                 .name("ROLE_ADMIN")
                 .description("Administrator role")
                 .build();
@@ -99,14 +131,14 @@ public class InitData implements CommandLineRunner {
             return;
         }
 
-        Role studentRole = roleRepository.findByName("ROLE_STUDENT")
+        Role studentRole = roleRepository.findByName(org.group3.tutorlink.features.auth.enums.Role.STUDENT.name())
                 .orElseThrow(() ->
                         new RuntimeException("ROLE_STUDENT not found"));
 
         String password = passwordEncoder.encode("Student@123");
 
         Student student1 = Student.builder()
-                .id(AppUtil.generateUUID())
+                .id(appUtil.generateUUID())
                 .fullname("Nguyen Van Student")
                 .email("student@gmail.com")
                 .password(password)
@@ -121,7 +153,7 @@ public class InitData implements CommandLineRunner {
                 .build();
 
         Student student2 = Student.builder()
-                .id(AppUtil.generateUUID())
+                .id(appUtil.generateUUID())
                 .fullname("Tran Thi Student")
                 .email("student2@gmail.com")
                 .password(password)
@@ -155,7 +187,7 @@ public class InitData implements CommandLineRunner {
             return;
         }
 
-        Role tutorRole = roleRepository.findByName("ROLE_TUTOR")
+        Role tutorRole = roleRepository.findByName(org.group3.tutorlink.features.auth.enums.Role.TUTOR.name())
                 .orElseThrow(() ->
                         new RuntimeException("ROLE_TUTOR not found"));
 
@@ -171,7 +203,7 @@ public class InitData implements CommandLineRunner {
         String password = passwordEncoder.encode("Tutor@123");
 
         Tutor tutor1 = Tutor.builder()
-                .id(AppUtil.generateUUID())
+                .id(appUtil.generateUUID())
                 .fullname("Nguyen Van Tutor")
                 .email("tutor@gmail.com")
                 .password(password)
@@ -189,7 +221,7 @@ public class InitData implements CommandLineRunner {
                 .build();
 
         Tutor tutor2 = Tutor.builder()
-                .id(AppUtil.generateUUID())
+                .id(appUtil.generateUUID())
                 .fullname("Tran Thi Tutor")
                 .email("tutor2@gmail.com")
                 .password(password)
