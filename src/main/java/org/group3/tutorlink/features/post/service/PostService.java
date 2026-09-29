@@ -3,14 +3,12 @@ package org.group3.tutorlink.features.post.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.utils.AppUtil;
-import org.group3.tutorlink.features.auth.enums.Role;
+import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.post.dto.request.CreatePostRequest;
 import org.group3.tutorlink.features.post.dto.response.PostResponse;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.PostType;
-import org.group3.tutorlink.features.post.enums.TeachingMode;
-import org.group3.tutorlink.features.post.exception.AddressNotFoundException;
 import org.group3.tutorlink.features.post.exception.PostErrorCode;
 import org.group3.tutorlink.features.post.exception.PostValidationException;
 import org.group3.tutorlink.features.post.mapper.PostMapper;
@@ -22,8 +20,6 @@ import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -61,7 +57,7 @@ public class PostService {
         log.info("Validating author for post type: {} and user role: {}", type, user.getRole().getName());
 
         if (type == PostType.FIND_TUTOR
-                && !Role.STUDENT.name().equals(user.getRole().getName())) {
+                && !RoleName.STUDENT.name().equals(user.getRole().getName())) {
 
             throw new PostValidationException(
                     PostErrorCode.AUTHOR_MUST_BE_STUDENT_FOR_FIND_TUTOR
@@ -69,7 +65,7 @@ public class PostService {
         }
 
         if (type == PostType.FIND_STUDENT
-                && !Role.TUTOR.name().equals(user.getRole().getName())) {
+                && !RoleName.TUTOR.name().equals(user.getRole().getName())) {
 
             throw new PostValidationException(
                     PostErrorCode.AUTHOR_MUST_BE_TUTOR_FOR_FIND_STUDENT

@@ -1,31 +1,27 @@
-package org.group3.tutorlink.features.auth.dto.response;
+package org.group3.tutorlink.features.user.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.group3.tutorlink.features.user.enums.Gender;
 import org.group3.tutorlink.features.user.enums.UserStatus;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@Builder
-public class UserResponse {
+@SuperBuilder
+public class BaseUserResponse {
     private UUID id;
     private String fullname;
     private String email;
     private String phone;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String avatarUrl;
     private Gender gender;
     private LocalDate dateOfBirth;
-    private String address;
+    private AddressResponse address;
     private UserStatus userStatus;
     private String role;
-
 }

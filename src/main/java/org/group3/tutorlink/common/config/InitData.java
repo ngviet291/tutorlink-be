@@ -2,8 +2,10 @@ package org.group3.tutorlink.common.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.group3.tutorlink.common.entity.Address;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.entity.Role;
+import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.group3.tutorlink.features.auth.repository.RoleRepository;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.subject.repository.SubjectRepository;
@@ -93,13 +95,13 @@ public class InitData implements CommandLineRunner {
 
         Role studentRole = Role.builder()
                 .id(appUtil.generateUUID())
-                .name(org.group3.tutorlink.features.auth.enums.Role.STUDENT.name())
+                .name(RoleName.STUDENT.name())
                 .description("Student role")
                 .build();
 
         Role tutorRole = Role.builder()
                 .id(appUtil.generateUUID())
-                .name(org.group3.tutorlink.features.auth.enums.Role.TUTOR.name())
+                .name(RoleName.TUTOR.name())
                 .description("Tutor role")
                 .build();
 
@@ -131,7 +133,7 @@ public class InitData implements CommandLineRunner {
             return;
         }
 
-        Role studentRole = roleRepository.findByName(org.group3.tutorlink.features.auth.enums.Role.STUDENT.name())
+        Role studentRole = roleRepository.findByName(RoleName.STUDENT.name())
                 .orElseThrow(() ->
                         new RuntimeException("ROLE_STUDENT not found"));
 
@@ -145,7 +147,11 @@ public class InitData implements CommandLineRunner {
                 .phone("0901234567")
                 .gender(Gender.MALE)
                 .dateOfBirth(LocalDate.of(2004, 1, 1))
-                .address("Ho Chi Minh City")
+                .address(Address.builder()
+                        .street("123 Nguyen Trai")
+                        .ward("Phuong 5")
+                        .province("Ho Chi Minh City")
+                        .build())
                 .userStatus(UserStatus.ACTIVE)
                 .role(studentRole)
                 .grade("12")
@@ -160,7 +166,11 @@ public class InitData implements CommandLineRunner {
                 .phone("0901234568")
                 .gender(Gender.FEMALE)
                 .dateOfBirth(LocalDate.of(2005, 5, 10))
-                .address("Binh Duong")
+                .address(Address.builder()
+                        .street("123 Nguyen Trai")
+                        .ward("Phuong 5")
+                        .province("Ho Chi Minh City")
+                        .build())
                 .userStatus(UserStatus.ACTIVE)
                 .role(studentRole)
                 .grade("11")
@@ -187,7 +197,7 @@ public class InitData implements CommandLineRunner {
             return;
         }
 
-        Role tutorRole = roleRepository.findByName(org.group3.tutorlink.features.auth.enums.Role.TUTOR.name())
+        Role tutorRole = roleRepository.findByName(RoleName.TUTOR.name())
                 .orElseThrow(() ->
                         new RuntimeException("ROLE_TUTOR not found"));
 
@@ -210,7 +220,11 @@ public class InitData implements CommandLineRunner {
                 .phone("0901234569")
                 .gender(Gender.MALE)
                 .dateOfBirth(LocalDate.of(1998, 3, 15))
-                .address("Ho Chi Minh City")
+                .address(Address.builder()
+                        .street("123 Nguyen Trai")
+                        .ward("Phuong 5")
+                        .province("Ho Chi Minh City")
+                        .build())
                 .userStatus(UserStatus.ACTIVE)
                 .role(tutorRole)
                 .experienceYears(5)
@@ -228,7 +242,11 @@ public class InitData implements CommandLineRunner {
                 .phone("0901234570")
                 .gender(Gender.FEMALE)
                 .dateOfBirth(LocalDate.of(1997, 8, 20))
-                .address("Binh Duong")
+                .address(Address.builder()
+                        .street("123 Nguyen Trai")
+                        .ward("Phuong 5")
+                        .province("Ho Chi Minh City")
+                        .build())
                 .userStatus(UserStatus.ACTIVE)
                 .role(tutorRole)
                 .experienceYears(7)

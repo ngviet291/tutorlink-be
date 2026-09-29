@@ -1,11 +1,14 @@
 package org.group3.tutorlink.features.auth.dto.request;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.group3.tutorlink.features.user.dto.request.AddressRequest;
 import org.group3.tutorlink.features.user.enums.Gender;
 
 import java.time.LocalDate;
@@ -24,7 +27,9 @@ public class RegisterStudentRequest {
     private String phone;
     private Gender gender;
     private LocalDate dateOfBirth;
-    private String address;
+    @NotNull(message = "Address must not be null")
+    @Valid
+    private AddressRequest address;
 
     private String grade;
     private String learningGoal;

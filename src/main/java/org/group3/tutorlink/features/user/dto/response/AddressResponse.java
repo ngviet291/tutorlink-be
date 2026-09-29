@@ -1,4 +1,4 @@
-package org.group3.tutorlink.features.post.dto.response;
+package org.group3.tutorlink.features.user.dto.response;
 
 import lombok.*;
 

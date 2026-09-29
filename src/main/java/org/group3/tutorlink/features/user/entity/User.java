@@ -1,5 +1,6 @@
 package org.group3.tutorlink.features.user.entity;
 
+import org.group3.tutorlink.common.entity.Address;
 import org.group3.tutorlink.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,7 +39,8 @@ public abstract class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
     private LocalDate dateOfBirth;
-    private String address;
+    @Embedded
+    private Address address;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserStatus userStatus;
