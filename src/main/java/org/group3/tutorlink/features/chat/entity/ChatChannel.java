@@ -25,6 +25,7 @@ public class ChatChannel extends BaseEntity {
 
     private String name;
 
+
     private Instant lastMessageAt;
 
     // ChatChannel n -- 1 Tutor
@@ -39,5 +40,5 @@ public class ChatChannel extends BaseEntity {
 
     // ChatChannel 1 -- 0..* Message
     @OneToMany(mappedBy = "chatChannel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Message> messages ;
+    private Set<Message> messages;
 }

@@ -1,19 +1,18 @@
 package org.group3.tutorlink.features.user.mapper;
 
+import org.group3.tutorlink.common.entity.Address;
 import org.group3.tutorlink.features.auth.dto.request.RegisterStudentRequest;
 import org.group3.tutorlink.features.auth.dto.request.RegisterTutorRequest;
-import org.group3.tutorlink.features.auth.entity.Role;
-import org.group3.tutorlink.features.user.dto.response.UserResponse;
+import org.group3.tutorlink.features.user.dto.response.AddressResponse;
+import org.group3.tutorlink.features.user.dto.response.StudentResponse;
+import org.group3.tutorlink.features.user.dto.response.TutorResponse;
 import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
-import org.group3.tutorlink.features.user.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "role", ignore = true)
@@ -29,28 +28,13 @@ public interface UserMapper {
     @Mapping(target = "verificationStatus", ignore = true)
     Tutor toTutor(RegisterTutorRequest request);
 
-    @Mapping(target = "role", source = "role", qualifiedByName = "roleToName")
-    UserResponse toBaseUserResponse(User user);
+    AddressResponse toAddressResponse(Address address);
 
-    @Mapping(target = "role", source = "role", qualifiedByName = "roleToName")
-    UserResponse toStudentResponse(Student student);
 
-    @Mapping(target = "role", source = "role", qualifiedByName = "roleToName")
-    @Mapping(target = "subjectId", source = "subject.id")
-    @Mapping(target = "subjectName", source = "subject.name")
-    UserResponse toTutorResponse(Tutor tutor);
+    @Mapping(target = "role", source = "role.name")
+    StudentResponse toStudentResponse(Student student);
 
-    default UserResponse toUserResponse(User user) {
-        if (user instanceof Student student) {
-            return toStudentResponse(student);
-        }
-        if (user instanceof Tutor tutor) {
-            return toTutorResponse(tutor);
-        }
-        return toBaseUserResponse(user);
-    }
-    @Named("roleToName")
-    default String roleToName(Role role) {
-        return role != null ? role.getName() : null;
-    }
+    @Mapping(target = "role", source = "role.name")
+    @Mapping(target = "subject", ignore = true)
+    TutorResponse toTutorResponse(Tutor tutor);
 }

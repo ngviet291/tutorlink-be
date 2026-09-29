@@ -29,7 +29,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(errorCode.getHttpStatus().value());
 
-        ErrorResponse errorResponse = AppUtil.generateErrorResponse(request, errorCode);
+        ErrorResponse errorResponse = AppUtil.builder().generateErrorResponse(request, errorCode);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());

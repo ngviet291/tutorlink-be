@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.group3.tutorlink.features.user.dto.response.UserResponse;
+import org.group3.tutorlink.features.user.dto.response.BaseUserResponse;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,8 +14,8 @@ public class AuthenticateResponse {
     private String accessToken;
     private String refreshToken;
     @Builder.Default
-    private String tokenType = "Bearer ";
+    private String tokenType = "Bearer";
     private Long expiresIn;
-    private UserResponse user;
+    private BaseUserResponse user;
 
 }
