@@ -22,10 +22,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -133,9 +130,11 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e, HttpServletRequest request) {
-        ErrorCode errorCode = ErrorCode.INVALID_PARAMETER_TYPE;
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException e,
+            HttpServletRequest request) {
 
+        ErrorCode errorCode = ErrorCode.INVALID_PARAMETER_TYPE;
 
         Class<?> errorTypeClass = e.getRequiredType();
 
@@ -145,22 +144,28 @@ public class GlobalExceptionHandler {
                 byte.class, short.class, int.class, long.class,
                 float.class, double.class
         );
+
         if (errorTypeClass == null) {
             errorTypeClass = e.getParameter().getParameterType();
         }
 
-        if (errorTypeClass == LocalDate.class) {
+        if (errorTypeClass == UUID.class) {
+            errorCode = ErrorCode.INVALID_UUID;
+        } else if (errorTypeClass == LocalDate.class) {
             errorCode = ErrorCode.INVALID_DATE_FORMAT;
         } else if (NUMBER_TYPES.contains(errorTypeClass)) {
             errorCode = ErrorCode.INVALID_NUMBER_FORMAT;
         }
-        String message = ErrorCode.INVALID_PARAMETER_TYPE.getMessage();
+
+        String message = errorCode.getMessage();
+
         if (e.getValue() != null) {
             Map<String, Object> params = Map.of(
                     "value", e.getValue(),
                     "parameter", e.getName(),
                     "type", errorTypeClass.getSimpleName()
             );
+
             message = mapAttributes(message, params);
         }
 
@@ -172,8 +177,11 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .build();
 
-        return ResponseEntity.status(errorCode.getHttpStatus()).body(response);
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(response);
     }
+
 
     @ExceptionHandler(ParameterizedException.class)
     public ResponseEntity<ErrorResponse> handleParameterizedException(ParameterizedException e, HttpServletRequest request) {

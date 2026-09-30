@@ -27,6 +27,7 @@ public enum ErrorCode implements BaseErrorCode{
     BAD_REQUEST("GEN_003", "Bad request", HttpStatus.BAD_REQUEST),
     TOKEN_EXPIRED("AUTH_006", "Token has expired", HttpStatus.UNAUTHORIZED),
     USER_NOT_SUPPORTED("USER_008", "Unsupported user type", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_UUID("VAL_006", "Invalid UUID format", HttpStatus.BAD_REQUEST)
     ;
     private final String code;
     private final String message;

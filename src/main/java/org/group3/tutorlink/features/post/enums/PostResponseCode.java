@@ -9,8 +9,9 @@ public enum PostResponseCode implements ResponseCode {
     POST_UPDATED("POST_200", "Post updated successfully"),
     POST_DELETED("POST_200", "Post deleted successfully"),
     POST_NOT_FOUND("POST_404", "Post not found"),
-    POST_LIST_RETRIEVED("POST_200", "Post list retrieved successfully");
-
+    GET_POSTS("POST_200", "Posts retrieved successfully"),
+    POST_LIST_RETRIEVED("POST_200", "Post list retrieved successfully"),
+    POST_FOUND("POST_200", "Post found successfully");
     private final String code;
     private final String message;
 
