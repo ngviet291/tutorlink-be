@@ -8,7 +8,7 @@ import lombok.*;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
 import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.enums.TeachingMode;
-import org.group3.tutorlink.features.post.validation.annotation.ValidCreatePostRequest;
+import org.group3.tutorlink.features.post.validation.ValidPostRequest;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -24,7 +24,7 @@ import java.util.UUID;
  * Validate address: address is required if teachingMode is OFFLINE or BOTH.
  *
  */
-@ValidCreatePostRequest
+@ValidPostRequest
 public class CreatePostRequest {
 
     @NotBlank(message = "Title must not be blank")

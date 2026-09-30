@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.features.post.dto.request.CreatePostRequest;
+import org.group3.tutorlink.features.post.dto.request.UpdatePostRequest;
 import org.group3.tutorlink.features.post.dto.response.PostResponse;
 import org.group3.tutorlink.features.post.enums.*;
 import org.group3.tutorlink.features.post.service.PostService;
@@ -76,5 +77,16 @@ public class PostController {
                 .build();
     }
 
+    @PutMapping("/{postId}")
+    public ApiResponse<PostResponse> updatePost(
+            @PathVariable UUID postId,
+            @Valid @RequestBody UpdatePostRequest updatePostRequest
+    ) {
+        return ApiResponse.<PostResponse>builder()
+                .code(PostResponseCode.POST_UPDATED.getCode())
+                .message(PostResponseCode.POST_UPDATED.getMessage())
+                .data(postService.updatePost(postId, updatePostRequest))
+                .build();
+    }
 
 }

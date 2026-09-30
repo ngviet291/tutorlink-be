@@ -1,6 +1,5 @@
 package org.group3.tutorlink.common.exception;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -252,20 +252,29 @@ public class GlobalExceptionHandler {
         log.info("HttpMessageNotReadableException at [{}]: {}", request.getRequestURI(), cause != null ? cause.getMessage() : ex.getMessage());
         String message;
 
-        if (cause instanceof InvalidFormatException ife && ife.getTargetType() != null && ife.getTargetType().isEnum()) {
+        tools.jackson.databind.exc.InvalidFormatException ife = null;
+        for (Throwable t = ex.getCause(); t != null; t = t.getCause()) {
+            if (t instanceof InvalidFormatException  e) {
+                ife = e;
+                break;
+            }
+        }
+
+        if (ife != null && ife.getTargetType() != null && ife.getTargetType().isEnum()) {
             String fieldName = ife.getPath().isEmpty()
                     ? "field"
-                    : ife.getPath().get(ife.getPath().size() - 1).getFieldName();
+                    : ife.getPath().get(ife.getPath().size() - 1).getPropertyName(); // Jackson 3
+            // Jackson 2: getFieldName()
 
-            Object[] acceptedValues = ife.getTargetType().getEnumConstants();
-            String accepted = Arrays.stream(acceptedValues)
+            String accepted = Arrays.stream(ife.getTargetType().getEnumConstants())
                     .map(Object::toString)
                     .collect(Collectors.joining(", "));
 
             message = mapAttributes(
                     "Invalid value ''{value}'' for field ''{field}''. Accepted values: {accepted}",
-                    Map.of("field", fieldName, "value", ife.getValue(), "accepted", accepted)
-            );
+                    Map.of("field", fieldName,
+                            "value", String.valueOf(ife.getValue()),
+                            "accepted", accepted));
         } else {
             message = errorCode.getMessage();
         }

@@ -7,6 +7,7 @@ import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.post.dto.request.CreatePostRequest;
+import org.group3.tutorlink.features.post.dto.request.UpdatePostRequest;
 import org.group3.tutorlink.features.post.dto.response.PostResponse;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
@@ -28,6 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,7 +61,6 @@ public class PostService {
                 .orElseThrow(SubjectNotFoundException::new);
 
 
-
         Post post = postMapper.toPost(appUtil.generateUUID(), user, subject, request);
         Post savedPost = postRepository.saveAndFlush(post);
         return postMapper.toPostResponse(savedPost);
@@ -86,7 +87,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public  PostResponse getPostByIdAndMe(UUID postId) {
+    public PostResponse getPostByIdAndMe(UUID postId) {
         UUID currentUserId = appUtil.userIdFromAuthentication();
 
         Post post = postRepository.findByIdWithSubjectAndWithAuthor(postId, currentUserId)
@@ -104,7 +105,7 @@ public class PostService {
     }
 
 
-
+    @Transactional(readOnly = true)
     public CursorResponse<PostResponse> getAllPosts(
             String keyword,
             PostType type,
@@ -144,5 +145,24 @@ public class PostService {
                 postMapper::toPostResponse
         );
 
+    }
+
+    @Transactional
+    public PostResponse updatePost(UUID postId, UpdatePostRequest request) {
+        Post post = postRepository.findByIdWithSubjectAndWithAuthor(postId, appUtil.userIdFromAuthentication())
+                .orElseThrow(PostNotFoundException::new);
+
+
+        Subject subject = subjectRepository.findById(request.getSubjectId())
+                .orElseThrow(SubjectNotFoundException::new);
+
+        validateAuthor(request.getType(), post.getAuthor());
+
+        postMapper.updatePostFromRequest(post, request);
+
+        post.setSubject(subject);
+
+        Post updatedPost = postRepository.save(post);
+        return postMapper.toPostResponse(updatedPost);
     }
 }
