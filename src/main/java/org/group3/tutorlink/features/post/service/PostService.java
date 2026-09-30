@@ -24,7 +24,6 @@ import org.group3.tutorlink.features.subject.exception.SubjectNotFoundException;
 import org.group3.tutorlink.features.subject.repository.SubjectRepository;
 import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.repository.UserRepository;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
