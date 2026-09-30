@@ -27,6 +27,14 @@ public enum ErrorCode implements BaseErrorCode{
     BAD_REQUEST("GEN_003", "Bad request", HttpStatus.BAD_REQUEST),
     TOKEN_EXPIRED("AUTH_006", "Token has expired", HttpStatus.UNAUTHORIZED),
     USER_NOT_SUPPORTED("USER_008", "Unsupported user type", HttpStatus.INTERNAL_SERVER_ERROR),
+    //Erroll phần application -- Xuyen
+    POST_NOT_FOUND("POST_001", "Post not found", HttpStatus.NOT_FOUND),
+    POST_NOT_AVAILABLE("POST_002", "Post is not available for application", HttpStatus.BAD_REQUEST),
+    APPLICATION_NOT_FOUND("APPLICATION_001", "Application not found", HttpStatus.NOT_FOUND),
+    APPLICATION_ALREADY_EXISTS("APPLICATION_002", "You have already applied to this post", HttpStatus.CONFLICT),
+    APPLICATION_NOT_ALLOWED("APPLICATION_003", "You are not allowed to perform this action", HttpStatus.FORBIDDEN),
+    APPLICATION_DEADLINE_EXPIRED("APPLICATION_004", "The application deadline has expired", HttpStatus.BAD_REQUEST),
+    INVALID_APPLICATION_STATUS("APPLICATION_005", "Invalid application status for this action", HttpStatus.BAD_REQUEST),
     ;
     private final String code;
     private final String message;

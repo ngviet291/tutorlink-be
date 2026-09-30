@@ -20,6 +20,7 @@ import org.group3.tutorlink.features.auth.repository.RoleRepository;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.subject.repository.SubjectRepository;
 import org.group3.tutorlink.features.user.dto.response.TutorResponse;
+import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
@@ -196,6 +197,7 @@ public class AuthenticationService {
                 yield r;
             }
             case Student student -> userMapper.toStudentResponse(student);
+            case Admin admin -> userMapper.toBaseUserResponse(admin);
             default -> throw new AppException(ErrorCode.USER_NOT_SUPPORTED);
         };
 
