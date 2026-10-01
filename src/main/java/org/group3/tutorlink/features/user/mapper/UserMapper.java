@@ -4,10 +4,13 @@ import org.group3.tutorlink.common.entity.Address;
 import org.group3.tutorlink.features.auth.dto.request.RegisterStudentRequest;
 import org.group3.tutorlink.features.auth.dto.request.RegisterTutorRequest;
 import org.group3.tutorlink.features.user.dto.response.AddressResponse;
+import org.group3.tutorlink.features.user.dto.response.BaseUserResponse;
 import org.group3.tutorlink.features.user.dto.response.StudentResponse;
 import org.group3.tutorlink.features.user.dto.response.TutorResponse;
+import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
+import org.group3.tutorlink.features.user.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -37,4 +40,7 @@ public interface UserMapper {
     @Mapping(target = "role", source = "role.name")
     @Mapping(target = "subject", ignore = true)
     TutorResponse toTutorResponse(Tutor tutor);
+    @Mapping(target = "role", source = "role.name")
+   BaseUserResponse toBaseUserResponse(User user);
+
 }

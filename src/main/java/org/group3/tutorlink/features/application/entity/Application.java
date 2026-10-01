@@ -8,6 +8,7 @@ import org.group3.tutorlink.features.payment.entity.Transaction;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Student;
+import org.group3.tutorlink.features.user.entity.Tutor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -40,8 +41,12 @@ public class Application extends BaseEntity {
 
     // Application n -- 1 Student (applicant)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "student_id")
     private Student student;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tutor_id")
+    private Tutor tutor;
 
     // Application n -- 1 Admin (accepts / processes), optional
     @ManyToOne(fetch = FetchType.LAZY)
