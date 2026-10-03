@@ -1,6 +1,7 @@
 package org.group3.tutorlink.features.subject.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.subject.dto.request.SubjectRequest;
 import org.group3.tutorlink.features.subject.dto.response.SubjectResponse;
 import org.group3.tutorlink.features.subject.entity.Subject;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,36 +23,40 @@ public class SubjectServiceImpl implements SubjectService {
 
     private final SubjectRepository subjectRepository;
     private final SubjectMapper subjectMapper;
+    private final AppUtil appUtil;
 
     @Override
+    @Transactional(readOnly = true)
     public List<SubjectResponse> getAllSubjects() {
         return subjectRepository.findAll().stream()
                 .map(subjectMapper::toSubjectResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SubjectResponse getSubjectById(UUID id) {
         Subject subject = subjectRepository.findById(id)
-                .orElseThrow(() -> new SubjectNotFoundException());
+                .orElseThrow(SubjectNotFoundException::new);
         return subjectMapper.toSubjectResponse(subject);
     }
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public SubjectResponse createSubject(SubjectRequest request) {
         Subject subject = subjectMapper.toSubject(request);
-        subject.setId(UUID.randomUUID());
+        subject.setId(appUtil.generateUUID());
         Subject savedSubject = subjectRepository.save(subject);
         return subjectMapper.toSubjectResponse(savedSubject);
     }
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public SubjectResponse updateSubject(UUID id, SubjectRequest request) {
         Subject subject = subjectRepository.findById(id)
-                .orElseThrow(() -> new SubjectNotFoundException());
+                .orElseThrow(SubjectNotFoundException::new);
 
         subjectMapper.updateSubjectFromRequest(request, subject);
         Subject updatedSubject = subjectRepository.save(subject);
@@ -62,9 +66,10 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
     public void deleteSubject(UUID id) {
         Subject subject = subjectRepository.findById(id)
-                .orElseThrow(() -> new SubjectNotFoundException());
+                .orElseThrow(SubjectNotFoundException::new);
 
         if (subjectRepository.isUsedByTutor(id)) {
             throw new SubjectInUseException();
