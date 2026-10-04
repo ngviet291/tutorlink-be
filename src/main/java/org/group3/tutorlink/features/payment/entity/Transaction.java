@@ -7,7 +7,9 @@ import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.payment.enums.PaymentMethod;
 import org.group3.tutorlink.features.payment.enums.TransactionStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -22,7 +24,7 @@ public class Transaction extends BaseEntity {
     @Id
     private UUID id;
 
-    private double amount;
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
@@ -30,7 +32,7 @@ public class Transaction extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    private LocalDate transactionDate;
+    private LocalDateTime transactionDate;
 
     // Transaction 0..1 -- 1 Application
     @OneToOne(fetch = FetchType.LAZY)
