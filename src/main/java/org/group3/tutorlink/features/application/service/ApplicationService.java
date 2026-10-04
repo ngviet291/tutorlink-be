@@ -14,6 +14,8 @@ package org.group3.tutorlink.features.application.service;
  */
 import org.group3.tutorlink.features.application.dto.request.CreateApplicationRequest;
 import org.group3.tutorlink.features.application.dto.response.ApplicationResponse;
+import org.group3.tutorlink.features.application.enums.ApplicationStatus;
+import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -29,13 +31,15 @@ public interface ApplicationService {
             UUID applicationId
     );
 
+    // Đã sửa
     Page<ApplicationResponse> getMyApplications(
-            String role,
+            RoleName role,
             Pageable pageable
     );
 
+    // Đã sửa
     Page<ApplicationResponse> getApplications(
-            String status,
+            ApplicationStatus status,
             Pageable pageable
     );
 

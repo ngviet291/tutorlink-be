@@ -10,8 +10,10 @@ import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.exception.ApplicationNotAllowedException;
 import org.group3.tutorlink.features.application.exception.ApplicationNotFoundException;
 import org.group3.tutorlink.features.application.exception.ErrorCodeApplication;
+import org.group3.tutorlink.features.application.mapper.ApplicationMapper;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
 import org.group3.tutorlink.features.application.service.ApplicationService;
+import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
@@ -39,6 +41,8 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final AppUtil appUtil;
+    // Đã sửa
+    private final ApplicationMapper applicationMapper;
 
     @Override
     @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
@@ -100,7 +104,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         Application saved = applicationRepository.save(application);
-        return toResponse(saved);
+        // Đã sửa
+        return applicationMapper.toApplicationResponse(saved);
     }
 
     @Override
@@ -116,71 +121,44 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new ApplicationNotAllowedException();
         }
 
-        return toResponse(application);
+        // Đã sửa
+        return applicationMapper.toApplicationResponse(application);
     }
 
     @Override
-    @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
+    @PreAuthorize("hasAuthority(#role.name())")
     @Transactional(readOnly = true)
-    public Page<ApplicationResponse> getMyApplications(String role, Pageable pageable) {
+    // Đã sửa
+    public Page<ApplicationResponse> getMyApplications(RoleName role, Pageable pageable) {
 
         UUID userId = appUtil.userIdFromAuthentication();
-        User currentUser = getUser(userId);
 
-        if (role == null || role.isBlank()) {
+        if (role == null) {
             throw new AppException(ErrorCodeApplication.INVALID_ROLE);
         }
 
-        Page<Application> applications;
+        Page<Application> applications = switch (role) {
+            case STUDENT -> applicationRepository.findByStudentId(userId, pageable);
+            case TUTOR -> applicationRepository.findByTutorId(userId, pageable);
+            default -> throw new AppException(ErrorCodeApplication.INVALID_ROLE);
+        };
 
-        if ("student".equalsIgnoreCase(role)) {
-
-            if (!(currentUser instanceof Student student)) {
-                throw new ApplicationNotAllowedException();
-            }
-            applications = applicationRepository.findByStudentId(student.getId(), pageable);
-
-        } else if ("tutor".equalsIgnoreCase(role)) {
-
-            if (!(currentUser instanceof Tutor tutor)) {
-                throw new ApplicationNotAllowedException();
-            }
-            applications = applicationRepository.findByTutorId(tutor.getId(), pageable);
-
-        } else {
-            throw new AppException(ErrorCodeApplication.INVALID_ROLE);
-        }
-
-        return applications.map(this::toResponse);
+        // Đã sửa
+        return applications.map(applicationMapper::toApplicationResponse);
     }
 
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
     @Transactional(readOnly = true)
-    public Page<ApplicationResponse> getApplications(String status, Pageable pageable) {
+    // Đã sửa
+    public Page<ApplicationResponse> getApplications(ApplicationStatus status, Pageable pageable) {
 
-        UUID userId = appUtil.userIdFromAuthentication();
-        User currentUser = getUser(userId);
+        Page<Application> applications = (status == null)
+                ? applicationRepository.findAll(pageable)
+                : applicationRepository.findByApplicationStatus(status, pageable);
 
-        if (!(currentUser instanceof Admin)) {
-            throw new ApplicationNotAllowedException();
-        }
-
-        Page<Application> applications;
-
-        if (status == null || status.isBlank()) {
-            applications = applicationRepository.findAll(pageable);
-        } else {
-            ApplicationStatus applicationStatus;
-            try {
-                applicationStatus = ApplicationStatus.valueOf(status.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new AppException(ErrorCodeApplication.INVALID_STATUS);
-            }
-            applications = applicationRepository.findByApplicationStatus(applicationStatus, pageable);
-        }
-
-        return applications.map(this::toResponse);
+        // Đã sửa
+        return applications.map(applicationMapper::toApplicationResponse);
     }
 
     @Override
@@ -244,7 +222,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         post.setStatus(PostStatus.CLOSED);
 
         Application saved = applicationRepository.save(application);
-        return toResponse(saved);
+        // Đã sửa
+        return applicationMapper.toApplicationResponse(saved);
     }
 
     @Override
@@ -288,7 +267,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.setApplicationStatus(ApplicationStatus.FINISHED);
 
         Application saved = applicationRepository.save(application);
-        return toResponse(saved);
+        // Đã sửa
+        return applicationMapper.toApplicationResponse(saved);
     }
 
     @Override
@@ -325,7 +305,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.setApplicationStatus(ApplicationStatus.CANCELLED);
 
         Application saved = applicationRepository.save(application);
-        return toResponse(saved);
+        // Đã sửa
+        return applicationMapper.toApplicationResponse(saved);
     }
 
     private User getUser(UUID userId) {
@@ -361,31 +342,4 @@ public class ApplicationServiceImpl implements ApplicationService {
                 && application.getPost().getAuthor().getId().equals(currentUserId);
     }
 
-    private ApplicationResponse toResponse(Application application) {
-
-        UUID studentId = application.getStudent() != null
-                ? application.getStudent().getId() : null;
-        UUID tutorId = application.getTutor() != null
-                ? application.getTutor().getId() : null;
-        UUID adminId = application.getProcessedByAdmin() != null
-                ? application.getProcessedByAdmin().getId() : null;
-        UUID transactionId = application.getTransaction() != null
-                ? application.getTransaction().getId() : null;
-
-        return ApplicationResponse.builder()
-                .id(application.getId())
-                .postId(application.getPost() != null ? application.getPost().getId() : null)
-                .studentId(studentId)
-                .tutorId(tutorId)
-                .applicationStatus(
-                        application.getApplicationStatus() != null
-                                ? application.getApplicationStatus().name()
-                                : null
-                )
-                .message(application.getMessage())
-                .appliedAt(application.getAppliedAt())
-                .processedByAdminId(adminId)
-                .transactionId(transactionId)
-                .build();
-    }
 }
