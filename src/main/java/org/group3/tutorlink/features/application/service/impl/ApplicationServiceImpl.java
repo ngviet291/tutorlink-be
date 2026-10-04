@@ -11,16 +11,17 @@ package org.group3.tutorlink.features.application.service.impl;
  * @author: Ho Thi Kim Xuyen
  * @version:     1.0
  * @date: 29/09/2026 00
- */
+*/
 import lombok.RequiredArgsConstructor;
-import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.common.utils.AppUtil;
+import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.features.application.dto.request.CreateApplicationRequest;
 import org.group3.tutorlink.features.application.dto.response.ApplicationResponse;
 import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
+import org.group3.tutorlink.features.application.exception.ApplicationNotAllowedException;
 import org.group3.tutorlink.features.application.exception.ApplicationNotFoundException;
-import org.group3.tutorlink.features.application.exception.ApplicationStatusException;
+import org.group3.tutorlink.features.application.exception.ErrorCodeApplication;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
 import org.group3.tutorlink.features.application.service.ApplicationService;
 import org.group3.tutorlink.features.post.entity.Post;
@@ -38,23 +39,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ApplicationServiceImpl
-        implements ApplicationService {
+public class ApplicationServiceImpl implements ApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final AppUtil appUtil;
 
-    // ============================================================
-    // CREATE APPLICATION
-    // ============================================================
 
     @Override
     public ApplicationResponse createApplication(
@@ -68,35 +64,35 @@ public class ApplicationServiceImpl
         Post post = postRepository.findById(request.getPostId())
                 .orElseThrow(() ->
                         new AppException(
-                                ApplicationStatusException.POST_NOT_FOUND
+                                ErrorCodeApplication.POST_NOT_FOUND
                         )
                 );
 
-        // Post phải đang được đăng
+
         if (post.getStatus() != PostStatus.PUBLISHED) {
+
             throw new AppException(
-                    ApplicationStatusException.POST_NOT_AVAILABLE
+                    ErrorCodeApplication.POST_NOT_AVAILABLE
             );
         }
 
-        // Kiểm tra deadline
+
         if (post.getDeadline() != null
                 && Instant.now().isAfter(post.getDeadline())) {
 
             throw new AppException(
-                    ApplicationStatusException.APPLICATION_DEADLINE_EXPIRED
+                    ErrorCodeApplication.APPLICATION_DEADLINE_EXPIRED
             );
         }
 
-        // Người tạo Post không được tự apply vào Post của mình
+
+
         if (post.getAuthor() != null
                 && post.getAuthor()
                 .getId()
                 .equals(currentUser.getId())) {
 
-            throw new AppException(
-                    ApplicationStatusException.APPLICATION_NOT_ALLOWED
-            );
+            throw new ApplicationNotAllowedException();
         }
 
         Application application = Application.builder()
@@ -107,19 +103,13 @@ public class ApplicationServiceImpl
                 .appliedAt(Instant.now())
                 .build();
 
-        // ========================================================
-        // FIND_TUTOR
-        // Student tạo Post
-        // Tutor apply
-        // ========================================================
+
 
         if (post.getType() == PostType.FIND_TUTOR) {
 
             if (!(currentUser instanceof Tutor tutor)) {
 
-                throw new AppException(
-                        ApplicationStatusException.APPLICATION_NOT_ALLOWED
-                );
+                throw new ApplicationNotAllowedException();
             }
 
             boolean exists =
@@ -131,26 +121,20 @@ public class ApplicationServiceImpl
             if (exists) {
 
                 throw new AppException(
-                        ApplicationStatusException.APPLICATION_ALREADY_EXISTS
+                        ErrorCodeApplication.APPLICATION_ALREADY_EXISTS
                 );
             }
 
             application.setTutor(tutor);
         }
 
-        // ========================================================
-        // FIND_STUDENT
-        // Tutor tạo Post
-        // Student apply
-        // ========================================================
+
 
         else if (post.getType() == PostType.FIND_STUDENT) {
 
             if (!(currentUser instanceof Student student)) {
 
-                throw new AppException(
-                        ApplicationStatusException.APPLICATION_NOT_ALLOWED
-                );
+                throw new ApplicationNotAllowedException();
             }
 
             boolean exists =
@@ -162,17 +146,19 @@ public class ApplicationServiceImpl
             if (exists) {
 
                 throw new AppException(
-                        ApplicationStatusException.APPLICATION_ALREADY_EXISTS
+                        ErrorCodeApplication.APPLICATION_ALREADY_EXISTS
                 );
             }
 
             application.setStudent(student);
         }
 
+
+
         else {
 
             throw new AppException(
-                    ApplicationStatusException.POST_NOT_AVAILABLE
+                    ErrorCodeApplication.POST_NOT_AVAILABLE
             );
         }
 
@@ -182,9 +168,7 @@ public class ApplicationServiceImpl
         return toResponse(saved);
     }
 
-    // ============================================================
-    // GET APPLICATION BY ID
-    // ============================================================
+
 
     @Override
     @Transactional(readOnly = true)
@@ -196,24 +180,20 @@ public class ApplicationServiceImpl
 
         User currentUser = getUser(userId);
 
-        Application application = getApplication(applicationId);
+        Application application =
+                getApplication(applicationId);
 
         if (!canViewApplication(
                 currentUser,
                 application
         )) {
 
-            throw new AppException(
-                    ApplicationStatusException.APPLICATION_NOT_ALLOWED
-            );
+            throw new ApplicationNotAllowedException();
         }
 
         return toResponse(application);
     }
 
-    // ============================================================
-    // GET MY APPLICATIONS
-    // ============================================================
 
     @Override
     @Transactional(readOnly = true)
@@ -229,19 +209,18 @@ public class ApplicationServiceImpl
         if (role == null || role.isBlank()) {
 
             throw new AppException(
-                    ApplicationStatusException.INVALID_ROLE
+                    ErrorCodeApplication.INVALID_ROLE
             );
         }
 
         Page<Application> applications;
 
+
         if ("student".equalsIgnoreCase(role)) {
 
             if (!(currentUser instanceof Student student)) {
 
-                throw new AppException(
-                        ApplicationStatusException.APPLICATION_NOT_ALLOWED
-                );
+                throw new ApplicationNotAllowedException();
             }
 
             applications =
@@ -249,14 +228,15 @@ public class ApplicationServiceImpl
                             student.getId(),
                             pageable
                     );
+        }
 
-        } else if ("tutor".equalsIgnoreCase(role)) {
+
+
+        else if ("tutor".equalsIgnoreCase(role)) {
 
             if (!(currentUser instanceof Tutor tutor)) {
 
-                throw new AppException(
-                        ApplicationStatusException.APPLICATION_NOT_ALLOWED
-                );
+                throw new ApplicationNotAllowedException();
             }
 
             applications =
@@ -264,20 +244,19 @@ public class ApplicationServiceImpl
                             tutor.getId(),
                             pageable
                     );
+        }
 
-        } else {
+
+        else {
 
             throw new AppException(
-                    ApplicationStatusException.INVALID_ROLE
+                    ErrorCodeApplication.INVALID_ROLE
             );
         }
 
         return applications.map(this::toResponse);
     }
 
-    // ============================================================
-    // ADMIN VIEW APPLICATIONS
-    // ============================================================
 
     @Override
     @Transactional(readOnly = true)
@@ -290,21 +269,24 @@ public class ApplicationServiceImpl
 
         User currentUser = getUser(userId);
 
+
         if (!(currentUser instanceof Admin)) {
 
-            throw new AppException(
-                    ApplicationStatusException.APPLICATION_NOT_ALLOWED
-            );
+            throw new ApplicationNotAllowedException();
         }
 
         Page<Application> applications;
+
 
         if (status == null || status.isBlank()) {
 
             applications =
                     applicationRepository.findAll(pageable);
+        }
 
-        } else {
+
+
+        else {
 
             ApplicationStatus applicationStatus;
 
@@ -318,7 +300,7 @@ public class ApplicationServiceImpl
             } catch (IllegalArgumentException e) {
 
                 throw new AppException(
-                        ApplicationStatusException.INVALID_STATUS
+                        ErrorCodeApplication.INVALID_STATUS
                 );
             }
 
@@ -332,9 +314,7 @@ public class ApplicationServiceImpl
         return applications.map(this::toResponse);
     }
 
-    // ============================================================
-    // SELECT APPLICATION
-    // ============================================================
+
 
     @Override
     public ApplicationResponse selectApplication(
@@ -350,46 +330,36 @@ public class ApplicationServiceImpl
 
         Post post = application.getPost();
 
-        // --------------------------------------------------------
-        // Chỉ chủ Post mới được chọn Application
-        // --------------------------------------------------------
 
-        if (post.getAuthor() == null
+
+        if (post == null
+                || post.getAuthor() == null
                 || !post.getAuthor()
                 .getId()
                 .equals(currentUser.getId())) {
 
-            throw new AppException(
-                    ApplicationStatusException.APPLICATION_NOT_ALLOWED
-            );
+            throw new ApplicationNotAllowedException();
         }
 
-        // --------------------------------------------------------
-        // Chỉ PENDING mới được chọn
-        // --------------------------------------------------------
+
 
         if (application.getApplicationStatus()
                 != ApplicationStatus.PENDING) {
 
             throw new AppException(
-                    ApplicationStatusException.INVALID_APPLICATION_STATUS
+                    ErrorCodeApplication.INVALID_APPLICATION_STATUS
             );
         }
 
-        // --------------------------------------------------------
-        // Kiểm tra Post đang còn mở
-        // --------------------------------------------------------
 
         if (post.getStatus() != PostStatus.PUBLISHED) {
 
             throw new AppException(
-                    ApplicationStatusException.POST_NOT_AVAILABLE
+                    ErrorCodeApplication.POST_NOT_AVAILABLE
             );
         }
 
-        // --------------------------------------------------------
-        // Kiểm tra Post đã có Application ACCEPTED chưa
-        // --------------------------------------------------------
+
 
         boolean alreadySelected =
                 applicationRepository
@@ -401,58 +371,40 @@ public class ApplicationServiceImpl
         if (alreadySelected) {
 
             throw new AppException(
-                    ApplicationStatusException.APPLICATION_ALREADY_SELECTED
+                    ErrorCodeApplication.APPLICATION_ALREADY_SELECTED
             );
         }
 
-        // --------------------------------------------------------
-        // Gán người tạo Post vào Application
-        // --------------------------------------------------------
+
 
         if (post.getType() == PostType.FIND_TUTOR) {
 
-            /*
-             * Student tạo Post
-             * Tutor là applicant
-             */
-            if (!(currentUser instanceof Student student)) {
+            if (!(currentUser instanceof Student)) {
 
-                throw new AppException(
-                        ApplicationStatusException.APPLICATION_NOT_ALLOWED
-                );
+                throw new ApplicationNotAllowedException();
             }
 
-            application.setStudent(student);
-        }
+        } else if (post.getType() == PostType.FIND_STUDENT) {
 
-        else if (post.getType() == PostType.FIND_STUDENT) {
+            if (!(currentUser instanceof Tutor)) {
 
-            /*
-             * Tutor tạo Post
-             * Student là applicant
-             */
-            if (!(currentUser instanceof Tutor tutor)) {
-
-                throw new AppException(
-                        ApplicationStatusException.APPLICATION_NOT_ALLOWED
-                );
+                throw new ApplicationNotAllowedException();
             }
 
-            application.setTutor(tutor);
+        } else {
+
+            throw new AppException(
+                    ErrorCodeApplication.POST_NOT_AVAILABLE
+            );
         }
 
-        // --------------------------------------------------------
-        // Student/Tutor chọn applicant
-        // PENDING -> ACCEPTED
-        // --------------------------------------------------------
+
 
         application.setApplicationStatus(
                 ApplicationStatus.ACCEPTED
         );
 
-        // --------------------------------------------------------
-        // Các Application PENDING khác bị REJECTED
-        // --------------------------------------------------------
+
 
         Page<Application> pendingApplications =
                 applicationRepository
@@ -474,9 +426,6 @@ public class ApplicationServiceImpl
             }
         }
 
-        // --------------------------------------------------------
-        // Post đóng sau khi đã chọn
-        // --------------------------------------------------------
 
         post.setStatus(PostStatus.CLOSED);
 
@@ -486,9 +435,7 @@ public class ApplicationServiceImpl
         return toResponse(saved);
     }
 
-    // ============================================================
-    // CONFIRM APPLICATION
-    // ============================================================
+
 
     @Override
     public ApplicationResponse confirmApplication(
@@ -504,34 +451,22 @@ public class ApplicationServiceImpl
 
         Post post = application.getPost();
 
-        // --------------------------------------------------------
-        // Chỉ ACCEPTED mới được confirm
-        // --------------------------------------------------------
 
         if (application.getApplicationStatus()
                 != ApplicationStatus.ACCEPTED) {
 
             throw new AppException(
-                    ApplicationStatusException.INVALID_APPLICATION_STATUS
+                    ErrorCodeApplication.INVALID_APPLICATION_STATUS
             );
         }
 
-        // --------------------------------------------------------
-        // FIND_TUTOR
-        //
-        // Student tạo Post
-        // Tutor apply
-        // Student chọn Tutor
-        // Tutor confirm
-        // --------------------------------------------------------
+
 
         if (post.getType() == PostType.FIND_TUTOR) {
 
             if (!(currentUser instanceof Tutor tutor)) {
 
-                throw new AppException(
-                        ApplicationStatusException.APPLICATION_NOT_ALLOWED
-                );
+                throw new ApplicationNotAllowedException();
             }
 
             if (application.getTutor() == null
@@ -539,28 +474,17 @@ public class ApplicationServiceImpl
                     .getId()
                     .equals(tutor.getId())) {
 
-                throw new AppException(
-                        ApplicationStatusException.APPLICATION_NOT_ALLOWED
-                );
+                throw new ApplicationNotAllowedException();
             }
         }
 
-        // --------------------------------------------------------
-        // FIND_STUDENT
-        //
-        // Tutor tạo Post
-        // Student apply
-        // Tutor chọn Student
-        // Student confirm
-        // --------------------------------------------------------
+
 
         else if (post.getType() == PostType.FIND_STUDENT) {
 
             if (!(currentUser instanceof Student student)) {
 
-                throw new AppException(
-                        ApplicationStatusException.APPLICATION_NOT_ALLOWED
-                );
+                throw new ApplicationNotAllowedException();
             }
 
             if (application.getStudent() == null
@@ -568,22 +492,18 @@ public class ApplicationServiceImpl
                     .getId()
                     .equals(student.getId())) {
 
-                throw new AppException(
-                        ApplicationStatusException.APPLICATION_NOT_ALLOWED
-                );
+                throw new ApplicationNotAllowedException();
             }
         }
+
 
         else {
 
             throw new AppException(
-                    ApplicationStatusException.POST_NOT_AVAILABLE
+                    ErrorCodeApplication.POST_NOT_AVAILABLE
             );
         }
 
-        // --------------------------------------------------------
-        // ACCEPTED -> COMPLETED
-        // --------------------------------------------------------
 
         application.setApplicationStatus(
                 ApplicationStatus.FINISHED
@@ -595,9 +515,6 @@ public class ApplicationServiceImpl
         return toResponse(saved);
     }
 
-    // ============================================================
-    // CANCEL APPLICATION
-    // ============================================================
 
     @Override
     public ApplicationResponse cancelApplication(
@@ -613,6 +530,7 @@ public class ApplicationServiceImpl
 
         boolean isApplicant = false;
 
+
         if (application.getTutor() != null
                 && application.getTutor()
                 .getId()
@@ -620,6 +538,7 @@ public class ApplicationServiceImpl
 
             isApplicant = true;
         }
+
 
         if (application.getStudent() != null
                 && application.getStudent()
@@ -629,23 +548,24 @@ public class ApplicationServiceImpl
             isApplicant = true;
         }
 
+
         if (!isApplicant) {
 
-            throw new AppException(
-                    ApplicationStatusException.APPLICATION_NOT_ALLOWED
-            );
+            throw new ApplicationNotAllowedException();
         }
 
         ApplicationStatus currentStatus =
                 application.getApplicationStatus();
 
+
         if (currentStatus != ApplicationStatus.PENDING
                 && currentStatus != ApplicationStatus.ACCEPTED) {
 
             throw new AppException(
-                    ApplicationStatusException.INVALID_APPLICATION_STATUS
+                    ErrorCodeApplication.INVALID_APPLICATION_STATUS
             );
         }
+
 
         application.setApplicationStatus(
                 ApplicationStatus.CANCELLED
@@ -657,19 +577,18 @@ public class ApplicationServiceImpl
         return toResponse(saved);
     }
 
-    // ============================================================
-    // HELPER
-    // ============================================================
 
     private User getUser(UUID userId) {
 
         return userRepository.findById(userId)
                 .orElseThrow(() ->
                         new AppException(
-                                ApplicationStatusException.USER_NOT_FOUND
+                                ErrorCodeApplication.USER_NOT_FOUND
                         )
                 );
     }
+
+
 
     private Application getApplication(
             UUID applicationId
@@ -681,12 +600,13 @@ public class ApplicationServiceImpl
                 );
     }
 
+
     private boolean canViewApplication(
             User currentUser,
             Application application
     ) {
 
-        // Admin được xem
+
         if (currentUser instanceof Admin) {
             return true;
         }
@@ -694,7 +614,8 @@ public class ApplicationServiceImpl
         UUID currentUserId =
                 currentUser.getId();
 
-        // Student applicant / owner
+
+
         if (application.getStudent() != null
                 && application.getStudent()
                 .getId()
@@ -703,7 +624,6 @@ public class ApplicationServiceImpl
             return true;
         }
 
-        // Tutor applicant / owner
         if (application.getTutor() != null
                 && application.getTutor()
                 .getId()
@@ -712,7 +632,7 @@ public class ApplicationServiceImpl
             return true;
         }
 
-        // Người tạo Post
+
         if (application.getPost() != null
                 && application.getPost().getAuthor() != null
                 && application.getPost()
@@ -725,6 +645,7 @@ public class ApplicationServiceImpl
 
         return false;
     }
+
 
     private ApplicationResponse toResponse(
             Application application
