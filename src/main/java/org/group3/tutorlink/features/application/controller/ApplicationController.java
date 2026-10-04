@@ -6,12 +6,13 @@ import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.features.application.dto.request.CreateApplicationRequest;
 import org.group3.tutorlink.features.application.dto.response.ApplicationResponse;
 import org.group3.tutorlink.features.application.enums.ApplicationResponseCode;
+import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.service.ApplicationService;
+import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.UUID;
 
 @RestController
@@ -46,9 +47,11 @@ public class ApplicationController {
     }
 
     @GetMapping("/mine")
+    // Đã sửa
     public ApiResponse<Page<ApplicationResponse>> getMyApplications(
-            @RequestParam String role,
-            Pageable pageable) {
+            @RequestParam RoleName role,
+            Pageable pageable
+    ) {
 
         return ApiResponse.<Page<ApplicationResponse>>builder()
                 .code(ApplicationResponseCode.GET_SUCCESS.getCode())
@@ -59,9 +62,11 @@ public class ApplicationController {
 
     // Admin xem tất cả
     @GetMapping
+    // Đã sửa
     public ApiResponse<Page<ApplicationResponse>> getApplications(
-            @RequestParam(required = false) String status,
-            Pageable pageable) {
+            @RequestParam(required = false) ApplicationStatus status,
+            Pageable pageable
+    ) {
 
         return ApiResponse.<Page<ApplicationResponse>>builder()
                 .code(ApplicationResponseCode.GET_SUCCESS.getCode())
