@@ -43,7 +43,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public SubjectResponse createSubject(SubjectRequest request) {
         Subject subject = subjectMapper.toSubject(request);
         subject.setId(appUtil.generateUUID());
@@ -53,7 +53,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public SubjectResponse updateSubject(UUID id, SubjectRequest request) {
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(SubjectNotFoundException::new);
@@ -66,7 +66,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteSubject(UUID id) {
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(SubjectNotFoundException::new);
