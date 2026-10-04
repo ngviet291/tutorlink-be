@@ -20,19 +20,43 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface ApplicationRepository extends JpaRepository<Application, UUID> {
+public interface ApplicationRepository
+        extends JpaRepository<Application, UUID> {
 
-    boolean existsByPostIdAndTutorId(UUID postId, UUID tutorId);
+    boolean existsByPostIdAndTutorId(
+            UUID postId,
+            UUID tutorId
+    );
 
-    boolean existsByPostIdAndStudentId(UUID postId, UUID studentId);
+    boolean existsByPostIdAndStudentId(
+            UUID postId,
+            UUID studentId
+    );
 
-    Page<Application> findByTutorId(UUID tutorId, Pageable pageable);
+    Page<Application> findByTutorId(
+            UUID tutorId,
+            Pageable pageable
+    );
 
-    Page<Application> findByStudentId(UUID studentId, Pageable pageable);
+    Page<Application> findByStudentId(
+            UUID studentId,
+            Pageable pageable
+    );
 
     Page<Application> findByApplicationStatus(
             ApplicationStatus applicationStatus,
             Pageable pageable
+    );
+
+    Page<Application> findByPostIdAndApplicationStatus(
+            UUID postId,
+            ApplicationStatus applicationStatus,
+            Pageable pageable
+    );
+
+    boolean existsByPostIdAndApplicationStatus(
+            UUID postId,
+            ApplicationStatus applicationStatus
     );
 
     Page<Application> findAll(Pageable pageable);

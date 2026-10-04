@@ -3,6 +3,7 @@ package org.group3.tutorlink.features.application.entity;
 import org.group3.tutorlink.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.group3.tutorlink.common.entity.BaseEntity;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.payment.entity.Transaction;
 import org.group3.tutorlink.features.post.entity.Post;
@@ -48,6 +49,11 @@ public class Application extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tutor_id")
     private Tutor tutor;
+
+    // Application n -- 1 Admin (accepts / processes), optional
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "processed_by_admin_id")
+    private Admin processedByAdmin;
 
     // Application 1 -- 0..1 Transaction
     @OneToOne(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -16,7 +16,6 @@ import org.group3.tutorlink.features.application.dto.request.CreateApplicationRe
 import org.group3.tutorlink.features.application.dto.response.ApplicationResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.UUID;
 
@@ -26,23 +25,29 @@ public interface ApplicationService {
             CreateApplicationRequest request
     );
 
-    ApplicationResponse getApplicationById(UUID applicationId);
+    ApplicationResponse getApplicationById(
+            UUID applicationId
+    );
 
     Page<ApplicationResponse> getMyApplications(
             String role,
             Pageable pageable
     );
-   @PreAuthorize("hasAuthority('ADMIN')")
+
     Page<ApplicationResponse> getApplications(
             String status,
             Pageable pageable
     );
 
-    ApplicationResponse confirmApplication(UUID applicationId);
+    ApplicationResponse selectApplication(
+            UUID applicationId
+    );
 
-    ApplicationResponse finishApplication(UUID applicationId);
+    ApplicationResponse confirmApplication(
+            UUID applicationId
+    );
 
-    ApplicationResponse approveApplication(UUID applicationId);
-
-    ApplicationResponse rejectApplication(UUID applicationId);
+    ApplicationResponse cancelApplication(
+            UUID applicationId
+    );
 }
