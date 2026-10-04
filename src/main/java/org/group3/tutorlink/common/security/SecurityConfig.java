@@ -46,6 +46,8 @@ public class SecurityConfig {
      *  CÁC ENDPOINT CỦA <b>GUEST</b> BỎ Ở ĐÂY
      */
     private static final String[] PUBLIC_ENDPOINTS_GET = {
+            "/v1/subjects",
+            "/v1/subjects/**",
     };
 
     private static final String[] PUBLIC_ENDPOINTS_HANDSHAKE = {

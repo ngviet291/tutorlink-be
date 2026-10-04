@@ -7,7 +7,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum SubjectErrorCode implements BaseErrorCode {
 
-    SUBJECT_NOT_FOUND("SUBJECT_404", "Subject not found", HttpStatus.NOT_FOUND);
+    SUBJECT_NOT_FOUND("SUBJECT_404", "Subject not found", HttpStatus.NOT_FOUND),
+    SUBJECT_IN_USE("SUBJECT_409", "Subject is being used by tutors and cannot be deleted", HttpStatus.CONFLICT);
 
     private final String code;
     private final String message;
