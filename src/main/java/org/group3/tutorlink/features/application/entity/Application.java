@@ -10,6 +10,7 @@ import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -32,7 +33,7 @@ public class Application extends BaseEntity {
     private String message;
     //Sửa Instant
     @Column(nullable = false, updatable = false)
-    private LocalDateTime appliedAt;
+    private Instant appliedAt;
 
     // Application n -- 1 Post
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,11 +48,6 @@ public class Application extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tutor_id")
     private Tutor tutor;
-
-    // Application n -- 1 Admin (accepts / processes), optional
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "processed_by_admin_id")
-    private Admin processedByAdmin;
 
     // Application 1 -- 0..1 Transaction
     @OneToOne(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)

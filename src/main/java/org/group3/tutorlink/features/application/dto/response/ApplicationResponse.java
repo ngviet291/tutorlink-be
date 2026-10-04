@@ -14,6 +14,7 @@ package org.group3.tutorlink.features.application.dto.response;
  */
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -36,7 +37,7 @@ public class ApplicationResponse {
 
     private String message;
 
-    private LocalDateTime appliedAt;
+    private Instant appliedAt;
 
     private UUID processedByAdminId;
 
