@@ -3,6 +3,7 @@ package org.group3.tutorlink.features.subject.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
+import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.features.subject.dto.request.SubjectRequest;
 import org.group3.tutorlink.features.subject.dto.response.SubjectResponse;
 import org.group3.tutorlink.features.subject.enums.SubjectResponseCode;
@@ -22,11 +23,14 @@ public class SubjectController {
 
     // 1. Xem danh sách môn học
     @GetMapping
-    public ApiResponse<List<SubjectResponse>> getAllSubjects() {
-        return ApiResponse.<List<SubjectResponse>>builder()
+    public ApiResponse<CursorResponse<SubjectResponse>> getAllSubjects(
+            @RequestParam(required = false) UUID cursor,
+            @RequestParam(defaultValue = "10") int limit) {
+
+        return ApiResponse.<CursorResponse<SubjectResponse>>builder()
                 .code(SubjectResponseCode.GET_SUBJECTS.getCode())
                 .message(SubjectResponseCode.GET_SUBJECTS.getMessage())
-                .data(subjectService.getAllSubjects())
+                .data(subjectService.getAllSubjects(cursor, limit))
                 .build();
     }
 

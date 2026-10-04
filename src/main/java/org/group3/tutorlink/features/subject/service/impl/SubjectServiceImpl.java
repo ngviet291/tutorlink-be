@@ -1,6 +1,7 @@
 package org.group3.tutorlink.features.subject.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.subject.dto.request.SubjectRequest;
 import org.group3.tutorlink.features.subject.dto.response.SubjectResponse;
@@ -10,6 +11,9 @@ import org.group3.tutorlink.features.subject.exception.SubjectNotFoundException;
 import org.group3.tutorlink.features.subject.mapper.SubjectMapper;
 import org.group3.tutorlink.features.subject.repository.SubjectRepository;
 import org.group3.tutorlink.features.subject.service.SubjectService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,16 +25,33 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SubjectServiceImpl implements SubjectService {
 
+    private static final int MAX_LIMIT = 50;
+
     private final SubjectRepository subjectRepository;
     private final SubjectMapper subjectMapper;
     private final AppUtil appUtil;
 
     @Override
     @Transactional(readOnly = true)
-    public List<SubjectResponse> getAllSubjects() {
-        return subjectRepository.findAll().stream()
-                .map(subjectMapper::toSubjectResponse)
-                .toList();
+    public CursorResponse<SubjectResponse> getAllSubjects(UUID cursor, int limit) {   // ĐÃ SỬA
+        int size = Math.min(Math.max(limit, 1), MAX_LIMIT);
+
+        Pageable pageable = PageRequest.of(
+                0,
+                size + 1,
+                Sort.by(Sort.Order.desc("id"))
+        );
+
+        List<Subject> subjects = (cursor == null)
+                ? subjectRepository.findAll(pageable).getContent()
+                : subjectRepository.findByIdLessThan(cursor, pageable);
+
+        return appUtil.buildCursorResponse(
+                subjects,
+                size,
+                Subject::getId,
+                subjectMapper::toSubjectResponse
+        );
     }
 
     @Override
