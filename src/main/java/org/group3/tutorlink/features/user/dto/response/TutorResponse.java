@@ -15,4 +15,5 @@ public class TutorResponse extends BaseUserResponse {
     private SubjectResponse subject;
     private Double averageRating;
     private VerificationStatus verificationStatus;
+    private String verificationNote;
 }

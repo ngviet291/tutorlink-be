@@ -20,6 +20,7 @@ public class Role extends BaseEntity {
     @Id
     private UUID id;
     @Column(length = 20)
+    @Enumerated(EnumType.STRING)
     private RoleName name;
     private String description;
 

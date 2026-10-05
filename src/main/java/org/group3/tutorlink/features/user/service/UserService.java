@@ -11,6 +11,7 @@ import org.group3.tutorlink.features.user.dto.request.UpdateProfileRequest;
 import org.group3.tutorlink.features.user.dto.request.UpdateUserStatusRequest;
 import org.group3.tutorlink.features.user.dto.response.BaseUserResponse;
 import org.group3.tutorlink.features.user.dto.response.TutorResponse;
+import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.enums.UserStatus;
@@ -57,19 +58,31 @@ public class UserService {
         return userMapper.toBaseUserResponse(userRepository.save(user));
     }
 
-    // Public — không cần auth
     @Transactional(readOnly = true)
-    public TutorResponse getPublicProfile(UUID userId) {
+    public BaseUserResponse getPublicProfile(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-
-        if (!(user instanceof Tutor tutor)
-                || tutor.getUserStatus() != UserStatus.ACTIVE
-                || tutor.getVerificationStatus() != VerificationStatus.APPROVED) {
-            throw new UserValidationException(UserErrorCode.PUBLIC_PROFILE_NOT_AVAILABLE);
+        if (user.getUserStatus() != UserStatus.ACTIVE) {
+            throw new UserValidationException(
+                    UserErrorCode.PUBLIC_PROFILE_NOT_AVAILABLE
+            );
         }
+        BaseUserResponse response;
+        if (user instanceof Tutor tutor) {
 
-        TutorResponse response = userMapper.toTutorResponse(tutor);
+            if (tutor.getVerificationStatus() != VerificationStatus.APPROVED) {
+                throw new UserValidationException(
+                        UserErrorCode.PUBLIC_PROFILE_NOT_AVAILABLE
+                );
+            }
+            response = userMapper.toTutorResponse(tutor);
+        } else if (user instanceof Student student) {
+            response = userMapper.toStudentResponse(student);
+        } else {
+            throw new UserValidationException(
+                    UserErrorCode.PUBLIC_PROFILE_NOT_AVAILABLE
+            );
+        }
         response.setEmail(null);
         response.setPhone(null);
         return response;
@@ -118,16 +131,15 @@ public class UserService {
     public TutorResponse approveTutor(UUID userId, ApproveTutorRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-
         if (!(user instanceof Tutor tutor)) {
             throw new UserValidationException(UserErrorCode.USER_IS_NOT_TUTOR);
         }
-
-        boolean approved = Boolean.TRUE.equals(request.getApproved());
+        boolean approved = request.getApproved();
         tutor.setVerificationStatus(approved ? VerificationStatus.APPROVED : VerificationStatus.REJECTED);
         tutor.setVerificationNote(approved ? null : request.getReason());
-
-        return userMapper.toTutorResponse((Tutor) userRepository.save(tutor));
+        Tutor savedTutor = userRepository.save(tutor);
+        TutorResponse response = userMapper.toTutorResponse(savedTutor);
+        return response;
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

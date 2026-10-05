@@ -48,8 +48,8 @@ public class UserController {
 
     // GET /v1/users/{id}/public-profile — public
     @GetMapping("/{id}/public-profile")
-    public ApiResponse<TutorResponse> getPublicProfile(@PathVariable UUID id) {
-        return ApiResponse.<TutorResponse>builder()
+    public ApiResponse<BaseUserResponse> getPublicProfile(@PathVariable UUID id) {
+        return ApiResponse.<BaseUserResponse>builder()
                 .code(UserResponseCode.PUBLIC_PROFILE_FOUND.getCode())
                 .message(UserResponseCode.PUBLIC_PROFILE_FOUND.getMessage())
                 .data(userService.getPublicProfile(id))

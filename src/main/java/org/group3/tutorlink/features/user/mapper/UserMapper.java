@@ -36,6 +36,7 @@ public interface UserMapper {
     @Mapping(target = "subject", ignore = true)
     @Mapping(target = "averageRating", ignore = true)
     @Mapping(target = "verificationStatus", ignore = true)
+    @Mapping(target = "verificationNote", ignore = true)
     Tutor toTutor(RegisterTutorRequest request);
 
     AddressResponse toAddressResponse(Address address);

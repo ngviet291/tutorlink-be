@@ -50,8 +50,8 @@ public class InitData implements CommandLineRunner {
 
         initRoles();
         initStudents();
-        initTutors();
         initSubjects();
+        initTutors();
         initAdmins();
 
         log.info("========== INIT DATA COMPLETED ==========");
@@ -273,7 +273,7 @@ public class InitData implements CommandLineRunner {
                 .education("Bachelor of Information Technology")
                 .subject(subject)
                 .averageRating(0.0)
-                .verificationStatus(VerificationStatus.PENDING)
+                .verificationStatus(VerificationStatus.APPROVED)
                 .build();
 
         Tutor tutor2 = Tutor.builder()

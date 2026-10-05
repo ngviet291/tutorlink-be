@@ -8,6 +8,7 @@ import org.group3.tutorlink.features.payment.enums.PaymentMethod;
 import org.group3.tutorlink.features.payment.enums.TransactionStatus;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class Transaction extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    private LocalDateTime transactionDate;
+    private Instant transactionDate;
 
     // Transaction 0..1 -- 1 Application
     @OneToOne(fetch = FetchType.LAZY)
