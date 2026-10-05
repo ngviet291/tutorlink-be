@@ -12,31 +12,31 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Request used to create or update a subject")
+@Schema(description = "Request used to create or update a subject!")
 public class SubjectRequest {
 
-    @NotBlank(message = "Subject name must not be blank")
-    @Size(max = 255, message = "Subject name must not exceed 255 characters")
+    @NotBlank(message = "Subject name must not be blank!")
+    @Size(max = 255, message = "Subject name must not exceed 255 characters!")
     @Schema(
-            description = "Name of the subject",
-            example = "Toán",
+            description = "Name of the subject!",
+            example = "Toán học",
             maxLength = 255,
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     private String name;
 
-    @Size(max = 255, message = "Description must not exceed 255 characters")
+    @Size(max = 255, message = "Description must not exceed 255 characters!")
     @Schema(
-            description = "Short description of the subject",
+            description = "Short description of the subject!",
             example = "Toán học phổ thông",
             maxLength = 255
     )
     private String description;
 
-    @NotBlank(message = "Category must not be blank")
-    @Size(max = 255, message = "Category must not exceed 255 characters")
+    @NotBlank(message = "Category must not be blank!")
+    @Size(max = 255, message = "Category must not exceed 255 characters!")
     @Schema(
-            description = "Category of the subject",
+            description = "Category of the subject!",
             example = "Khoa học tự nhiên",
             maxLength = 255,
             requiredMode = Schema.RequiredMode.REQUIRED

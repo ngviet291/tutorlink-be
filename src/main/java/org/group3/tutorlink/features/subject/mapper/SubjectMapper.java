@@ -9,11 +9,7 @@ import org.mapstruct.MappingTarget;
 public interface SubjectMapper {
 
     Subject toSubject(SubjectRequest request);
-
     org.group3.tutorlink.features.user.dto.response.SubjectResponse toResponse(Subject subject);
-
-    // 2. Hàm này DÀNH RIÊNG cho module subject
     org.group3.tutorlink.features.subject.dto.response.SubjectResponse toSubjectResponse(Subject subject);
-
     void updateSubjectFromRequest(SubjectRequest request, @MappingTarget Subject subject);
 }
