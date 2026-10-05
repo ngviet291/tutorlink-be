@@ -5,6 +5,7 @@ import lombok.*;
 import org.group3.tutorlink.common.entity.BaseEntity;
 import org.group3.tutorlink.features.user.entity.User;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -27,7 +28,7 @@ public class Message extends BaseEntity {
     private boolean isRead;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime sentAt;
+    private Instant sentAt;
 
     // Message n -- 1 ChatChannel
     @ManyToOne(fetch = FetchType.LAZY)

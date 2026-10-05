@@ -37,7 +37,7 @@ public class AppUtil {
 
     public ErrorResponse generateErrorResponse(HttpServletRequest request, ErrorCode errorCode) {
         return ErrorResponse.builder()
-                .timestamp(java.time.LocalDateTime.now())
+                .timestamp(Instant.now())
                 .status(errorCode.getHttpStatus().value())
                 .error(HttpStatus.valueOf(errorCode.getHttpStatus().value()).getReasonPhrase())
                 .message(errorCode.getMessage())
