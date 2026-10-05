@@ -25,6 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SubjectServiceImpl implements SubjectService {
 
+    private static final int DEFAULT_LIMIT = 10;
     private static final int MAX_LIMIT = 50;
 
     private final SubjectRepository subjectRepository;
@@ -33,8 +34,8 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     @Transactional(readOnly = true)
-    public CursorResponse<SubjectResponse> getAllSubjects(UUID cursor, int limit) {   // ĐÃ SỬA
-        int size = Math.min(Math.max(limit, 1), MAX_LIMIT);
+    public CursorResponse<SubjectResponse> getAllSubjects(UUID cursor, int limit) {
+        int size = limit <= 0 ? DEFAULT_LIMIT : Math.min(limit, MAX_LIMIT);
 
         Pageable pageable = PageRequest.of(
                 0,
@@ -42,9 +43,7 @@ public class SubjectServiceImpl implements SubjectService {
                 Sort.by(Sort.Order.desc("id"))
         );
 
-        List<Subject> subjects = (cursor == null)
-                ? subjectRepository.findAll(pageable).getContent()
-                : subjectRepository.findByIdLessThan(cursor, pageable);
+        List<Subject> subjects = subjectRepository.findPage(cursor, pageable);
 
         return appUtil.buildCursorResponse(
                 subjects,

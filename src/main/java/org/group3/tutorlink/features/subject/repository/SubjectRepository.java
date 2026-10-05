@@ -13,6 +13,11 @@ public interface SubjectRepository extends JpaRepository<Subject, UUID> {
 
     @Query("select count(t) > 0 from Tutor t where t.subject.id = :subjectId")
     boolean isUsedByTutor(@Param("subjectId") UUID subjectId);
-    List<Subject> findByIdLessThan(UUID cursor, Pageable pageable);
+
+    @Query("""
+        SELECT s FROM Subject s
+        WHERE (:cursor IS NULL OR s.id < :cursor)
+        """)
+    List<Subject> findPage(@Param("cursor") UUID cursor, Pageable pageable);
 
 }
