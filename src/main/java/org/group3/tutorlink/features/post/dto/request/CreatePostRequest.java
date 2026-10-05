@@ -1,13 +1,14 @@
 package org.group3.tutorlink.features.post.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-import org.group3.tutorlink.common.entity.Address;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
 import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.enums.TeachingMode;
+import org.group3.tutorlink.features.post.validation.ValidPostRequest;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -23,6 +24,7 @@ import java.util.UUID;
  * Validate address: address is required if teachingMode is OFFLINE or BOTH.
  *
  */
+@ValidPostRequest
 public class CreatePostRequest {
 
     @NotBlank(message = "Title must not be blank")
@@ -36,9 +38,9 @@ public class CreatePostRequest {
     private String title;
 
     @NotBlank(message = "Content must not be blank")
-    @Schema(
-            description = "Detailed description of the tutoring request",
-            example = "Cần tìm gia sư Toán lớp 10, học 3 buổi mỗi tuần tại Quận 7."
+    @Size(
+            max = 5000,
+            message = "Content must not exceed 5000 characters"
     )
     private String content;
 
@@ -74,6 +76,7 @@ public class CreatePostRequest {
     )
     private TeachingMode teachingMode;
 
+    @Valid
     @Schema(
             description = "Learning location. Required when teaching mode is OFFLINE or BOTH."
     )
