@@ -5,6 +5,6 @@ import org.group3.tutorlink.common.exception.AppException;
 public class ApplicationNotFoundException extends AppException {
 
     public ApplicationNotFoundException() {
-        super(ApplicationStatusException.APPLICATION_NOT_FOUND);
+        super(ErrorCodeApplication.APPLICATION_NOT_FOUND);
     }
 }

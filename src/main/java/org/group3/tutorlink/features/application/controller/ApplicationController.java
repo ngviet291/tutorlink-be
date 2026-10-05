@@ -1,28 +1,18 @@
-/*
- * @ (#) ApplicationController,java       1.0    29/09/2026
- *
- * Copyright (c) 2026 IUH. All righta reserved.
- */
-
 package org.group3.tutorlink.features.application.controller;
 
-/*
- * @description:
- * @author: Ho Thi Kim Xuyen
- * @version:     1.0
- * @date: 29/09/2026 00
- */
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.group3.tutorlink.common.dto.response.CursorResponse;
+import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.features.application.dto.request.CreateApplicationRequest;
 import org.group3.tutorlink.features.application.dto.response.ApplicationResponse;
+import org.group3.tutorlink.features.application.enums.ApplicationResponseCode;
+import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.service.ApplicationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.UUID;
 
 @RestController
@@ -32,126 +22,88 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    /**
-     * Tutor apply vào FIND_TUTOR
-     * hoặc Student apply vào FIND_STUDENT.
-     *
-     * POST /v1/applications
-     */
+    // Tutor apply vào FIND_TUTOR, Student apply vào FIND_STUDENT
     @PostMapping
-    public ResponseEntity<ApplicationResponse> createApplication(
-            @Valid @RequestBody CreateApplicationRequest request
-    ) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<ApplicationResponse> createApplication(
+            @Valid @RequestBody CreateApplicationRequest req) {
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(
-                        applicationService.createApplication(request)
-                );
+        return ApiResponse.<ApplicationResponse>builder()
+                .code(ApplicationResponseCode.CREATE_SUCCESS.getCode())
+                .message(ApplicationResponseCode.CREATE_SUCCESS.getMessage())
+                .data(applicationService.createApplication(req))
+                .build();
     }
 
-    /**
-     * Xem chi tiết Application.
-     *
-     * GET /v1/applications/{applicationId}
-     */
     @GetMapping("/{applicationId}")
-    public ResponseEntity<ApplicationResponse> getApplicationById(
-            @PathVariable UUID applicationId
-    ) {
+    public ApiResponse<ApplicationResponse> getApplicationById(
+            @PathVariable UUID applicationId) {
 
-        return ResponseEntity.ok(
-                applicationService.getApplicationById(
-                        applicationId
-                )
-        );
+        return ApiResponse.<ApplicationResponse>builder()
+                .code(ApplicationResponseCode.GET_SUCCESS.getCode())
+                .message(ApplicationResponseCode.GET_SUCCESS.getMessage())
+                .data(applicationService.getApplicationById(applicationId))
+                .build();
     }
 
-    /**
-     * Xem Application của chính mình.
-     *
-     * GET /v1/applications/mine?role=tutor
-     * GET /v1/applications/mine?role=student
-     */
     @GetMapping("/mine")
-    public ResponseEntity<Page<ApplicationResponse>> getMyApplications(
-            @RequestParam String role,
-            Pageable pageable
+    public ApiResponse<CursorResponse<ApplicationResponse>> getMyApplications(
+            @RequestParam(required = false) UUID cursor,
+            @RequestParam(defaultValue = "10") int limit
     ) {
 
-        return ResponseEntity.ok(
-                applicationService.getMyApplications(
-                        role,
-                        pageable
-                )
-        );
+        return ApiResponse.<CursorResponse<ApplicationResponse>>builder()
+                .code(ApplicationResponseCode.GET_SUCCESS.getCode())
+                .message(ApplicationResponseCode.GET_SUCCESS.getMessage())
+                .data(applicationService.getMyApplications(cursor, limit))
+                .build();
     }
 
-    /**
-     * Admin xem danh sách Application.
-     *
-     * GET /v1/applications
-     *
-     * Có thể filter:
-     *
-     * ?status=PENDING
-     * ?status=ACCEPTED
-     * ?status=COMPLETED
-     * ?status=REJECTED
-     * ?status=CANCELLED
-     *
-     * Lưu ý:
-     * Admin xem xét nhưng không làm thay đổi status.
-     */
+    // Admin xem tất cả
     @GetMapping
-    public ResponseEntity<Page<ApplicationResponse>> getApplications(
-            @RequestParam(required = false) String status,
+    // Đã sửa
+    public ApiResponse<Page<ApplicationResponse>> getApplications(
+            @RequestParam(required = false) ApplicationStatus status,
             Pageable pageable
     ) {
 
-        return ResponseEntity.ok(
-                applicationService.getApplications(
-                        status,
-                        pageable
-                )
-        );
+        return ApiResponse.<Page<ApplicationResponse>>builder()
+                .code(ApplicationResponseCode.GET_SUCCESS.getCode())
+                .message(ApplicationResponseCode.GET_SUCCESS.getMessage())
+                .data(applicationService.getApplications(status, pageable))
+                .build();
     }
-
 
     @PostMapping("/{applicationId}/select")
-    public ResponseEntity<ApplicationResponse> selectApplication(
-            @PathVariable UUID applicationId
-    ) {
+    public ApiResponse<ApplicationResponse> selectApplication(
+            @PathVariable UUID applicationId) {
 
-        return ResponseEntity.ok(
-                applicationService.selectApplication(
-                        applicationId
-                )
-        );
+        return ApiResponse.<ApplicationResponse>builder()
+                .code(ApplicationResponseCode.SELECT_SUCCESS.getCode())
+                .message(ApplicationResponseCode.SELECT_SUCCESS.getMessage())
+                .data(applicationService.selectApplication(applicationId))
+                .build();
     }
 
-
     @PostMapping("/{applicationId}/confirm")
-    public ResponseEntity<ApplicationResponse> confirmApplication(
-            @PathVariable UUID applicationId
-    ) {
+    public ApiResponse<ApplicationResponse> confirmApplication(
+            @PathVariable UUID applicationId) {
 
-        return ResponseEntity.ok(
-                applicationService.confirmApplication(
-                        applicationId
-                )
-        );
+        return ApiResponse.<ApplicationResponse>builder()
+                .code(ApplicationResponseCode.CONFIRM_SUCCESS.getCode())
+                .message(ApplicationResponseCode.CONFIRM_SUCCESS.getMessage())
+                .data(applicationService.confirmApplication(applicationId))
+                .build();
     }
 
     @PostMapping("/{applicationId}/cancel")
-    public ResponseEntity<ApplicationResponse> cancelApplication(
-            @PathVariable UUID applicationId
-    ) {
+    public ApiResponse<ApplicationResponse> cancelApplication(
+            @PathVariable UUID applicationId) {
 
-        return ResponseEntity.ok(
-                applicationService.cancelApplication(
-                        applicationId
-                )
-        );
+        return ApiResponse.<ApplicationResponse>builder()
+                .code(ApplicationResponseCode.CANCEL_SUCCESS.getCode())
+                .message(ApplicationResponseCode.CANCEL_SUCCESS.getMessage())
+                .data(applicationService.cancelApplication(applicationId))
+                .build();
     }
 }
