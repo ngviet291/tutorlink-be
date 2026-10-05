@@ -1,6 +1,7 @@
 package org.group3.tutorlink.features.application.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.features.application.dto.request.CreateApplicationRequest;
@@ -13,7 +14,7 @@ import org.group3.tutorlink.features.application.exception.ErrorCodeApplication;
 import org.group3.tutorlink.features.application.mapper.ApplicationMapper;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
 import org.group3.tutorlink.features.application.service.ApplicationService;
-import org.group3.tutorlink.features.auth.enums.RoleName;
+import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
@@ -24,12 +25,14 @@ import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -49,7 +52,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     public ApplicationResponse createApplication(CreateApplicationRequest request) {
 
         UUID userId = appUtil.userIdFromAuthentication();
-        User currentUser = getUser(userId);
+        User currentUser = getUserOrThrow(userId);
 
         Post post = postRepository.findById(request.getPostId())
                 .orElseThrow(() -> new AppException(ErrorCodeApplication.POST_NOT_FOUND));
@@ -114,8 +117,8 @@ public class ApplicationServiceImpl implements ApplicationService {
     public ApplicationResponse getApplicationById(UUID applicationId) {
 
         UUID userId = appUtil.userIdFromAuthentication();
-        User currentUser = getUser(userId);
-        Application application = getApplication(applicationId);
+        User currentUser = getUserOrThrow(userId);
+        Application application = getApplicationOrThrow(applicationId);
 
         if (!canViewApplication(currentUser, application)) {
             throw new ApplicationNotAllowedException();
@@ -126,25 +129,33 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    @PreAuthorize("hasAuthority(#role.name())")
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
     @Transactional(readOnly = true)
-    // Đã sửa
-    public Page<ApplicationResponse> getMyApplications(RoleName role, Pageable pageable) {
+    public CursorResponse<ApplicationResponse> getMyApplications(UUID cursor, int limit) {
 
         UUID userId = appUtil.userIdFromAuthentication();
+        User currentUser = getUserOrThrow(userId);
 
-        if (role == null) {
-            throw new AppException(ErrorCodeApplication.INVALID_ROLE);
+        if (limit < 1 || limit > 100) {
+            throw new AppException(ErrorCodeApplication.INVALID_LIMIT);
         }
 
-        Page<Application> applications = switch (role) {
-            case STUDENT -> applicationRepository.findByStudentId(userId, pageable);
-            case TUTOR -> applicationRepository.findByTutorId(userId, pageable);
-            default -> throw new AppException(ErrorCodeApplication.INVALID_ROLE);
-        };
+        Pageable pageable = PageRequest.of(0, limit + 1);
+        List<Application> applications;
+        if (currentUser instanceof Student) {
+            applications = applicationRepository.findByStudentIdAfterCursor(userId, cursor, pageable);
+        } else if (currentUser instanceof Tutor) {
+            applications = applicationRepository.findByTutorIdAfterCursor(userId, cursor, pageable);
+        } else {
+            throw new ApplicationNotAllowedException();
+        }
 
-        // Đã sửa
-        return applications.map(applicationMapper::toApplicationResponse);
+        return appUtil.buildCursorResponse(
+                applications,
+                limit,
+                Application::getId,
+                applicationMapper::toApplicationResponse
+        );
     }
 
     @Override
@@ -153,9 +164,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     // Đã sửa
     public Page<ApplicationResponse> getApplications(ApplicationStatus status, Pageable pageable) {
 
-        Page<Application> applications = (status == null)
-                ? applicationRepository.findAll(pageable)
-                : applicationRepository.findByApplicationStatus(status, pageable);
+        Page<Application> applications = applicationRepository.findApplications(status, pageable);
 
         // Đã sửa
         return applications.map(applicationMapper::toApplicationResponse);
@@ -166,8 +175,9 @@ public class ApplicationServiceImpl implements ApplicationService {
     public ApplicationResponse selectApplication(UUID applicationId) {
 
         UUID userId = appUtil.userIdFromAuthentication();
-        User currentUser = getUser(userId);
-        Application application = getApplication(applicationId);
+        User currentUser = getUserOrThrow(userId);
+        Application application = applicationRepository.findByIdForSelection(applicationId)
+                .orElseThrow(ApplicationNotFoundException::new);
         Post post = application.getPost();
 
         // Chỉ chủ post được chọn
@@ -231,8 +241,8 @@ public class ApplicationServiceImpl implements ApplicationService {
     public ApplicationResponse confirmApplication(UUID applicationId) {
 
         UUID userId = appUtil.userIdFromAuthentication();
-        User currentUser = getUser(userId);
-        Application application = getApplication(applicationId);
+        User currentUser = getUserOrThrow(userId);
+        Application application = getApplicationOrThrow(applicationId);
         Post post = application.getPost();
 
         if (application.getApplicationStatus() != ApplicationStatus.ACCEPTED) {
@@ -276,17 +286,15 @@ public class ApplicationServiceImpl implements ApplicationService {
     public ApplicationResponse cancelApplication(UUID applicationId) {
 
         UUID userId = appUtil.userIdFromAuthentication();
-        User currentUser = getUser(userId);
-        Application application = getApplication(applicationId);
+        User currentUser = getUserOrThrow(userId);
+        Application application = getApplicationOrThrow(applicationId);
 
         boolean isApplicant = false;
 
         if (application.getTutor() != null
                 && application.getTutor().getId().equals(currentUser.getId())) {
             isApplicant = true;
-        }
-
-        if (application.getStudent() != null
+        } else if (application.getStudent() != null
                 && application.getStudent().getId().equals(currentUser.getId())) {
             isApplicant = true;
         }
@@ -309,12 +317,12 @@ public class ApplicationServiceImpl implements ApplicationService {
         return applicationMapper.toApplicationResponse(saved);
     }
 
-    private User getUser(UUID userId) {
+    private User getUserOrThrow(UUID userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCodeApplication.USER_NOT_FOUND));
+                .orElseThrow(UserNotFoundException::new);
     }
 
-    private Application getApplication(UUID applicationId) {
+    private Application getApplicationOrThrow(UUID applicationId) {
         return applicationRepository.findById(applicationId)
                 .orElseThrow(ApplicationNotFoundException::new);
     }

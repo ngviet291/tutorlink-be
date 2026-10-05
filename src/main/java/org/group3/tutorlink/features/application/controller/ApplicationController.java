@@ -2,13 +2,13 @@ package org.group3.tutorlink.features.application.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.features.application.dto.request.CreateApplicationRequest;
 import org.group3.tutorlink.features.application.dto.response.ApplicationResponse;
 import org.group3.tutorlink.features.application.enums.ApplicationResponseCode;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.service.ApplicationService;
-import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -47,16 +47,15 @@ public class ApplicationController {
     }
 
     @GetMapping("/mine")
-    // Đã sửa
-    public ApiResponse<Page<ApplicationResponse>> getMyApplications(
-            @RequestParam RoleName role,
-            Pageable pageable
+    public ApiResponse<CursorResponse<ApplicationResponse>> getMyApplications(
+            @RequestParam(required = false) UUID cursor,
+            @RequestParam(defaultValue = "10") int limit
     ) {
 
-        return ApiResponse.<Page<ApplicationResponse>>builder()
+        return ApiResponse.<CursorResponse<ApplicationResponse>>builder()
                 .code(ApplicationResponseCode.GET_SUCCESS.getCode())
                 .message(ApplicationResponseCode.GET_SUCCESS.getMessage())
-                .data(applicationService.getMyApplications(role, pageable))
+                .data(applicationService.getMyApplications(cursor, limit))
                 .build();
     }
 
