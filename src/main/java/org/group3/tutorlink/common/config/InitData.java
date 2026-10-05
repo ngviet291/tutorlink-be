@@ -21,6 +21,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.group3.tutorlink.features.user.entity.Admin;
+import org.group3.tutorlink.features.user.repository.AdminRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,6 +40,7 @@ public class InitData implements CommandLineRunner {
     private final TutorRepository tutorRepository;
     private final PasswordEncoder passwordEncoder;
     private final SubjectRepository subjectRepo;
+    private final AdminRepository adminRepository;
 
     @Override
     @Transactional
@@ -49,6 +52,7 @@ public class InitData implements CommandLineRunner {
         initStudents();
         initTutors();
         initSubjects();
+        initAdmins();
 
         log.info("========== INIT DATA COMPLETED ==========");
     }
@@ -95,19 +99,19 @@ public class InitData implements CommandLineRunner {
 
         Role studentRole = Role.builder()
                 .id(appUtil.generateUUID())
-                .name(RoleName.STUDENT.name())
+                .name(RoleName.STUDENT)
                 .description("Student role")
                 .build();
 
         Role tutorRole = Role.builder()
                 .id(appUtil.generateUUID())
-                .name(RoleName.TUTOR.name())
+                .name(RoleName.TUTOR)
                 .description("Tutor role")
                 .build();
 
         Role adminRole = Role.builder()
                 .id(appUtil.generateUUID())
-                .name("ROLE_ADMIN")
+                .name(RoleName.ADMIN)
                 .description("Administrator role")
                 .build();
 
@@ -133,7 +137,7 @@ public class InitData implements CommandLineRunner {
             return;
         }
 
-        Role studentRole = roleRepository.findByName(RoleName.STUDENT.name())
+        Role studentRole = roleRepository.findByName(RoleName.STUDENT)
                 .orElseThrow(() ->
                         new RuntimeException("ROLE_STUDENT not found"));
 
@@ -186,6 +190,44 @@ public class InitData implements CommandLineRunner {
         log.info("  Student 2: student2@gmail.com / Student@123");
     }
 
+    //Admin
+
+    private void initAdmins() {
+
+        if (adminRepository.count() > 0) {
+            log.info("Admins already exist. Skip.");
+            return;
+        }
+
+        Role adminRole = roleRepository.findByName(RoleName.ADMIN)
+                .orElseThrow(() ->
+                        new RuntimeException("ROLE_ADMIN not found"));
+
+        String password = passwordEncoder.encode("Admin@123");
+
+        Admin admin = Admin.builder()
+                .id(appUtil.generateUUID())
+                .fullname("System Admin")
+                .email("admin@gmail.com")
+                .password(password)
+                .phone("0901234571")
+                .gender(Gender.MALE)
+                .dateOfBirth(LocalDate.of(1995, 1, 1))
+                .address(Address.builder()
+                        .street("123 Nguyen Trai")
+                        .ward("Phuong 5")
+                        .province("Ho Chi Minh City")
+                        .build())
+                .userStatus(UserStatus.ACTIVE)
+                .role(adminRole)
+                .department("Administration")
+                .build();
+
+        adminRepository.save(admin);
+
+        log.info("✓ Initialized 1 admin");
+        log.info("  Admin: admin@gmail.com / Admin@123");
+    }
     // =========================================================
     // TUTOR
     // =========================================================
@@ -197,7 +239,7 @@ public class InitData implements CommandLineRunner {
             return;
         }
 
-        Role tutorRole = roleRepository.findByName(RoleName.TUTOR.name())
+        Role tutorRole = roleRepository.findByName(RoleName.TUTOR)
                 .orElseThrow(() ->
                         new RuntimeException("ROLE_TUTOR not found"));
 

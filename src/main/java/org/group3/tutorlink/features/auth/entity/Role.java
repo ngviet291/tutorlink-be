@@ -3,6 +3,7 @@ package org.group3.tutorlink.features.auth.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.group3.tutorlink.common.entity.BaseEntity;
+import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.group3.tutorlink.features.user.entity.User;
 
 import java.util.Set;
@@ -19,7 +20,7 @@ public class Role extends BaseEntity {
     @Id
     private UUID id;
     @Column(length = 20)
-    private String name;
+    private RoleName name;
     private String description;
 
     // Role 1 -- n User
