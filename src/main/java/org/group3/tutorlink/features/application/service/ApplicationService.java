@@ -12,10 +12,10 @@ package org.group3.tutorlink.features.application.service;
  * @version:     1.0
  * @date: 29/09/2026 00
  */
+import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.features.application.dto.request.CreateApplicationRequest;
 import org.group3.tutorlink.features.application.dto.response.ApplicationResponse;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
-import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -31,10 +31,9 @@ public interface ApplicationService {
             UUID applicationId
     );
 
-    // Đã sửa
-    Page<ApplicationResponse> getMyApplications(
-            RoleName role,
-            Pageable pageable
+    CursorResponse<ApplicationResponse> getMyApplications(
+            UUID cursor,
+            int limit
     );
 
     // Đã sửa

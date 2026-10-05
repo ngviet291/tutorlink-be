@@ -67,6 +67,12 @@ public enum ErrorCodeApplication implements BaseErrorCode {
             HttpStatus.BAD_REQUEST
     ),
 
+    INVALID_LIMIT(
+            "APPLICATION_012",
+            "Limit must be between 1 and 100",
+            HttpStatus.BAD_REQUEST
+    ),
+
     APPLICATION_ALREADY_SELECTED(
             "APPLICATION_011",
             "Another application has already been selected",
