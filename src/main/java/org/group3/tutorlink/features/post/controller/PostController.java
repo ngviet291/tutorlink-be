@@ -8,7 +8,7 @@ import org.group3.tutorlink.features.post.dto.request.CreatePostRequest;
 import org.group3.tutorlink.features.post.dto.request.UpdatePostRequest;
 import org.group3.tutorlink.features.post.dto.response.PostResponse;
 import org.group3.tutorlink.features.post.enums.*;
-import org.group3.tutorlink.features.post.service.PostService;
+import org.group3.tutorlink.features.post.service.impl.PostServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -19,7 +19,7 @@ import java.util.UUID;
 @RequestMapping("/v1/posts")
 public class PostController {
 
-    private final PostService postService;
+    private final PostServiceImpl postService;
 
     @PostMapping
     public ApiResponse<PostResponse> createPost(@Valid @RequestBody CreatePostRequest createPostRequest) {

@@ -50,8 +50,8 @@ public class InitData implements CommandLineRunner {
 
         initRoles();
         initStudents();
-        initTutors();
         initSubjects();
+        initTutors();
         initAdmins();
 
         log.info("========== INIT DATA COMPLETED ==========");
@@ -99,19 +99,19 @@ public class InitData implements CommandLineRunner {
 
         Role studentRole = Role.builder()
                 .id(appUtil.generateUUID())
-                .name(RoleName.STUDENT.name())
+                .name(RoleName.STUDENT)
                 .description("Student role")
                 .build();
 
         Role tutorRole = Role.builder()
                 .id(appUtil.generateUUID())
-                .name(RoleName.TUTOR.name())
+                .name(RoleName.TUTOR)
                 .description("Tutor role")
                 .build();
 
         Role adminRole = Role.builder()
                 .id(appUtil.generateUUID())
-                .name(RoleName.ADMIN.name())
+                .name(RoleName.ADMIN)
                 .description("Administrator role")
                 .build();
 
@@ -137,7 +137,7 @@ public class InitData implements CommandLineRunner {
             return;
         }
 
-        Role studentRole = roleRepository.findByName(RoleName.STUDENT.name())
+        Role studentRole = roleRepository.findByName(RoleName.STUDENT)
                 .orElseThrow(() ->
                         new RuntimeException("ROLE_STUDENT not found"));
 
@@ -199,7 +199,7 @@ public class InitData implements CommandLineRunner {
             return;
         }
 
-        Role adminRole = roleRepository.findByName(RoleName.ADMIN.name())
+        Role adminRole = roleRepository.findByName(RoleName.ADMIN)
                 .orElseThrow(() ->
                         new RuntimeException("ROLE_ADMIN not found"));
 
@@ -239,7 +239,7 @@ public class InitData implements CommandLineRunner {
             return;
         }
 
-        Role tutorRole = roleRepository.findByName(RoleName.TUTOR.name())
+        Role tutorRole = roleRepository.findByName(RoleName.TUTOR)
                 .orElseThrow(() ->
                         new RuntimeException("ROLE_TUTOR not found"));
 
@@ -273,7 +273,7 @@ public class InitData implements CommandLineRunner {
                 .education("Bachelor of Information Technology")
                 .subject(subject)
                 .averageRating(0.0)
-                .verificationStatus(VerificationStatus.PENDING)
+                .verificationStatus(VerificationStatus.APPROVED)
                 .build();
 
         Tutor tutor2 = Tutor.builder()

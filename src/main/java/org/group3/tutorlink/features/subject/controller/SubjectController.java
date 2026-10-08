@@ -3,6 +3,7 @@ package org.group3.tutorlink.features.subject.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
+import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.features.subject.dto.request.SubjectRequest;
 import org.group3.tutorlink.features.subject.dto.response.SubjectResponse;
 import org.group3.tutorlink.features.subject.enums.SubjectResponseCode;
@@ -20,17 +21,20 @@ public class SubjectController {
 
     private final SubjectService subjectService;
 
-    // 1. Xem danh sách (Public)
+    // 1. Xem danh sách môn học
     @GetMapping
-    public ApiResponse<List<SubjectResponse>> getAllSubjects() {
-        return ApiResponse.<List<SubjectResponse>>builder()
+    public ApiResponse<CursorResponse<SubjectResponse>> getAllSubjects(
+            @RequestParam(required = false) UUID cursor,
+            @RequestParam(defaultValue = "10") int limit) {
+
+        return ApiResponse.<CursorResponse<SubjectResponse>>builder()
                 .code(SubjectResponseCode.GET_SUBJECTS.getCode())
                 .message(SubjectResponseCode.GET_SUBJECTS.getMessage())
-                .data(subjectService.getAllSubjects())
+                .data(subjectService.getAllSubjects(cursor, limit))
                 .build();
     }
 
-    // 2. Xem chi tiết (Public)
+    // 2. Xem chi tiết danh sách môn học
     @GetMapping("/{id}")
     public ApiResponse<SubjectResponse> getSubjectById(@PathVariable UUID id) {
         return ApiResponse.<SubjectResponse>builder()
@@ -40,7 +44,7 @@ public class SubjectController {
                 .build();
     }
 
-    // 3. Tạo mới (ROLE_ADMIN - phân quyền ở service)
+    // 3. Tạo mới môn học - chỉ có Admin làm
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<SubjectResponse> createSubject(@RequestBody @Valid SubjectRequest request) {
@@ -51,7 +55,7 @@ public class SubjectController {
                 .build();
     }
 
-    // 4. Cập nhật (ROLE_ADMIN - phân quyền ở service)
+    // 4. Update môn học - chỉ có Admin làm
     @PutMapping("/{id}")
     public ApiResponse<SubjectResponse> updateSubject(
             @PathVariable UUID id,
@@ -64,7 +68,7 @@ public class SubjectController {
                 .build();
     }
 
-    // 5. Xóa (ROLE_ADMIN - phân quyền ở service) -> 204 No Content, không có body
+    // 5. Xóa môn học - chỉ có Admin làm
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSubject(@PathVariable UUID id) {

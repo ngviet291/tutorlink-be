@@ -31,6 +31,8 @@ public class Tutor extends User {
 
     @Enumerated(EnumType.STRING)
     private VerificationStatus verificationStatus;
+    @Column(columnDefinition = "TEXT")
+    private String verificationNote;
 
     private String education;
 

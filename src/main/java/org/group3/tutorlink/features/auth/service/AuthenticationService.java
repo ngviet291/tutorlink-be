@@ -180,7 +180,7 @@ public class AuthenticationService {
     }
 
     private Role getRoleOrThrow(RoleName roleNameEnum) {
-        return roleRepository.findByName(roleNameEnum.name())
+        return roleRepository.findByName(roleNameEnum)
                 .orElseThrow(() ->
                         new AppException(
                                 ErrorCode.ROLE_NOT_FOUND
