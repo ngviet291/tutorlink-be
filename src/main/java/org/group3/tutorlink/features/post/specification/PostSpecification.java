@@ -56,6 +56,34 @@ public class PostSpecification {
         };
     }
 
+    public static Specification<Post> hasStatusNotRemoved(PostStatus postStatus) {
+        return (root, query, cb) -> {
+            if (postStatus == null) {
+                return cb.or(
+                        cb.notEqual(root.get("status"), PostStatus.REMOVED),
+                        cb.isNull(root.get("status"))
+                );
+            }
+
+            return cb.and(
+                    cb.equal(root.get("status"), postStatus),
+                    cb.notEqual(root.get("status"), PostStatus.REMOVED)
+            );
+        };
+    }
+
+    public static Specification<Post> hasAuthorId(UUID authorId) {
+        return (root, query, cb) -> {
+            if (authorId == null) {
+                return null;
+            }
+
+            return cb.equal(
+                    root.get("author").get("id"),
+                    authorId
+            );
+        };
+    }
     public static Specification<Post> hasTeachingMode(
             TeachingMode teachingMode) {
 

@@ -6,6 +6,7 @@ import org.group3.tutorlink.features.post.dto.request.CreatePostRequest;
 import org.group3.tutorlink.features.post.dto.request.UpdatePostRequest;
 import org.group3.tutorlink.features.post.dto.response.PostResponse;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
+import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.enums.TeachingMode;
 import org.group3.tutorlink.features.post.exception.PostErrorCode;
@@ -61,4 +62,24 @@ public interface PostService {
 
     @Transactional
     PostResponse updatePost(UUID postId, UpdatePostRequest request);
+
+    @Transactional
+    void closePost(UUID postId);
+
+    @Transactional
+    void removePost(UUID postId);
+
+    @Transactional(readOnly = true)
+    CursorResponse<PostResponse> getCurrentUserPosts(
+            String keyword,
+            PostType type,
+            String subjectName,
+            TeachingMode teachingMode,
+            EducationLevel educationLevel,
+            BigDecimal maxBudget,
+            BigDecimal minBudget,
+            UUID cursor,
+            PostStatus postStatus,
+            int limit
+    );
 }

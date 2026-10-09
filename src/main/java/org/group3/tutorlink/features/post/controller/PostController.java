@@ -1,5 +1,6 @@
 package org.group3.tutorlink.features.post.controller;
 
+import jakarta.servlet.annotation.HttpConstraint;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
@@ -9,6 +10,7 @@ import org.group3.tutorlink.features.post.dto.request.UpdatePostRequest;
 import org.group3.tutorlink.features.post.dto.response.PostResponse;
 import org.group3.tutorlink.features.post.enums.*;
 import org.group3.tutorlink.features.post.service.impl.PostServiceImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -20,8 +22,8 @@ import java.util.UUID;
 public class PostController {
 
     private final PostServiceImpl postService;
-
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<PostResponse> createPost(@Valid @RequestBody CreatePostRequest createPostRequest) {
         return ApiResponse.<PostResponse>builder()
                 .code(PostResponseCode.POST_CREATED.getCode())
@@ -86,6 +88,49 @@ public class PostController {
                 .code(PostResponseCode.POST_UPDATED.getCode())
                 .message(PostResponseCode.POST_UPDATED.getMessage())
                 .data(postService.updatePost(postId, updatePostRequest))
+                .build();
+    }
+
+    @PatchMapping("{id}/close")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void closePost( @PathVariable UUID id) {
+        postService.closePost(id);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePost(@PathVariable UUID id) {
+        postService.removePost(id);
+    }
+
+    @GetMapping("/me")
+    public ApiResponse<CursorResponse<PostResponse>> getMyPosts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) PostType type,
+            @RequestParam(required = false) String subjectName,
+            @RequestParam(required = false) TeachingMode teachingMode,
+            @RequestParam(required = false) UUID cursor,
+            @RequestParam(required = false) EducationLevel educationLevel,
+            @RequestParam(required = false) BigDecimal minBudget,
+            @RequestParam(required = false) BigDecimal maxBudget,
+            @RequestParam(required = false) PostStatus postStatus,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+
+        return ApiResponse.<CursorResponse<PostResponse>>builder()
+                .code(PostResponseCode.GET_POSTS.getCode())
+                .message(PostResponseCode.GET_POSTS.getMessage())
+                .data(postService.getCurrentUserPosts(keyword,
+                        type,
+                        subjectName,
+                        teachingMode,
+                        educationLevel,
+                        minBudget,
+                        maxBudget,
+                        cursor,
+                        postStatus,
+                        limit)
+                )
                 .build();
     }
 
