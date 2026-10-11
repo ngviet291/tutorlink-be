@@ -11,7 +11,6 @@ import org.group3.tutorlink.features.notification.exception.NotificationNotFound
 import org.group3.tutorlink.features.notification.mapper.NotificationMapper;
 import org.group3.tutorlink.features.notification.repository.NotificationRepository;
 import org.group3.tutorlink.features.notification.service.NotificationService;
-import org.group3.tutorlink.features.notification.specification.NotificationSpecification;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,20 +31,13 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationMapper notificationMapper;
     private final AppUtil appUtil;
 
-    @PreAuthorize("isAuthenticated()")
     @Transactional(readOnly = true)
     @Override
-    public CursorResponse<NotificationResponse> getMyNotifications(UUID cursor, int limit) {
+    public CursorResponse<NotificationResponse> getMyNotifications(
+            UUID cursor, int limit) {
         UUID currentUserId = appUtil.userIdFromAuthentication();
-
-        Specification<Notification> spec = Specification
-                .where(NotificationSpecification.hasRecipient(currentUserId))
-                .and(NotificationSpecification.cursor(cursor));
-
-        Pageable pageable = PageRequest.of(0, limit + 1, Sort.by(Sort.Order.desc("id")));
-
-        List<Notification> notifications = notificationRepository.findAll(spec, pageable).getContent();
-
+        Pageable pageable = PageRequest.of(0, limit + 1);
+        List<Notification> notifications = notificationRepository.findMyNotifications(currentUserId, cursor, pageable);
         return appUtil.buildCursorResponse(
                 notifications,
                 limit,
@@ -53,7 +45,6 @@ public class NotificationServiceImpl implements NotificationService {
                 notificationMapper::toNotificationResponse
         );
     }
-    @PreAuthorize("isAuthenticated()")
     @Transactional
     @Override
     public NotificationResponse markAsRead(UUID notificationId) {
@@ -70,16 +61,10 @@ public class NotificationServiceImpl implements NotificationService {
         Notification updated = notificationRepository.save(notification);
         return notificationMapper.toNotificationResponse(updated);
     }
-    @PreAuthorize("isAuthenticated()")
     @Transactional
     @Override
     public int markAllAsRead() {
         UUID currentUserId = appUtil.userIdFromAuthentication();
-
-        List<Notification> unread = notificationRepository.findAllByRecipientIdAndIsReadFalse(currentUserId);
-        unread.forEach(notification -> notification.setRead(true));
-        notificationRepository.saveAll(unread);
-
-        return unread.size();
+        return notificationRepository.updateIsRead(currentUserId);
     }
 }

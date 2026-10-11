@@ -48,6 +48,7 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS_GET = {
             "/v1/subjects",
             "/v1/subjects/**",
+            "/v1/users/*/public-profile",
     };
 
     private static final String[] PUBLIC_ENDPOINTS_HANDSHAKE = {
