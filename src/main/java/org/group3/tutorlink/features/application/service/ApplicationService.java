@@ -17,7 +17,6 @@ import org.group3.tutorlink.features.application.dto.request.CreateApplicationRe
 import org.group3.tutorlink.features.application.dto.response.ApplicationResponse;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
 
@@ -36,10 +35,10 @@ public interface ApplicationService {
             int limit
     );
 
-    // Đã sửa
-    Page<ApplicationResponse> getApplications(
+    CursorResponse<ApplicationResponse> getApplications(
             ApplicationStatus status,
-            Pageable pageable
+            UUID cursor,
+            int limit
     );
 
     ApplicationResponse selectApplication(

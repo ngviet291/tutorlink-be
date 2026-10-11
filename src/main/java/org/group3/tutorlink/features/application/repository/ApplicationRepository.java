@@ -14,6 +14,7 @@ package org.group3.tutorlink.features.application.repository;
  */
 import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
+import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -52,30 +53,12 @@ public interface ApplicationRepository
     @Query("""
             SELECT a FROM Application a
             WHERE a.tutor.id = :tutorId
-            """)
-    Page<Application> findByTutorId(
-            @Param("tutorId") UUID tutorId,
-            Pageable pageable
-    );
-
-    @Query("""
-            SELECT a FROM Application a
-            WHERE a.tutor.id = :tutorId
               AND (:cursor IS NULL OR a.id < :cursor)
             ORDER BY a.id DESC
             """)
     List<Application> findByTutorIdAfterCursor(
             @Param("tutorId") UUID tutorId,
             @Param("cursor") UUID cursor,
-            Pageable pageable
-    );
-
-    @Query("""
-            SELECT a FROM Application a
-            WHERE a.student.id = :studentId
-            """)
-    Page<Application> findByStudentId(
-            @Param("studentId") UUID studentId,
             Pageable pageable
     );
 
@@ -94,7 +77,7 @@ public interface ApplicationRepository
     @Query("""
             SELECT a FROM Application a
             JOIN FETCH a.post p
-            JOIN FETCH p.author
+            LEFT JOIN FETCH p.author
             WHERE a.id = :applicationId
             """)
     Optional<Application> findByIdForSelection(
@@ -103,11 +86,45 @@ public interface ApplicationRepository
 
     @Query("""
             SELECT a FROM Application a
-            WHERE (:status IS NULL OR a.applicationStatus = :status)
-            ORDER BY a.appliedAt DESC
+            JOIN FETCH a.post p
+            LEFT JOIN FETCH p.author
+            LEFT JOIN FETCH a.student
+            LEFT JOIN FETCH a.tutor
+            WHERE a.id = :applicationId
+              AND a.applicationStatus = :applicationStatus
+              AND p.status = :postStatus
+              AND (
+                    a.student.id = :userId
+                    OR a.tutor.id = :userId
+                    OR p.author.id = :userId
+              )
             """)
-    Page<Application> findApplications(
+    Optional<Application> findByIdForViewer(
+            @Param("applicationId") UUID applicationId,
+            @Param("userId") UUID userId,
+            @Param("applicationStatus") ApplicationStatus applicationStatus,
+            @Param("postStatus") PostStatus postStatus
+    );
+
+    @Query("""
+            SELECT a FROM Application a
+            WHERE a.id = :applicationId
+              AND (a.student.id = :userId OR a.tutor.id = :userId)
+            """)
+    Optional<Application> findByIdAndApplicantId(
+            @Param("applicationId") UUID applicationId,
+            @Param("userId") UUID userId
+    );
+
+    @Query("""
+            SELECT a FROM Application a
+            WHERE (:status IS NULL OR a.applicationStatus = :status)
+              AND (:cursor IS NULL OR a.id < :cursor)
+            ORDER BY a.id DESC
+            """)
+    List<Application> findApplicationsAfterCursor(
             @Param("status") ApplicationStatus status,
+            @Param("cursor") UUID cursor,
             Pageable pageable
     );
 
@@ -133,5 +150,4 @@ public interface ApplicationRepository
             @Param("applicationStatus") ApplicationStatus applicationStatus
     );
 
-    Page<Application> findAll(Pageable pageable);
 }

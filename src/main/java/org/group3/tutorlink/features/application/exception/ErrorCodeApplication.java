@@ -69,7 +69,7 @@ public enum ErrorCodeApplication implements BaseErrorCode {
 
     INVALID_LIMIT(
             "APPLICATION_012",
-            "Limit must be between 1 and 100",
+            "Limit must be between 0 and 100",
             HttpStatus.BAD_REQUEST
     ),
 

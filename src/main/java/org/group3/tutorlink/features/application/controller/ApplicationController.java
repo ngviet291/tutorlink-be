@@ -1,6 +1,8 @@
 package org.group3.tutorlink.features.application.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
@@ -10,14 +12,15 @@ import org.group3.tutorlink.features.application.enums.ApplicationResponseCode;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.service.ApplicationService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1/applications")
 @RequiredArgsConstructor
+@Validated
 public class ApplicationController {
 
     private final ApplicationService applicationService;
@@ -49,7 +52,9 @@ public class ApplicationController {
     @GetMapping("/mine")
     public ApiResponse<CursorResponse<ApplicationResponse>> getMyApplications(
             @RequestParam(required = false) UUID cursor,
-            @RequestParam(defaultValue = "10") int limit
+            @RequestParam(defaultValue = "10")
+            @Min(0)
+            @Max(100) int limit
     ) {
 
         return ApiResponse.<CursorResponse<ApplicationResponse>>builder()
@@ -61,16 +66,18 @@ public class ApplicationController {
 
     // Admin xem tất cả
     @GetMapping
-    // Đã sửa
-    public ApiResponse<Page<ApplicationResponse>> getApplications(
+    public ApiResponse<CursorResponse<ApplicationResponse>> getApplications(
             @RequestParam(required = false) ApplicationStatus status,
-            Pageable pageable
+            @RequestParam(required = false) UUID cursor,
+            @RequestParam(defaultValue = "10")
+            @Min(0)
+            @Max(100) int limit
     ) {
 
-        return ApiResponse.<Page<ApplicationResponse>>builder()
+        return ApiResponse.<CursorResponse<ApplicationResponse>>builder()
                 .code(ApplicationResponseCode.GET_SUCCESS.getCode())
                 .message(ApplicationResponseCode.GET_SUCCESS.getMessage())
-                .data(applicationService.getApplications(status, pageable))
+                .data(applicationService.getApplications(status, cursor, limit))
                 .build();
     }
 
