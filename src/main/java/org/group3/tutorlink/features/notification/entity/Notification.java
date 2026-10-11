@@ -27,7 +27,9 @@ public class Notification extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
-
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isRead = false;
     // Notification n -- 1 User (receives)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipient_id", nullable = false)

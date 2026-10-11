@@ -7,15 +7,20 @@ import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.entity.Role;
 import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.group3.tutorlink.features.auth.repository.RoleRepository;
+import org.group3.tutorlink.features.notification.entity.Notification;
+import org.group3.tutorlink.features.notification.enums.NotificationType;
+import org.group3.tutorlink.features.notification.repository.NotificationRepository;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.subject.repository.SubjectRepository;
 import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
+import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.enums.Gender;
 import org.group3.tutorlink.features.user.enums.UserStatus;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.user.repository.StudentRepository;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
+import org.group3.tutorlink.features.user.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +30,7 @@ import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.repository.AdminRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -40,6 +46,8 @@ public class InitData implements CommandLineRunner {
     private final TutorRepository tutorRepository;
     private final PasswordEncoder passwordEncoder;
     private final SubjectRepository subjectRepo;
+    private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
     private final AdminRepository adminRepository;
 
     @Override
@@ -53,10 +61,62 @@ public class InitData implements CommandLineRunner {
         initSubjects();
         initTutors();
         initAdmins();
-
+        initNotifications();
         log.info("========== INIT DATA COMPLETED ==========");
     }
+    private void initNotifications() {
+        if (notificationRepository.count() > 0) {
+            log.info("Notifications already exist. Skip.");
+            return;
+        }
 
+        var student = userRepository.findByEmail("student@gmail.com")
+                .orElseThrow(() -> new RuntimeException("student@gmail.com not found"));
+
+        var tutor1 = userRepository.findByEmail("tutor@gmail.com")
+                .orElseThrow(() -> new RuntimeException("tutor@gmail.com not found"));
+
+        var tutor2 = userRepository.findByEmail("tutor2@gmail.com")
+                .orElseThrow(() -> new RuntimeException("tutor2@gmail.com not found"));
+
+        List<Notification> notifications = new ArrayList<>( );
+
+        List<User> users = List.of(student, tutor1, tutor2);
+
+        for (User user : users) {
+            notifications.add(Notification.builder()
+                    .id(appUtil.generateUUID())
+                    .title("Chào mừng bạn đến với TutorLink")
+                    .content("Tài khoản của bạn đã được tạo thành công.")
+                    .notificationType(NotificationType.SYSTEM)
+                    .isRead(false)
+                    .recipient(user)
+                    .build());
+
+            notifications.add(Notification.builder()
+                    .id(appUtil.generateUUID())
+                    .title("Cập nhật hồ sơ")
+                    .content("Vui lòng kiểm tra và cập nhật thông tin hồ sơ của bạn.")
+                    .notificationType(NotificationType.APPLICATION)
+                    .isRead(false)
+                    .recipient(user)
+                    .build());
+
+            notifications.add(Notification.builder()
+                    .id(appUtil.generateUUID())
+                    .title("Thông báo mới")
+                    .content("Bạn có thông báo mới từ TutorLink.")
+                    .notificationType(NotificationType.SYSTEM)
+                    .isRead(true)
+                    .recipient(user)
+                    .build());
+        }
+
+        notificationRepository.saveAll(notifications);
+
+        log.info("Initialized {} notifications for {} users",
+                notifications.size(), users.size());
+    }
     private void initSubjects() {
         if (subjectRepository.count() > 0) {
             log.info("Subjects already exist. Skip.");
