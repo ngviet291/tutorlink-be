@@ -23,6 +23,7 @@ public enum ErrorCode implements BaseErrorCode{
     INVALID_DATE_FORMAT("VAL_003", "Invalid date format", HttpStatus.BAD_REQUEST),
     INVALID_NUMBER_FORMAT("VAL_004", "Invalid number format", HttpStatus.BAD_REQUEST),
     FILE_SIZE_EXCEEDED("VAL_005", "File size exceeded the limit", HttpStatus.BAD_REQUEST),
+    INVALID_ENUM_VALUE("VAL_006", "Invalid enum value for parameter '{parameter}': '{value}'. Expected one of {allowedValues}.", HttpStatus.BAD_REQUEST),
     FORBIDDEN("GEN_002", "Forbidden", HttpStatus.FORBIDDEN),
     BAD_REQUEST("GEN_003", "Bad request", HttpStatus.BAD_REQUEST),
     TOKEN_EXPIRED("AUTH_006", "Token has expired", HttpStatus.UNAUTHORIZED),

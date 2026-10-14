@@ -46,7 +46,4 @@ public class Tutor extends User {
     private Set<Certificate> certificates;
 
 
-    // Tutor 1 -- 0..* ChatChannel
-    @OneToMany(mappedBy = "tutor")
-    private Set<ChatChannel> chatChannels ;
 }

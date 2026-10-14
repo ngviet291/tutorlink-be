@@ -22,7 +22,7 @@ public class Message extends BaseEntity {
     @Id
     private UUID id;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private boolean isRead;

@@ -1,4 +1,4 @@
-package org.group3.tutorlink.common.service;
+package org.group3.tutorlink.common.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -7,9 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.enums.MediaType;
 import org.group3.tutorlink.common.exception.UploadMediaException;
 import org.group3.tutorlink.common.service.MediaStorageService;
-import org.group3.tutorlink.common.service.UploadMediaResponse;
+import org.group3.tutorlink.common.dto.response.UploadMediaResponse;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
@@ -36,6 +37,8 @@ public class CloudinaryMediaStorageService implements MediaStorageService {
         return upload(data, folder, MediaType.VIDEO);
     }
 
+
+
     @Async
     @Override
     public void delete(String publicId) {
@@ -48,7 +51,8 @@ public class CloudinaryMediaStorageService implements MediaStorageService {
     }
 
 
-    private CompletableFuture<UploadMediaResponse> upload(
+    @Override
+    public CompletableFuture<UploadMediaResponse> upload(
             byte[] data,
             String folder,
             MediaType mediaType
@@ -76,5 +80,15 @@ public class CloudinaryMediaStorageService implements MediaStorageService {
                     new UploadMediaException()
             );
         }
+    }
+
+    @Override
+    public UploadMediaResponse uploadSync(MultipartFile file, String folder, MediaType mediaType) {
+            try {
+                return upload(file.getBytes(), folder, mediaType).join();
+            } catch (IOException e) {
+                log.error("Upload media failed", e);
+                throw new UploadMediaException();
+            }
     }
 }

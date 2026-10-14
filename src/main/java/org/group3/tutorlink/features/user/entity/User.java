@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.group3.tutorlink.features.auth.entity.Role;
+import org.group3.tutorlink.features.chat.entity.ChatChannel;
 import org.group3.tutorlink.features.chat.entity.Media;
 import org.group3.tutorlink.features.notification.entity.Notification;
 import org.group3.tutorlink.features.post.entity.Post;
@@ -60,4 +61,9 @@ public abstract class User extends BaseEntity {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Post> posts;
 
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ChatChannel> sentChannels;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ChatChannel> receivedChannels;
 }
