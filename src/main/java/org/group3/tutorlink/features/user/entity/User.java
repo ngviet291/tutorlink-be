@@ -30,7 +30,7 @@ public abstract class User extends BaseEntity {
     @Id
     private UUID id;
     @Column(nullable = false)
-    private String fullname;
+    private String fullName;
     @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)

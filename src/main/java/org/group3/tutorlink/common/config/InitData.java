@@ -205,7 +205,7 @@ public class InitData implements CommandLineRunner {
 
         Student student1 = Student.builder()
                 .id(appUtil.generateUUID())
-                .fullname("Nguyen Van Student")
+                .fullName("Nguyen Van Student")
                 .email("student@gmail.com")
                 .password(password)
                 .phone("0901234567")
@@ -224,7 +224,7 @@ public class InitData implements CommandLineRunner {
 
         Student student2 = Student.builder()
                 .id(appUtil.generateUUID())
-                .fullname("Tran Thi Student")
+                .fullName("Tran Thi Student")
                 .email("student2@gmail.com")
                 .password(password)
                 .phone("0901234568")
@@ -267,7 +267,7 @@ public class InitData implements CommandLineRunner {
 
         Admin admin = Admin.builder()
                 .id(appUtil.generateUUID())
-                .fullname("System Admin")
+                .fullName("System Admin")
                 .email("admin@gmail.com")
                 .password(password)
                 .phone("0901234571")
@@ -316,7 +316,7 @@ public class InitData implements CommandLineRunner {
 
         Tutor tutor1 = Tutor.builder()
                 .id(appUtil.generateUUID())
-                .fullname("Nguyen Van Tutor")
+                .fullName("Nguyen Van Tutor")
                 .email("tutor@gmail.com")
                 .password(password)
                 .phone("0901234569")
@@ -338,7 +338,7 @@ public class InitData implements CommandLineRunner {
 
         Tutor tutor2 = Tutor.builder()
                 .id(appUtil.generateUUID())
-                .fullname("Tran Thi Tutor")
+                .fullName("Tran Thi Tutor")
                 .email("tutor2@gmail.com")
                 .password(password)
                 .phone("0901234570")
