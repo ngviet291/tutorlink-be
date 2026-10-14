@@ -42,5 +42,5 @@ public class Message extends BaseEntity {
 
     // Message 1 -- 0..* Media
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Media> mediaList ;
+    private Set<Media> mediaList;
 }

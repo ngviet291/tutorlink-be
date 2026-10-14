@@ -29,9 +29,7 @@ public enum ErrorCode implements BaseErrorCode{
     USER_NOT_SUPPORTED("USER_008", "Unsupported user type", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_UUID("VAL_006", "Invalid UUID format", HttpStatus.BAD_REQUEST),
     //Erroll phần application -- Xuyen
-
-    POST_NOT_FOUND("POST_001", "Post not found", HttpStatus.NOT_FOUND),
-    POST_NOT_AVAILABLE("POST_002", "Post is not available for application", HttpStatus.BAD_REQUEST),
+    UPLOAD_MEDIA_FAILED("MEDIA_001", "Upload media failed", HttpStatus.INTERNAL_SERVER_ERROR)
 
     ;
     private final String code;
