@@ -70,6 +70,7 @@ public class NotificationServiceImpl implements NotificationService {
         Notification updated = notificationRepository.save(notification);
         return notificationMapper.toNotificationResponse(updated);
     }
+
     @PreAuthorize("isAuthenticated()")
     @Transactional
     @Override

@@ -25,7 +25,7 @@ public interface PostService {
 
 
         if (type == PostType.FIND_TUTOR
-                && !RoleName.STUDENT.name().equals(user.getRole().getName())) {
+                && !RoleName.STUDENT.name().equals(user.getRole().getName().name())) {
 
             throw new PostValidationException(
                     PostErrorCode.AUTHOR_MUST_BE_STUDENT_FOR_FIND_TUTOR
@@ -33,7 +33,7 @@ public interface PostService {
         }
 
         if (type == PostType.FIND_STUDENT
-                && !RoleName.TUTOR.name().equals(user.getRole().getName())) {
+                && !RoleName.TUTOR.name().equals(user.getRole().getName().name())) {
 
             throw new PostValidationException(
                     PostErrorCode.AUTHOR_MUST_BE_TUTOR_FOR_FIND_STUDENT

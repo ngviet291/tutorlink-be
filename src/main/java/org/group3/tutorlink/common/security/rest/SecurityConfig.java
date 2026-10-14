@@ -1,4 +1,4 @@
-package org.group3.tutorlink.common.security;
+package org.group3.tutorlink.common.security.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -109,7 +109,8 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         // Sử dụng setAllowedOrigins để truyền danh sách domain linh hoạt từ cấu hình env
-        corsConfiguration.setAllowedOrigins(allowedOrigins);
+//        corsConfiguration.setAllowedOrigins(allowedOrigins);
+        corsConfiguration.setAllowedOriginPatterns(allowedOrigins);
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.addAllowedHeader("*");
 
