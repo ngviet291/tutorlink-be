@@ -3,8 +3,11 @@ package org.group3.tutorlink.features.review.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.group3.tutorlink.common.entity.BaseEntity;
+import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.post.entity.Post;
+import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Student;
+import org.group3.tutorlink.features.user.entity.Tutor;
 
 import java.util.UUID;
 
@@ -30,8 +33,11 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    // Review n -- 1 Post (target)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @JoinColumn(name = "tutor_id", nullable = false)
+    private Tutor tutor;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "application_id", nullable = false, unique = true)
+    private Application application;
 }

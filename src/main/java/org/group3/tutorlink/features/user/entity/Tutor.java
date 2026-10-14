@@ -31,6 +31,8 @@ public class Tutor extends User {
 
     @Enumerated(EnumType.STRING)
     private VerificationStatus verificationStatus;
+    @Column(columnDefinition = "TEXT")
+    private String verificationNote;
 
     private String education;
 
@@ -44,7 +46,4 @@ public class Tutor extends User {
     private Set<Certificate> certificates;
 
 
-    // Tutor 1 -- 0..* ChatChannel
-    @OneToMany(mappedBy = "tutor")
-    private Set<ChatChannel> chatChannels ;
 }

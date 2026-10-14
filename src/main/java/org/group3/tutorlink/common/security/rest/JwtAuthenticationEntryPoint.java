@@ -1,4 +1,4 @@
-package org.group3.tutorlink.common.security;
+package org.group3.tutorlink.common.security.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

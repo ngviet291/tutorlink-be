@@ -3,6 +3,7 @@ package org.group3.tutorlink.common.utils;
 import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NoArgsConstructor;
+import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.dto.response.ErrorResponse;
 import org.group3.tutorlink.common.exception.ErrorCode;
 import org.group3.tutorlink.features.auth.exception.UnauthenticatedException;
@@ -12,8 +13,11 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Component
 @NoArgsConstructor
@@ -72,5 +76,50 @@ public class AppUtil {
         }
     }
 
+
+    /**
+     * Build a cursor-based pagination response.
+     * @param items the list of items to include in the response
+     * @param size the maximum number of items to include in the response
+     * @param cursorExtractor a function to extract the cursor value from an item
+     * @param mapper a function to map an item to the desired response type
+     * @return a CursorResponse containing the mapped items, next cursor, and hasNext flag
+     * @param <T> the type of the items in the input list
+     * @param <R> the type of the items in the response
+     */
+    public <T, R> CursorResponse<R> buildCursorResponse(
+            List<T> items,
+            int size,
+            Function<T, UUID> cursorExtractor,
+            Function<T, R> mapper
+    ) {
+
+        boolean hasNext = items.size() > size;
+
+        if (hasNext) {
+            items = new ArrayList<>(items);
+            items.remove(items.size() - 1);
+        }
+
+        UUID nextCursor = items.isEmpty()
+                ? null
+                : cursorExtractor.apply(
+                items.get(items.size() - 1)
+        );
+
+        return CursorResponse.<R>builder()
+                .content(
+                        items.stream()
+                                .map(mapper)
+                                .toList()
+                )
+                .nextCursor(
+                        nextCursor != null
+                                ? nextCursor.toString()
+                                : null
+                )
+                .hasNext(hasNext)
+                .build();
+    }
 
 }
