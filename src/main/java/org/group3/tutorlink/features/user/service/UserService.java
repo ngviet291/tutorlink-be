@@ -41,7 +41,6 @@ public class UserService {
     private final UserMapper userMapper;
     private final AppUtil appUtil;
 
-    @PreAuthorize("isAuthenticated()")
     @Transactional(readOnly = true)
     public BaseUserResponse getMyProfile() {
         User user = userRepository.findById(appUtil.userIdFromAuthentication())
@@ -49,7 +48,6 @@ public class UserService {
         return userMapper.toBaseUserResponse(user);
     }
 
-    @PreAuthorize("isAuthenticated()")
     @Transactional
     public BaseUserResponse updateMyProfile(UpdateProfileRequest request) {
         User user = userRepository.findById(appUtil.userIdFromAuthentication())
@@ -57,7 +55,7 @@ public class UserService {
         userMapper.updateUserFromRequest(user, request);
         return userMapper.toBaseUserResponse(userRepository.save(user));
     }
-
+    
     @Transactional(readOnly = true)
     public BaseUserResponse getPublicProfile(UUID userId) {
         User user = userRepository.findById(userId)

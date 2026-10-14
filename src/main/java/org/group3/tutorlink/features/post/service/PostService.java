@@ -22,19 +22,17 @@ public interface PostService {
     PostResponse createPost(CreatePostRequest request);
 
     default void validateAuthor(PostType type, User user) {
-
+        String roleName = user.getRole().getName().name();
 
         if (type == PostType.FIND_TUTOR
-                && !RoleName.STUDENT.name().equals(user.getRole().getName().name())) {
-
+                && !RoleName.STUDENT.name().equals(roleName)) {
             throw new PostValidationException(
                     PostErrorCode.AUTHOR_MUST_BE_STUDENT_FOR_FIND_TUTOR
             );
         }
 
         if (type == PostType.FIND_STUDENT
-                && !RoleName.TUTOR.name().equals(user.getRole().getName().name())) {
-
+                && !RoleName.TUTOR.name().equals(roleName)) {
             throw new PostValidationException(
                     PostErrorCode.AUTHOR_MUST_BE_TUTOR_FOR_FIND_STUDENT
             );

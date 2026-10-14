@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class UpdateProfileRequest {
     @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
-    private String fullname;
+    private String fullName;
 
     @Pattern(regexp = "^0\\d{9}$", message = "Phone number must start with 0 and have 10 digits")
     private String phone;
