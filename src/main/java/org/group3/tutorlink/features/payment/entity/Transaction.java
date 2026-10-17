@@ -1,16 +1,16 @@
 package org.group3.tutorlink.features.payment.entity;
 
-import org.group3.tutorlink.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.group3.tutorlink.common.entity.BaseEntity;
 import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.payment.enums.PaymentMethod;
 import org.group3.tutorlink.features.payment.enums.TransactionStatus;
+import org.group3.tutorlink.features.payment.enums.TransactionType;
+import org.group3.tutorlink.features.user.entity.Tutor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -25,7 +25,13 @@ public class Transaction extends BaseEntity {
     @Id
     private UUID id;
 
+    @Column(precision = 19, scale = 2)
     private BigDecimal amount;
+
+    // TOP_UP: nạp tiền vào ví, COMMISSION: trả phí hoa hồng cho 1 application
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TransactionType type;
 
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
@@ -35,8 +41,13 @@ public class Transaction extends BaseEntity {
 
     private Instant transactionDate;
 
-    // Transaction 0..1 -- 1 Application
+    // Transaction n -- 1 Tutor (chủ ví)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tutor_id", nullable = false)
+    private Tutor tutor;
+
+    // Transaction 0..1 -- 1 Application (chỉ có khi type = COMMISSION)
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "application_id", nullable = false, unique = true)
+    @JoinColumn(name = "application_id", unique = true)
     private Application application;
 }
