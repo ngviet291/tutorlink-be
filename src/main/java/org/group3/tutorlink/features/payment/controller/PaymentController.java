@@ -24,7 +24,7 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    // 1. Xem số dư ví - chỉ Tutor
+    // 1. Xem số dư ví - Tutor
     @GetMapping("/wallet/balance")
     public ApiResponse<WalletBalanceResponse> getWalletBalance() {
         return ApiResponse.<WalletBalanceResponse>builder()
@@ -34,7 +34,7 @@ public class PaymentController {
                 .build();
     }
 
-    // 2. Nạp tiền vào ví - chỉ Tutor
+    // 2. Nạp tiền vào ví - Tutor
     @PostMapping("/wallet/top-up")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<TransactionResponse> topUp(@RequestBody @Valid TopUpRequest request) {
@@ -45,7 +45,7 @@ public class PaymentController {
                 .build();
     }
 
-    // 3. Thanh toán phí hoa hồng 20% cho 1 application - chỉ Tutor của application đó
+    // 3. Thanh toán phí hoa hồng - chỉ Tutor của application đó
     @PostMapping("/applications/{id}/pay")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<TransactionResponse> payCommission(@PathVariable UUID id) {
@@ -56,7 +56,7 @@ public class PaymentController {
                 .build();
     }
 
-    // 4. Lịch sử giao dịch của mình - chỉ Tutor
+    // 4. Lịch sử giao dịch - Tutor
     @GetMapping("/history")
     public ApiResponse<CursorResponse<TransactionResponse>> getMyTransactions(
             @RequestParam(required = false) UUID cursor,
@@ -69,7 +69,7 @@ public class PaymentController {
                 .build();
     }
 
-    // 5. Danh sách giao dịch (lọc status = success | failed | refund) - chỉ Admin
+    // 5. Danh sách giao dịch - Admin
     @GetMapping
     public ApiResponse<CursorResponse<TransactionResponse>> getAllTransactions(
             @RequestParam(required = false) String status,
@@ -83,7 +83,7 @@ public class PaymentController {
                 .build();
     }
 
-    // 6. Hoàn tiền - chỉ Admin
+    // 6. Hoàn tiền - Admin
     @PostMapping("/{id}/refund")
     public ApiResponse<TransactionResponse> refundTransaction(@PathVariable UUID id) {
         return ApiResponse.<TransactionResponse>builder()
@@ -93,7 +93,7 @@ public class PaymentController {
                 .build();
     }
 
-    // 7. Thống kê doanh thu & vận hành - chỉ Admin
+    // 7. Thống kê doanh thu - Admin
     @GetMapping("/statistics/revenue")
     public ApiResponse<RevenueStatisticsResponse> getRevenueStatistics(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
