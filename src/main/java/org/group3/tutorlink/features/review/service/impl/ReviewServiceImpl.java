@@ -13,8 +13,7 @@ import org.group3.tutorlink.features.review.exception.ReviewAccessDeniedExceptio
 import org.group3.tutorlink.features.review.exception.ReviewAlreadyExistsException;
 import org.group3.tutorlink.features.review.exception.ReviewApplicationNotFoundException;
 import org.group3.tutorlink.features.review.exception.ReviewInvalidApplicationStatusException;
-import org.group3.tutorlink.features.review.exception.ReviewInvalidPaginationException;
-import org.group3.tutorlink.features.review.exception.ReviewInvalidTutorIdException;
+import org.group3.tutorlink.features.review.exception.ReviewInvalidApplicationException;
 import org.group3.tutorlink.features.review.exception.ReviewNotFoundException;
 import org.group3.tutorlink.features.review.mapper.ReviewMapper;
 import org.group3.tutorlink.features.review.repository.ReviewRepository;
@@ -53,7 +52,7 @@ public class ReviewServiceImpl implements ReviewService {
         Application application = applicationRepository.findById(request.getApplicationId())
                 .orElseThrow(ReviewApplicationNotFoundException::new);
         if (application.getPost() == null) {
-            throw new ReviewAccessDeniedException();
+            throw new ReviewInvalidApplicationException();
         }
         Student applicationStudent = application.getStudent();
         Tutor applicationTutor = application.getTutor();
@@ -66,9 +65,10 @@ public class ReviewServiceImpl implements ReviewService {
         if (application.getApplicationStatus() != ApplicationStatus.FINISHED) {
             throw new ReviewInvalidApplicationStatusException();
         }
-        if (applicationStudent == null
-                || !applicationStudent.getId().equals(student.getId())
-                || applicationTutor == null) {
+        if (applicationStudent == null || applicationTutor == null) {
+            throw new ReviewInvalidApplicationException();
+        }
+        if (!applicationStudent.getId().equals(student.getId())) {
             throw new ReviewAccessDeniedException();
         }
         if (reviewRepository.existsByApplicationId(application.getId())) {
@@ -88,12 +88,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public CursorResponse<ReviewResponse> getReviewsByTutor(UUID tutorId, UUID cursor, int limit) {
-        if (tutorId == null) {
-            throw new ReviewInvalidTutorIdException();
-        }
-        if (limit < 1 || limit > 100) {
-            throw new ReviewInvalidPaginationException();
-        }
         Pageable pageable = PageRequest.of(0, limit + 1);
         return appUtil.buildCursorResponse(
                 reviewRepository.findByTutorIdAfterCursor(tutorId, cursor, pageable),

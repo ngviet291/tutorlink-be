@@ -87,6 +87,22 @@ public interface ApplicationRepository
     @Query("""
             SELECT a FROM Application a
             JOIN FETCH a.post p
+            JOIN FETCH p.author
+            WHERE a.id = :applicationId
+              AND a.applicationStatus = :applicationStatus
+              AND p.status = :postStatus
+              AND p.author.id = :userId
+            """)
+    Optional<Application> findSelectableApplication(
+            @Param("applicationId") UUID applicationId,
+            @Param("userId") UUID userId,
+            @Param("applicationStatus") ApplicationStatus applicationStatus,
+            @Param("postStatus") PostStatus postStatus
+    );
+
+    @Query("""
+            SELECT a FROM Application a
+            JOIN FETCH a.post p
             LEFT JOIN FETCH p.author
             LEFT JOIN FETCH a.student
             LEFT JOIN FETCH a.tutor

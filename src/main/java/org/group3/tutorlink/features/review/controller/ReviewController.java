@@ -1,6 +1,9 @@
 package org.group3.tutorlink.features.review.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
@@ -33,9 +36,11 @@ public class ReviewController {
 
     @GetMapping
     public ApiResponse<CursorResponse<ReviewResponse>> getReviews(
-            @RequestParam UUID tutorId,
+            @RequestParam @NotNull UUID tutorId,
             @RequestParam(required = false) UUID cursor,
-            @RequestParam(defaultValue = "10") int limit) {
+            @RequestParam(defaultValue = "10")
+            @Min(1)
+            @Max(100) int limit) {
         return ApiResponse.<CursorResponse<ReviewResponse>>builder()
                 .code(ReviewResponseCode.REVIEWS_RETRIEVED.getCode())
                 .message(ReviewResponseCode.REVIEWS_RETRIEVED.getMessage())
