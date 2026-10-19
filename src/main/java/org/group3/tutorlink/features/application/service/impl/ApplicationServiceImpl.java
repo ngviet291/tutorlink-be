@@ -9,6 +9,8 @@ import org.group3.tutorlink.features.application.dto.response.ApplicationRespons
 import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.exception.ApplicationNotFoundException;
+import org.group3.tutorlink.features.application.exception.ApplicationInvalidStatusException;
+import org.group3.tutorlink.features.application.exception.ApplicationNotAllowedException;
 import org.group3.tutorlink.features.application.exception.ErrorCodeApplication;
 import org.group3.tutorlink.features.application.mapper.ApplicationMapper;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
@@ -88,6 +90,9 @@ public class ApplicationServiceImpl implements ApplicationService {
             }
 
             application.setTutor(tutor);
+            if (post.getAuthor() instanceof Student student) {
+                application.setStudent(student);
+            }
 
         } else if (post.getType() == PostType.FIND_STUDENT) {
 
@@ -100,6 +105,9 @@ public class ApplicationServiceImpl implements ApplicationService {
             }
 
             application.setStudent(student);
+            if (post.getAuthor() instanceof Tutor tutor) {
+                application.setTutor(tutor);
+            }
 
         } else {
             throw new AppException(ErrorCodeApplication.POST_NOT_AVAILABLE);
@@ -248,6 +256,27 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
+    public ApplicationResponse rejectApplication(UUID applicationId) {
+        UUID userId = appUtil.userIdFromAuthentication();
+        User currentUser = getUserOrThrow(userId);
+        Application application = applicationRepository.findByIdForSelection(applicationId)
+                .orElseThrow(ApplicationNotFoundException::new);
+        Post post = application.getPost();
+
+        if (post == null || post.getAuthor() == null
+                || !post.getAuthor().getId().equals(currentUser.getId())) {
+            throw new ApplicationNotAllowedException();
+        }
+        if (application.getApplicationStatus() != ApplicationStatus.PENDING) {
+            throw new ApplicationInvalidStatusException();
+        }
+        validateSelectorRole(post, currentUser);
+        application.setApplicationStatus(ApplicationStatus.REJECTED);
+        return applicationMapper.toApplicationResponse(applicationRepository.save(application));
+    }
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
     public ApplicationResponse confirmApplication(UUID applicationId) {
 
         UUID userId = appUtil.userIdFromAuthentication();
@@ -259,36 +288,55 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new AppException(ErrorCodeApplication.INVALID_APPLICATION_STATUS);
         }
 
-        // Chỉ người đã apply được xác nhận
+        // The post owner confirms the selected applicant.
         if (post.getType() == PostType.FIND_TUTOR) {
-
-            if (!(currentUser instanceof Tutor tutor)) {
+            if (!(currentUser instanceof Student student)
+                    || post.getAuthor() == null
+                    || !post.getAuthor().getId().equals(student.getId())) {
                 throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
             }
-            if (application.getTutor() == null
-                    || !application.getTutor().getId().equals(tutor.getId())) {
-                throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
-            }
-
         } else if (post.getType() == PostType.FIND_STUDENT) {
-
-            if (!(currentUser instanceof Student student)) {
+            if (!(currentUser instanceof Tutor tutor)
+                    || post.getAuthor() == null
+                    || !post.getAuthor().getId().equals(tutor.getId())) {
                 throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
             }
-            if (application.getStudent() == null
-                    || !application.getStudent().getId().equals(student.getId())) {
-                throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
-            }
-
         } else {
             throw new AppException(ErrorCodeApplication.POST_NOT_AVAILABLE);
         }
 
-        application.setApplicationStatus(ApplicationStatus.FINISHED);
+        application.setApplicationStatus(ApplicationStatus.CONFIRMED);
 
         Application saved = applicationRepository.save(application);
         // Đã sửa
         return applicationMapper.toApplicationResponse(saved);
+    }
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
+    public ApplicationResponse finishApplication(UUID applicationId) {
+        UUID userId = appUtil.userIdFromAuthentication();
+        User currentUser = getUserOrThrow(userId);
+        Application application = getApplicationOrThrow(applicationId);
+
+        if (application.getStudent() == null && application.getTutor() == null) {
+            throw new ApplicationNotAllowedException();
+        }
+        boolean participant = (application.getStudent() != null
+                && application.getStudent().getId().equals(userId))
+                || (application.getTutor() != null
+                && application.getTutor().getId().equals(userId))
+                || (application.getPost().getAuthor() != null
+                && application.getPost().getAuthor().getId().equals(userId));
+        if (!participant || !(currentUser instanceof Student || currentUser instanceof Tutor)) {
+            throw new ApplicationNotAllowedException();
+        }
+        if (application.getApplicationStatus() != ApplicationStatus.CONFIRMED
+                && application.getApplicationStatus() != ApplicationStatus.FINISHED) {
+            throw new ApplicationInvalidStatusException();
+        }
+        application.setApplicationStatus(ApplicationStatus.FINISHED);
+        return applicationMapper.toApplicationResponse(applicationRepository.save(application));
     }
 
     @Override

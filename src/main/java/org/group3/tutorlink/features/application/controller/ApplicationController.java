@@ -103,6 +103,28 @@ public class ApplicationController {
                 .build();
     }
 
+    @PostMapping("/{applicationId}/reject")
+    public ApiResponse<ApplicationResponse> rejectApplication(
+            @PathVariable UUID applicationId) {
+
+        return ApiResponse.<ApplicationResponse>builder()
+                .code(ApplicationResponseCode.REJECT_SUCCESS.getCode())
+                .message(ApplicationResponseCode.REJECT_SUCCESS.getMessage())
+                .data(applicationService.rejectApplication(applicationId))
+                .build();
+    }
+
+    @PostMapping("/{applicationId}/finish")
+    public ApiResponse<ApplicationResponse> finishApplication(
+            @PathVariable UUID applicationId) {
+
+        return ApiResponse.<ApplicationResponse>builder()
+                .code(ApplicationResponseCode.FINISH_SUCCESS.getCode())
+                .message(ApplicationResponseCode.FINISH_SUCCESS.getMessage())
+                .data(applicationService.finishApplication(applicationId))
+                .build();
+    }
+
     @PostMapping("/{applicationId}/cancel")
     public ApiResponse<ApplicationResponse> cancelApplication(
             @PathVariable UUID applicationId) {
