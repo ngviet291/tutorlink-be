@@ -6,6 +6,7 @@ import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
+import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.review.dto.request.CreateReviewRequest;
 import org.group3.tutorlink.features.review.dto.response.ReviewResponse;
 import org.group3.tutorlink.features.review.entity.Review;
@@ -20,8 +21,7 @@ import org.group3.tutorlink.features.review.repository.ReviewRepository;
 import org.group3.tutorlink.features.review.service.ReviewService;
 import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
-import org.group3.tutorlink.features.user.entity.User;
-import org.group3.tutorlink.features.user.repository.UserRepository;
+import org.group3.tutorlink.features.user.repository.StudentRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,7 +35,7 @@ import java.util.UUID;
 public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final ApplicationRepository applicationRepository;
-    private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
     private final AppUtil appUtil;
     private final ReviewMapper reviewMapper;
 
@@ -44,11 +44,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public ReviewResponse createReview(CreateReviewRequest request) {
         UUID userId = appUtil.userIdFromAuthentication();
-        User user = userRepository.findById(userId)
-                .orElseThrow(ReviewAccessDeniedException::new);
-        if (!(user instanceof Student student)) {
-            throw new ReviewAccessDeniedException();
-        }
+        Student student = studentRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
         Application application = applicationRepository.findById(request.getApplicationId())
                 .orElseThrow(ReviewApplicationNotFoundException::new);
         if (application.getPost() == null) {
