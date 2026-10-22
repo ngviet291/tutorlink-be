@@ -115,8 +115,6 @@ public class AuthenticationService {
         }
         String refreshToken = jwtService.generateRefreshToken(user);
 
-        refreshTokenService.saveRefreshToken(refreshToken, user.getEmail());
-
         log.info("User {} logged in", user.getEmail());
 
         return buildAuthResponse(user, refreshToken);
@@ -139,7 +137,6 @@ public class AuthenticationService {
         String newRefreshToken = jwtService.generateRefreshToken(user);
 
         refreshTokenService.deleteRefreshToken(refreshTokenStr);
-        refreshTokenService.saveRefreshToken(newRefreshToken, username);
 
         return buildAuthResponse(user, newRefreshToken);
 
