@@ -1,6 +1,7 @@
 package org.group3.tutorlink.features.payment.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.common.utils.AppUtil;
@@ -19,15 +20,22 @@ import org.group3.tutorlink.features.payment.enums.TransactionType;
 import org.group3.tutorlink.features.payment.exception.PaymentInsufficientBalanceException;
 import org.group3.tutorlink.features.payment.exception.PaymentErrorCode;
 import org.group3.tutorlink.features.payment.exception.PaymentTutorNotFoundException;
+import org.group3.tutorlink.features.payment.gateway.GatewayCallbackResult;
+import org.group3.tutorlink.features.payment.gateway.GatewayPaymentRequest;
+import org.group3.tutorlink.features.payment.gateway.GatewayPaymentResult;
+import org.group3.tutorlink.features.payment.gateway.GatewayPaymentState;
+import org.group3.tutorlink.features.payment.gateway.PaymentGateway;
+import org.group3.tutorlink.features.payment.mapper.RevenueStatisticsMapper;
 import org.group3.tutorlink.features.payment.mapper.TransactionMapper;
 import org.group3.tutorlink.features.payment.mapper.WalletMapper;
 import org.group3.tutorlink.features.payment.repository.TransactionRepository;
-import org.group3.tutorlink.features.payment.repository.TransactionStatRow;
+import org.group3.tutorlink.features.payment.repository.RevenueStatisticsRow;
 import org.group3.tutorlink.features.payment.repository.WalletRepository;
 import org.group3.tutorlink.features.payment.service.PaymentService;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -43,15 +51,19 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
-    private static final int DEFAULT_LIMIT = 10;
-    private static final int MAX_LIMIT = 50;
+    @Value("${payment.pagination.default-limit:10}")
+    private int defaultLimit;
 
-    // Phí hoa hồng = 20% giá của bài đăng
-    private static final BigDecimal COMMISSION_RATE = new BigDecimal("0.20");
+    @Value("${payment.pagination.max-limit:50}")
+    private int maxLimit;
+
+    @Value("${payment.commission-rate:0.20}")
+    private BigDecimal commissionRate;
 
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
@@ -59,6 +71,9 @@ public class PaymentServiceImpl implements PaymentService {
     private final ApplicationRepository applicationRepository;
     private final WalletMapper walletMapper;
     private final TransactionMapper transactionMapper;
+    private final RevenueStatisticsMapper revenueStatisticsMapper;
+    // Spring tự inject tất cả cổng thanh toán (MomoGateway, ZaloPayGateway, ...)
+    private final List<PaymentGateway> paymentGateways;
     private final AppUtil appUtil;
 
     @Override
@@ -78,23 +93,115 @@ public class PaymentServiceImpl implements PaymentService {
     @PreAuthorize("hasAuthority('TUTOR')")
     public TransactionResponse topUp(TopUpRequest request) {
         UUID tutorId = appUtil.userIdFromAuthentication();
-        BigDecimal amount = request.getAmount().setScale(2, RoundingMode.HALF_UP);
+        PaymentMethod method = request.getPaymentMethod();
+        PaymentGateway gateway = findGateway(method);
+        BigDecimal amount = request.getAmount().setScale(0, RoundingMode.HALF_UP);
 
-        Wallet wallet = getOrCreateWalletForUpdate(tutorId);
-        wallet.setBalance(wallet.getBalance().add(amount));
-        walletRepository.save(wallet);
+        Wallet wallet = walletRepository.findByTutorId(tutorId)
+                .orElseGet(() -> createWallet(tutorId));
 
+        // Tạo đơn bên MoMo/ZaloPay trước; lỗi cổng -> ném exception, không lưu giao dịch rác
+        String providerOrderId = gateway.newProviderOrderId();
+        GatewayPaymentResult payment = gateway.createPayment(new GatewayPaymentRequest(
+                providerOrderId, amount, "Nap tien vao vi TutorLink", tutorId));
+
+        // Giao dịch ở trạng thái chờ; chỉ cộng tiền khi cổng thanh toán xác nhận qua IPN/callback
         Transaction transaction = Transaction.builder()
                 .id(appUtil.generateUUID())
                 .type(TransactionType.TOP_UP)
                 .amount(amount)
-                .status(TransactionStatus.SUCCESS)
-                .paymentMethod(PaymentMethod.BANK_TRANSFER)
+                .status(TransactionStatus.PENDING)
+                .paymentMethod(method)
+                .providerOrderId(providerOrderId)
                 .transactionDate(Instant.now())
                 .tutor(wallet.getTutor())
                 .build();
 
-        return transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
+        TransactionResponse response = transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
+        response.setPaymentLink(payment.payUrl());
+        response.setQrCodeUrl(payment.qrCodeUrl());
+        response.setDeeplink(payment.deeplink());
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public void handleGatewayCallback(PaymentMethod method, String rawBody) {
+        // Sai chữ ký -> AppException(INVALID_GATEWAY_SIGNATURE), không đụng tới ví
+        GatewayCallbackResult result = findGateway(method).verifyCallback(rawBody);
+
+        Transaction transaction = transactionRepository.findForUpdateByProviderOrderId(result.providerOrderId())
+                .orElse(null);
+        if (transaction == null) {
+            log.warn("{} callback for unknown order {}", method, result.providerOrderId());
+            return;
+        }
+        settleTopUp(transaction, method, result);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('TUTOR')")
+    public TransactionResponse syncTopUpStatus(UUID transactionId) {
+        UUID tutorId = appUtil.userIdFromAuthentication();
+
+        Transaction transaction = transactionRepository.findForUpdateById(transactionId)
+                .orElseThrow(() -> new AppException(PaymentErrorCode.TRANSACTION_NOT_FOUND));
+
+        if (!tutorId.equals(transaction.getTutor().getId())) {
+            throw new AppException(PaymentErrorCode.NOT_TRANSACTION_OWNER);
+        }
+        if (transaction.getType() != TransactionType.TOP_UP || transaction.getProviderOrderId() == null) {
+            throw new AppException(PaymentErrorCode.TRANSACTION_NOT_TOP_UP);
+        }
+
+        // Chưa có kết quả cuối -> chủ động hỏi cổng (dùng khi IPN chưa tới, vd chạy localhost)
+        if (transaction.getStatus() == TransactionStatus.PENDING) {
+            PaymentMethod method = transaction.getPaymentMethod();
+            settleTopUp(transaction, method, findGateway(method).queryOrder(transaction.getProviderOrderId()));
+        }
+
+        return transactionMapper.toTransactionResponse(transaction);
+    }
+
+    // Chốt kết quả giao dịch nạp tiền. Idempotent: chỉ xử lý khi giao dịch còn PENDING.
+    private void settleTopUp(Transaction transaction, PaymentMethod method, GatewayCallbackResult result) {
+        if (transaction.getType() != TransactionType.TOP_UP || transaction.getPaymentMethod() != method) {
+            log.warn("Ignore {} result for transaction {}: type/method mismatch", method, transaction.getId());
+            return;
+        }
+        if (transaction.getStatus() != TransactionStatus.PENDING || result.state() == GatewayPaymentState.PENDING) {
+            return;
+        }
+
+        if (result.state() == GatewayPaymentState.SUCCESS) {
+            if (result.amount() != null && transaction.getAmount().compareTo(result.amount()) != 0) {
+                // Chữ ký hợp lệ nhưng số tiền lệch với đơn đã tạo -> không cộng ví, cần đối soát thủ công
+                log.error("{} amount mismatch for transaction {}: expected {}, gateway {}",
+                        method, transaction.getId(), transaction.getAmount(), result.amount());
+                transaction.setStatus(TransactionStatus.FAILED);
+            } else {
+                Wallet wallet = getOrCreateWalletForUpdate(transaction.getTutor().getId());
+                wallet.setBalance(wallet.getBalance().add(transaction.getAmount()));
+                walletRepository.save(wallet);
+                transaction.setStatus(TransactionStatus.SUCCESS);
+            }
+        } else {
+            transaction.setStatus(TransactionStatus.FAILED);
+        }
+
+        if (result.providerTransId() != null && !result.providerTransId().isBlank()) {
+            transaction.setProviderTransId(result.providerTransId());
+        }
+        transaction.setTransactionDate(Instant.now());
+        transactionRepository.save(transaction);
+    }
+
+    private PaymentGateway findGateway(PaymentMethod method) {
+        return paymentGateways.stream()
+                .filter(gateway -> gateway.method() == method)
+                .findFirst()
+                .orElseThrow(() -> new AppException(PaymentErrorCode.UNSUPPORTED_TOP_UP_METHOD));
     }
 
     // Khi số dư không đủ vẫn phải lưu giao dịch FAILED nên không rollback với exception này
@@ -178,8 +285,8 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasAuthority('ADMIN')")
-    public CursorResponse<TransactionResponse> getAllTransactions(String status, UUID cursor, int limit) {
-        TransactionStatus transactionStatus = parseStatusFilter(status);
+    public CursorResponse<TransactionResponse> getAllTransactions(TransactionStatus status, UUID cursor, int limit) {
+        TransactionStatus transactionStatus = status;
         int size = normalizeLimit(limit);
         Pageable pageable = buildPageable(size);
 
@@ -235,55 +342,9 @@ public class PaymentServiceImpl implements PaymentService {
         Instant start = from.atStartOfDay(ZoneOffset.UTC).toInstant();
         Instant end = to.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
 
-        BigDecimal totalRevenue = BigDecimal.ZERO;
-        BigDecimal totalRefunded = BigDecimal.ZERO;
-        BigDecimal totalTopUp = BigDecimal.ZERO;
-        long successCount = 0;
-        long failedCount = 0;
-        long refundedCount = 0;
-        long topUpCount = 0;
-        long totalTransactions = 0;
-
-        for (TransactionStatRow row : transactionRepository.summarize(start, end)) {
-            BigDecimal rowTotal = row.getTotalAmount() == null ? BigDecimal.ZERO : row.getTotalAmount();
-            totalTransactions += row.getTransactionCount();
-
-            if (row.getTransactionType() == TransactionType.TOP_UP) {
-                if (row.getTransactionStatus() == TransactionStatus.SUCCESS) {
-                    totalTopUp = totalTopUp.add(rowTotal);
-                    topUpCount += row.getTransactionCount();
-                }
-                continue;
-            }
-
-            switch (row.getTransactionStatus()) {
-                case SUCCESS -> {
-                    totalRevenue = totalRevenue.add(rowTotal);
-                    successCount += row.getTransactionCount();
-                }
-                case FAILED -> failedCount += row.getTransactionCount();
-                case REFUNDED -> {
-                    totalRefunded = totalRefunded.add(rowTotal);
-                    refundedCount += row.getTransactionCount();
-                }
-                default -> {
-                    // PENDING / CANCELLED chỉ tính vào totalTransactions
-                }
-            }
-        }
-
-        return RevenueStatisticsResponse.builder()
-                .from(from)
-                .to(to)
-                .totalRevenue(totalRevenue)
-                .totalRefunded(totalRefunded)
-                .totalTopUp(totalTopUp)
-                .successCount(successCount)
-                .failedCount(failedCount)
-                .refundedCount(refundedCount)
-                .topUpCount(topUpCount)
-                .totalTransactions(totalTransactions)
-                .build();
+        // Gộp số liệu bằng SQL (aggregate ở DB), dùng mapper để build response
+        RevenueStatisticsRow row = transactionRepository.summarizeRevenue(start, end);
+        return revenueStatisticsMapper.toResponse(row, from, to);
     }
 
     private Wallet getOrCreateWalletForUpdate(UUID tutorId) {
@@ -320,25 +381,11 @@ public class PaymentServiceImpl implements PaymentService {
             throw new AppException(PaymentErrorCode.POST_BUDGET_MISSING);
         }
 
-        return base.multiply(COMMISSION_RATE).setScale(2, RoundingMode.HALF_UP);
-    }
-
-    // Query param nhận success | failed | refund (không phân biệt hoa thường), bỏ trống = tất cả
-    private TransactionStatus parseStatusFilter(String status) {
-        if (status == null || status.isBlank()) {
-            return null;
-        }
-
-        return switch (status.trim().toLowerCase()) {
-            case "success" -> TransactionStatus.SUCCESS;
-            case "failed" -> TransactionStatus.FAILED;
-            case "refund" -> TransactionStatus.REFUNDED;
-            default -> throw new AppException(PaymentErrorCode.INVALID_STATUS_FILTER);
-        };
+        return base.multiply(commissionRate).setScale(2, RoundingMode.HALF_UP);
     }
 
     private int normalizeLimit(int limit) {
-        return limit <= 0 ? DEFAULT_LIMIT : Math.min(limit, MAX_LIMIT);
+        return limit <= 0 ? defaultLimit : Math.min(limit, maxLimit);
     }
 
     private Pageable buildPageable(int size) {
