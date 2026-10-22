@@ -9,6 +9,7 @@ import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -35,6 +36,14 @@ public class Tutor extends User {
     private String verificationNote;
 
     private String education;
+
+    @ElementCollection
+    @CollectionTable(name = "tutor_available_slots", joinColumns = @JoinColumn(name = "tutor_id"))
+    private List<AvailableSlot> availableSlots;
+
+    @ElementCollection
+    @CollectionTable(name = "tutor_teaching_areas", joinColumns = @JoinColumn(name = "tutor_id"))
+    private List<String> teachingAreas;
 
     // Tutor n -- 1 Subject (see README note: diagram reads Subject 1 -- 1..* Tutor)
     @ManyToOne(fetch = FetchType.LAZY)

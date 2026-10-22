@@ -19,7 +19,7 @@ public interface PostMapper {
     @Mapping(target = "author", source = "user")
     @Mapping(target = "subject", source = "subject")
     @Mapping(target = "address", source = "request.address")
-    @Mapping(target = "status", constant = "PUBLISHED")
+    @Mapping(target = "status", source = "request.status")
     @Mapping(target = "applications", ignore = true)
     Post toPost(
             UUID id,
