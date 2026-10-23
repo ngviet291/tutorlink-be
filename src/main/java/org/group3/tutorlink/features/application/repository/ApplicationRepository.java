@@ -150,4 +150,26 @@ public interface ApplicationRepository
             @Param("applicationStatus") ApplicationStatus applicationStatus
     );
 
+    // ===== Thêm cho module thống kê (Việt) =====
+
+    // Thống kê: tổng số lượt nhận lớp thành công (GET /v1/statistics/applications/accepted)
+    long countByApplicationStatus(ApplicationStatus status);
+
+    // Thống kê: gia sư có nhiều lượt nhận lớp nhất (GET /v1/statistics/top-tutors)
+    @Query("""
+            SELECT a.tutor.id AS tutorId,
+                   a.tutor.fullName AS fullName,
+                   a.tutor.averageRating AS averageRating,
+                   COUNT(a) AS acceptedCount
+            FROM Application a
+            WHERE a.applicationStatus = :status
+              AND a.tutor IS NOT NULL
+            GROUP BY a.tutor.id, a.tutor.fullName, a.tutor.averageRating
+            ORDER BY COUNT(a) DESC
+            """)
+    List<TopTutorRow> findTopTutorsByAcceptedCount(
+            @Param("status") ApplicationStatus status,
+            Pageable pageable
+    );
+
 }
