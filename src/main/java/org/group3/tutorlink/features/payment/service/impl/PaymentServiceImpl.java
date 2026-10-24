@@ -8,10 +8,13 @@ import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
+import org.group3.tutorlink.features.payment.dto.request.CreateFeeConfigRequest;
 import org.group3.tutorlink.features.payment.dto.request.TopUpRequest;
+import org.group3.tutorlink.features.payment.dto.response.FeeConfigResponse;
 import org.group3.tutorlink.features.payment.dto.response.RevenueStatisticsResponse;
 import org.group3.tutorlink.features.payment.dto.response.TransactionResponse;
 import org.group3.tutorlink.features.payment.dto.response.WalletBalanceResponse;
+import org.group3.tutorlink.features.payment.entity.MatchingFeeConfig;
 import org.group3.tutorlink.features.payment.entity.Transaction;
 import org.group3.tutorlink.features.payment.entity.Wallet;
 import org.group3.tutorlink.features.payment.enums.PaymentMethod;
@@ -25,21 +28,26 @@ import org.group3.tutorlink.features.payment.gateway.GatewayPaymentRequest;
 import org.group3.tutorlink.features.payment.gateway.GatewayPaymentResult;
 import org.group3.tutorlink.features.payment.gateway.GatewayPaymentState;
 import org.group3.tutorlink.features.payment.gateway.PaymentGateway;
+import org.group3.tutorlink.features.payment.mapper.FeeConfigMapper;
 import org.group3.tutorlink.features.payment.mapper.RevenueStatisticsMapper;
 import org.group3.tutorlink.features.payment.mapper.TransactionMapper;
 import org.group3.tutorlink.features.payment.mapper.WalletMapper;
+import org.group3.tutorlink.features.payment.repository.MatchingFeeConfigRepository;
 import org.group3.tutorlink.features.payment.repository.TransactionRepository;
 import org.group3.tutorlink.features.payment.repository.RevenueStatisticsRow;
 import org.group3.tutorlink.features.payment.repository.WalletRepository;
 import org.group3.tutorlink.features.payment.service.PaymentService;
 import org.group3.tutorlink.features.post.entity.Post;
+import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Tutor;
+import org.group3.tutorlink.features.user.repository.AdminRepository;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,9 +77,12 @@ public class PaymentServiceImpl implements PaymentService {
     private final TransactionRepository transactionRepository;
     private final TutorRepository tutorRepository;
     private final ApplicationRepository applicationRepository;
+    private final MatchingFeeConfigRepository feeConfigRepository;
+    private final AdminRepository adminRepository;
     private final WalletMapper walletMapper;
     private final TransactionMapper transactionMapper;
     private final RevenueStatisticsMapper revenueStatisticsMapper;
+    private final FeeConfigMapper feeConfigMapper;
     // Spring tự inject tất cả cổng thanh toán (MomoGateway, ZaloPayGateway, ...)
     private final List<PaymentGateway> paymentGateways;
     private final AppUtil appUtil;
@@ -345,6 +356,86 @@ public class PaymentServiceImpl implements PaymentService {
         // Gộp số liệu bằng SQL (aggregate ở DB), dùng mapper để build response
         RevenueStatisticsRow row = transactionRepository.summarizeRevenue(start, end);
         return revenueStatisticsMapper.toResponse(row, from, to);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TransactionResponse getTransactionDetail(UUID transactionId) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        UUID userId = appUtil.userIdFromAuthentication();
+        
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new AppException(PaymentErrorCode.TRANSACTION_NOT_FOUND));
+
+        // Admin hoặc chủ giao dịch mới xem được
+        boolean isOwner = userId.equals(transaction.getTutor().getId());
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ADMIN"));
+
+        if (!isOwner && !isAdmin) {
+            throw new AppException(PaymentErrorCode.NOT_TRANSACTION_OWNER);
+        }
+
+        return transactionMapper.toTransactionResponse(transaction);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public CursorResponse<FeeConfigResponse> getFeeConfigs(UUID cursor, int limit) {
+        int size = normalizeLimit(limit);
+        Pageable pageable = PageRequest.of(0, size + 1, Sort.by(Sort.Order.desc("effectiveFrom")));
+
+        List<MatchingFeeConfig> configs = cursor == null
+                ? feeConfigRepository.findAllByOrderByEffectiveFromDesc(pageable)
+                : feeConfigRepository.findByIdLessThanOrderByEffectiveFromDesc(cursor, pageable);
+
+        return appUtil.buildCursorResponse(
+                configs,
+                size,
+                MatchingFeeConfig::getId,
+                feeConfigMapper::toFeeConfigResponse
+        );
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public FeeConfigResponse createFeeConfig(CreateFeeConfigRequest request) {
+        UUID adminId = appUtil.userIdFromAuthentication();
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new AppException(PaymentErrorCode.TUTOR_NOT_FOUND)); // Reuse error code
+
+        LocalDate effectiveFrom = request.getEffectiveFrom() != null
+                ? request.getEffectiveFrom()
+                : LocalDate.now();
+
+        // Kiểm tra chồng lấn với cấu hình hiện có (effectiveTo = null nghĩa là active vô thời hạn)
+        List<MatchingFeeConfig> overlapping = feeConfigRepository.findOverlappingConfigs(
+                effectiveFrom,
+                effectiveFrom.plusYears(100) // Giả định cấu hình mới active vô thời hạn
+        );
+
+        if (!overlapping.isEmpty()) {
+            // Đóng các cấu hình cũ bằng cách set effectiveTo = effectiveFrom - 1
+            for (MatchingFeeConfig old : overlapping) {
+                if (old.getEffectiveTo() == null || old.getEffectiveTo().isAfter(effectiveFrom)) {
+                    old.setEffectiveTo(effectiveFrom.minusDays(1));
+                    feeConfigRepository.save(old);
+                }
+            }
+        }
+
+        MatchingFeeConfig config = MatchingFeeConfig.builder()
+                .id(appUtil.generateUUID())
+                .feePercentage(request.getFeePercentage())
+                .fixedFee(request.getFixedFee() != null ? request.getFixedFee() : 0.0)
+                .effectiveFrom(effectiveFrom)
+                .effectiveTo(null) // Active vô thời hạn cho đến khi có config mới
+                .createdByAdmin(admin)
+                .build();
+
+        return feeConfigMapper.toFeeConfigResponse(feeConfigRepository.save(config));
     }
 
     private Wallet getOrCreateWalletForUpdate(UUID tutorId) {

@@ -22,7 +22,9 @@ public enum PaymentErrorCode implements BaseErrorCode {
     NOT_TRANSACTION_OWNER("PAYMENT_403", "You are not the owner of this transaction!", HttpStatus.FORBIDDEN),
     TRANSACTION_NOT_TOP_UP("PAYMENT_400", "This transaction is not a gateway top-up!", HttpStatus.BAD_REQUEST),
     GATEWAY_ERROR("PAYMENT_502", "Payment gateway is unavailable or rejected the request, please try again later!", HttpStatus.BAD_GATEWAY),
-    INVALID_DATE_RANGE("PAYMENT_400", "Both 'from' and 'to' are required (yyyy-MM-dd) and 'from' must not be after 'to'!", HttpStatus.BAD_REQUEST);
+    INVALID_DATE_RANGE("PAYMENT_400", "Both 'from' and 'to' are required (yyyy-MM-dd) and 'from' must not be after 'to'!", HttpStatus.BAD_REQUEST),
+    FEE_CONFIG_NOT_FOUND("PAYMENT_404", "Fee configuration not found!", HttpStatus.NOT_FOUND),
+    FEE_CONFIG_OVERLAPPING("PAYMENT_409", "Fee configuration period overlaps with an existing configuration!", HttpStatus.CONFLICT);
 
     private final String code;
     private final String message;

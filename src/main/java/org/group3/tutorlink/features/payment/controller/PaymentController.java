@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
+import org.group3.tutorlink.features.payment.dto.request.CreateFeeConfigRequest;
 import org.group3.tutorlink.features.payment.dto.request.TopUpRequest;
+import org.group3.tutorlink.features.payment.dto.response.FeeConfigResponse;
 import org.group3.tutorlink.features.payment.dto.response.RevenueStatisticsResponse;
 import org.group3.tutorlink.features.payment.dto.response.TransactionResponse;
 import org.group3.tutorlink.features.payment.dto.response.WalletBalanceResponse;
@@ -77,7 +79,7 @@ public class PaymentController {
                 .build();
     }
 
-    // 5. Danh sách giao dịch - Admin
+    // 5. Danh sách giao dịch - Admin (có thể lọc theo status và tutorId)
     @GetMapping
     public ApiResponse<CursorResponse<TransactionResponse>> getAllTransactions(
             @RequestParam(required = false) TransactionStatus status,
@@ -88,6 +90,16 @@ public class PaymentController {
                 .code(PaymentResponseCode.GET_PAYMENTS.getCode())
                 .message(PaymentResponseCode.GET_PAYMENTS.getMessage())
                 .data(paymentService.getAllTransactions(status, cursor, limit))
+                .build();
+    }
+
+    // 5.1. Chi tiết giao dịch - Admin hoặc chủ giao dịch
+    @GetMapping("/{id}")
+    public ApiResponse<TransactionResponse> getTransactionDetail(@PathVariable UUID id) {
+        return ApiResponse.<TransactionResponse>builder()
+                .code(PaymentResponseCode.GET_PAYMENT_DETAIL.getCode())
+                .message(PaymentResponseCode.GET_PAYMENT_DETAIL.getMessage())
+                .data(paymentService.getTransactionDetail(id))
                 .build();
     }
 
@@ -148,5 +160,29 @@ public class PaymentController {
             log.error("ZaloPay callback failed", ex);
             return Map.of("return_code", 0, "return_message", "internal error");
         }
+    }
+
+    // 11. Lịch sử cấu hình phí - Admin
+    @GetMapping("/fee-configs")
+    public ApiResponse<CursorResponse<FeeConfigResponse>> getFeeConfigs(
+            @RequestParam(required = false) UUID cursor,
+            @RequestParam(defaultValue = "10") int limit) {
+
+        return ApiResponse.<CursorResponse<FeeConfigResponse>>builder()
+                .code(PaymentResponseCode.GET_FEE_CONFIGS.getCode())
+                .message(PaymentResponseCode.GET_FEE_CONFIGS.getMessage())
+                .data(paymentService.getFeeConfigs(cursor, limit))
+                .build();
+    }
+
+    // 12. Tạo cấu hình phí mới - Admin
+    @PostMapping("/fee-configs")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<FeeConfigResponse> createFeeConfig(@RequestBody @Valid CreateFeeConfigRequest request) {
+        return ApiResponse.<FeeConfigResponse>builder()
+                .code(PaymentResponseCode.CREATE_FEE_CONFIG.getCode())
+                .message(PaymentResponseCode.CREATE_FEE_CONFIG.getMessage())
+                .data(paymentService.createFeeConfig(request))
+                .build();
     }
 }
