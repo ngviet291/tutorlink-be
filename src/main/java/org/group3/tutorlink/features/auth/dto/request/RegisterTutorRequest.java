@@ -19,8 +19,8 @@ import java.util.UUID;
 @Data
 @Builder
 public class RegisterTutorRequest {
-    @NotBlank(message = "Fullname not be blank")
-    private String fullname;
+    @NotBlank(message = "FullName not be blank")
+    private String fullName;
     @Email(message = "Email is not valid")
     @NotBlank(message = "Email not be blank")
     private String email;
