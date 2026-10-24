@@ -12,11 +12,19 @@ import org.group3.tutorlink.features.review.dto.request.CreateReviewComplaintReq
 import org.group3.tutorlink.features.review.dto.response.ReviewComplaintResponse;
 import org.group3.tutorlink.features.review.service.ReviewComplaintService;
 import org.group3.tutorlink.features.review.dto.response.ReviewResponse;
+import org.group3.tutorlink.features.review.enums.ReviewComplaintResponseCode;
 import org.group3.tutorlink.features.review.enums.ReviewResponseCode;
 import org.group3.tutorlink.features.review.service.ReviewService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
@@ -28,13 +36,16 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final ReviewComplaintService complaintService;
 
-    @PostMapping("/{id}/complaints")
+    @PostMapping("/{reviewId}/complaints")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ReviewComplaintResponse> createComplaint(
-            @PathVariable UUID id, @Valid @RequestBody CreateReviewComplaintRequest request) {
+            @PathVariable UUID reviewId,
+            @Valid @RequestBody CreateReviewComplaintRequest request) {
         return ApiResponse.<ReviewComplaintResponse>builder()
-                .code("REVIEW_COMPLAINT_201").message("Review complaint created successfully")
-                .data(complaintService.create(id, request)).build();
+                .code(ReviewComplaintResponseCode.CREATE_SUCCESS.getCode())
+                .message(ReviewComplaintResponseCode.CREATE_SUCCESS.getMessage())
+                .data(complaintService.create(reviewId, request))
+                .build();
     }
 
     @PostMapping
@@ -61,12 +72,12 @@ public class ReviewController {
                 .build();
     }
 
-    @GetMapping("/{id}")
-    public ApiResponse<ReviewResponse> getReview(@PathVariable UUID id) {
+    @GetMapping("/{reviewId}")
+    public ApiResponse<ReviewResponse> getReview(@PathVariable UUID reviewId) {
         return ApiResponse.<ReviewResponse>builder()
                 .code(ReviewResponseCode.REVIEW_FOUND.getCode())
                 .message(ReviewResponseCode.REVIEW_FOUND.getMessage())
-                .data(reviewService.getReviewById(id))
+                .data(reviewService.getReviewById(reviewId))
                 .build();
     }
 }

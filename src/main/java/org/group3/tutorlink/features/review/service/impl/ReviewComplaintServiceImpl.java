@@ -51,6 +51,7 @@ public class ReviewComplaintServiceImpl implements ReviewComplaintService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Transactional(readOnly = true)
     public List<ReviewComplaintResponse> findAll(ComplaintStatus status) {
         List<ReviewComplaint> complaints = status == null

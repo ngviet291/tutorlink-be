@@ -11,6 +11,7 @@ import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
 import org.group3.tutorlink.features.user.repository.UserRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     private final AppUtil appUtil;
 
     @Override
+    @PreAuthorize("isAuthenticated()")
     @Transactional
     public FavoriteResponse add(UUID tutorId) {
         UUID userId = appUtil.userIdFromAuthentication();
@@ -38,6 +40,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated()")
     @Transactional
     public void remove(UUID tutorId) {
         UUID userId = appUtil.userIdFromAuthentication();
@@ -45,6 +48,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated()")
     @Transactional(readOnly = true)
     public List<FavoriteResponse> findMine() {
         UUID userId = appUtil.userIdFromAuthentication();
