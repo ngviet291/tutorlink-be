@@ -1,17 +1,16 @@
 package org.group3.tutorlink.features.statistics.service;
 
-import org.group3.tutorlink.features.statistics.dto.response.AcceptedApplicationsResponse;
-import org.group3.tutorlink.features.statistics.dto.response.RevenueStatisticsResponse;
-import org.group3.tutorlink.features.statistics.dto.response.TopTutorResponse;
+import org.group3.tutorlink.features.statistics.dto.response.*;
+import org.group3.tutorlink.features.statistics.enums.TimeDetail;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface StatisticsService {
 
-    RevenueStatisticsResponse getRevenueStatistics(LocalDate from, LocalDate to);
+    List<RevenuePointResponse> getRevenueSeries(LocalDate from, LocalDate to, TimeDetail timeDetail);
 
-    AcceptedApplicationsResponse getAcceptedApplicationsCount();
+    List<AcceptedPointResponse> getAcceptedSeries(LocalDate from, LocalDate to, TimeDetail timeDetail);
 
-    List<TopTutorResponse> getTopTutors(int limit);
+    List<TopTutorResponse> getTopTutors(int limit, LocalDate from, LocalDate to);
 }

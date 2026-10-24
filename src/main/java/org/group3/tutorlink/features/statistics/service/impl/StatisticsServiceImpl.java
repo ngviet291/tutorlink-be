@@ -12,9 +12,13 @@ import org.group3.tutorlink.features.payment.enums.TransactionType;
 import org.group3.tutorlink.features.payment.repository.RevenueReportRepository;
 import org.group3.tutorlink.features.payment.repository.TransactionRepository;
 import org.group3.tutorlink.features.payment.repository.TransactionStatRow;
+import org.group3.tutorlink.features.statistics.dto.Period;
 import org.group3.tutorlink.features.statistics.dto.response.AcceptedApplicationsResponse;
+import org.group3.tutorlink.features.statistics.dto.response.AcceptedPointResponse;
+import org.group3.tutorlink.features.statistics.dto.response.RevenuePointResponse;
 import org.group3.tutorlink.features.statistics.dto.response.RevenueStatisticsResponse;
 import org.group3.tutorlink.features.statistics.dto.response.TopTutorResponse;
+import org.group3.tutorlink.features.statistics.enums.TimeDetail;
 import org.group3.tutorlink.features.statistics.exception.StatisticsErrorCode;
 import org.group3.tutorlink.features.statistics.service.StatisticsService;
 import org.group3.tutorlink.features.user.entity.Admin;
@@ -26,8 +30,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +46,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     private static final int DEFAULT_TOP_TUTORS_LIMIT = 10;
     private static final int MAX_TOP_TUTORS_LIMIT = 50;
+    private static final long MAX_DAYS_FOR_DAILY = 366;
 
     private final TransactionRepository transactionRepository;
     private final RevenueReportRepository revenueReportRepository;
@@ -44,71 +54,73 @@ public class StatisticsServiceImpl implements StatisticsService {
     private final ApplicationRepository applicationRepository;
     private final AppUtil appUtil;
 
+    // Doanh thu (phí hoa hồng) theo từng mốc thời gian
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     @PreAuthorize("hasAuthority('ADMIN')")
-    public RevenueStatisticsResponse getRevenueStatistics(java.time.LocalDate from, java.time.LocalDate to) {
-        if (from == null || to == null || from.isAfter(to)) {
+    public List<RevenuePointResponse> getRevenueSeries(LocalDate from, LocalDate to, TimeDetail timeDetail) {
+        List<RevenuePointResponse> result = new ArrayList<>();
+
+        for (Period period : splitPeriods(from, to, timeDetail)) {
+            BigDecimal totalRevenue = BigDecimal.ZERO;
+            long totalTransactions = 0;
+            for (TransactionStatRow row : transactionRepository.summarize(
+                    toStartInstant(period.getStartDate()), toEndInstant(period.getEndDate()))) {
+                if (row.getTransactionType() == TransactionType.COMMISSION
+                        && row.getTransactionStatus() == TransactionStatus.SUCCESS) {
+                    totalRevenue = row.getTotalAmount() == null ? BigDecimal.ZERO : row.getTotalAmount();
+                    totalTransactions = row.getTransactionCount();
+                    break;
+                }
+            }
+
+            result.add(RevenuePointResponse.builder()
+                    .periodStart(period.getStartDate())
+                    .periodEnd(period.getEndDate())
+                    .totalRevenue(totalRevenue)
+                    .totalTransactions(totalTransactions)
+                    .build());
+        }
+        return result;
+    }
+
+    // Số lượt nhận lớp thành công theo từng mốc thời gian
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<AcceptedPointResponse> getAcceptedSeries(LocalDate from, LocalDate to, TimeDetail timeDetail) {
+        List<AcceptedPointResponse> result = new ArrayList<>();
+
+        for (Period period : splitPeriods(from, to, timeDetail)) {
+            long totalAccepted = applicationRepository.countByStatusBetween(
+                    ApplicationStatus.ACCEPTED,
+                    toStartInstant(period.getStartDate()),
+                    toEndInstant(period.getEndDate()));
+
+            result.add(AcceptedPointResponse.builder()
+                    .periodStart(period.getStartDate())
+                    .periodEnd(period.getEndDate())
+                    .totalAccepted(totalAccepted)
+                    .build());
+        }
+        return result;
+    }
+
+    // Top gia sư (from/to có thể null = lấy tất cả thời gian)
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<TopTutorResponse> getTopTutors(int limit, LocalDate from, LocalDate to) {
+        if (from != null && to != null && from.isAfter(to)) {
             throw new AppException(StatisticsErrorCode.INVALID_DATE_RANGE);
         }
+        Instant start = (from == null) ? Instant.EPOCH : toStartInstant(from);
+        Instant end = (to == null) ? Instant.now().plus(1, ChronoUnit.DAYS) : toEndInstant(to);
 
-        UUID adminId = appUtil.userIdFromAuthentication();
-        Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new AppException(StatisticsErrorCode.ADMIN_NOT_FOUND));
-        Instant start = from.atStartOfDay(ZoneOffset.UTC).toInstant();
-        Instant end = to.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
-
-        BigDecimal totalRevenue = BigDecimal.ZERO;
-        long totalTransactions = 0;
-        for (TransactionStatRow row : transactionRepository.summarize(start, end)) {
-            if (row.getTransactionType() == TransactionType.COMMISSION
-                    && row.getTransactionStatus() == TransactionStatus.SUCCESS) {
-                totalRevenue = row.getTotalAmount() == null ? BigDecimal.ZERO : row.getTotalAmount();
-                totalTransactions = row.getTransactionCount();
-                break;
-            }
-        }
-
-        RevenueReport report = RevenueReport.builder()
-                .id(appUtil.generateUUID())
-                .periodStart(from)
-                .periodEnd(to)
-                .totalRevenue(totalRevenue.doubleValue())
-                .totalTransactions((int) totalTransactions)
-                .generatedByAdmin(admin)
-                .build();
-        revenueReportRepository.save(report);
-
-        return RevenueStatisticsResponse.builder()
-                .reportId(report.getId())
-                .periodStart(from)
-                .periodEnd(to)
-                .totalRevenue(totalRevenue)
-                .totalTransactions(totalTransactions)
-                .generatedByAdminId(adminId)
-                .generatedAt(report.getCreatedAt())
-                .build();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public AcceptedApplicationsResponse getAcceptedApplicationsCount() {
-        long total = applicationRepository.countByApplicationStatus(ApplicationStatus.ACCEPTED);
-        return AcceptedApplicationsResponse.builder()
-                .totalAccepted(total)
-                .build();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public List<TopTutorResponse> getTopTutors(int limit) {
-        int size = normalizeLimit(limit);
-        Pageable pageable = PageRequest.of(0, size);
+        Pageable pageable = PageRequest.of(0, normalizeLimit(limit));
 
         List<TopTutorRow> rows = applicationRepository.findTopTutorsByAcceptedCount(
-                ApplicationStatus.ACCEPTED, pageable);
+                ApplicationStatus.ACCEPTED, start, end, pageable);
 
         return rows.stream()
                 .map(row -> TopTutorResponse.builder()
@@ -118,6 +130,41 @@ public class StatisticsServiceImpl implements StatisticsService {
                         .acceptedCount(row.getAcceptedCount())
                         .build())
                 .toList();
+    }
+
+    // Chiafrom..to thành  đoạn:ngày / tuần / tháng / năm
+    private List<Period> splitPeriods(LocalDate from, LocalDate to, TimeDetail timeDetail) {
+        if (from == null || to == null || timeDetail == null || from.isAfter(to)) {
+            throw new AppException(StatisticsErrorCode.INVALID_DATE_RANGE);
+        }
+        if (timeDetail == TimeDetail.DAY && ChronoUnit.DAYS.between(from, to) > MAX_DAYS_FOR_DAILY) {
+            throw new AppException(StatisticsErrorCode.RANGE_TOO_LARGE);
+        }
+
+        List<Period> periods = new ArrayList<>();
+        LocalDate start = from;
+        while (!start.isAfter(to)) {
+            LocalDate end = switch (timeDetail) {
+                case DAY -> start;
+                case WEEK -> start.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+                case MONTH -> start.with(TemporalAdjusters.lastDayOfMonth());
+                case YEAR -> start.with(TemporalAdjusters.lastDayOfYear());
+            };
+            if (end.isAfter(to)) {
+                end = to;
+            }
+            periods.add(new Period(start, end));
+            start = end.plusDays(1);
+        }
+        return periods;
+    }
+
+    private Instant toStartInstant(LocalDate date) {
+        return date.atStartOfDay(ZoneOffset.UTC).toInstant();
+    }
+
+    private Instant toEndInstant(LocalDate date) {
+        return date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
     }
 
     private int normalizeLimit(int limit) {

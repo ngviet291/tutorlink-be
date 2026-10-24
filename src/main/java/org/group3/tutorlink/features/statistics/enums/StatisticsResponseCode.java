@@ -8,7 +8,10 @@ public enum StatisticsResponseCode implements ResponseCode {
 
     GET_REVENUE_STATISTICS("STATISTICS_200", "Revenue statistics retrieved successfully!"),
     GET_ACCEPTED_APPLICATIONS_COUNT("STATISTICS_201", "Accepted applications count retrieved successfully!"),
-    GET_TOP_TUTORS("STATISTICS_202", "Top tutors retrieved successfully!");
+    GET_TOP_TUTORS("STATISTICS_202", "Top tutors retrieved successfully!"),
+    GET_REVENUE_SERIES("STATISTICS_203", "Revenue series retrieved successfully!"),
+    GET_ACCEPTED_SERIES("STATISTICS_204", "Accepted applications series retrieved successfully!")
+    ;
 
     private final String code;
     private final String message;

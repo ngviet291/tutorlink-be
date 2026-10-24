@@ -21,6 +21,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -150,26 +151,32 @@ public interface ApplicationRepository
             @Param("applicationStatus") ApplicationStatus applicationStatus
     );
 
-    // ===== Thêm cho module thống kê (Việt) =====
-
-    // Thống kê: tổng số lượt nhận lớp thành công (GET /v1/statistics/applications/accepted)
-    long countByApplicationStatus(ApplicationStatus status);
-
-    // Thống kê: gia sư có nhiều lượt nhận lớp nhất (GET /v1/statistics/top-tutors)
+    // Đếm số lượt ACCEPTED trong 1 khoảng thời gian
     @Query("""
-            SELECT a.tutor.id AS tutorId,
-                   a.tutor.fullName AS fullName,
-                   a.tutor.averageRating AS averageRating,
-                   COUNT(a) AS acceptedCount
-            FROM Application a
-            WHERE a.applicationStatus = :status
-              AND a.tutor IS NOT NULL
-            GROUP BY a.tutor.id, a.tutor.fullName, a.tutor.averageRating
-            ORDER BY COUNT(a) DESC
-            """)
+        SELECT COUNT(a) FROM Application a
+        WHERE a.applicationStatus = :status
+          AND a.appliedAt >= :start AND a.appliedAt < :end
+        """)
+    long countByStatusBetween(@Param("status") ApplicationStatus status,
+                              @Param("start") Instant start,
+                              @Param("end") Instant end);
+
+    @Query("""
+        SELECT a.tutor.id AS tutorId,
+               a.tutor.fullName AS fullName,
+               a.tutor.averageRating AS averageRating,
+               COUNT(a) AS acceptedCount
+        FROM Application a
+        WHERE a.applicationStatus = :status
+          AND a.tutor IS NOT NULL
+          AND a.appliedAt >= :start AND a.appliedAt < :end
+        GROUP BY a.tutor.id, a.tutor.fullName, a.tutor.averageRating
+        ORDER BY COUNT(a) DESC
+        """)
     List<TopTutorRow> findTopTutorsByAcceptedCount(
             @Param("status") ApplicationStatus status,
-            Pageable pageable
-    );
+            @Param("start") Instant start,
+            @Param("end") Instant end,
+            Pageable pageable);
 
 }
