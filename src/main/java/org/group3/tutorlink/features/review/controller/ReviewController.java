@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.features.review.dto.request.CreateReviewRequest;
+import org.group3.tutorlink.features.review.dto.request.CreateReviewComplaintRequest;
+import org.group3.tutorlink.features.review.dto.response.ReviewComplaintResponse;
+import org.group3.tutorlink.features.review.service.ReviewComplaintService;
 import org.group3.tutorlink.features.review.dto.response.ReviewResponse;
 import org.group3.tutorlink.features.review.enums.ReviewResponseCode;
 import org.group3.tutorlink.features.review.service.ReviewService;
@@ -23,6 +26,16 @@ import java.util.UUID;
 @Validated
 public class ReviewController {
     private final ReviewService reviewService;
+    private final ReviewComplaintService complaintService;
+
+    @PostMapping("/{id}/complaints")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<ReviewComplaintResponse> createComplaint(
+            @PathVariable UUID id, @Valid @RequestBody CreateReviewComplaintRequest request) {
+        return ApiResponse.<ReviewComplaintResponse>builder()
+                .code("REVIEW_COMPLAINT_201").message("Review complaint created successfully")
+                .data(complaintService.create(id, request)).build();
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

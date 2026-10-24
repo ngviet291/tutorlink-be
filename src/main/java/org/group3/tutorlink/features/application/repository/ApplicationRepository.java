@@ -134,6 +134,25 @@ public interface ApplicationRepository
 
     @Query("""
             SELECT a FROM Application a
+            JOIN FETCH a.post p
+            LEFT JOIN FETCH p.author
+            LEFT JOIN FETCH a.student
+            LEFT JOIN FETCH a.tutor
+            WHERE a.id = :applicationId
+              AND a.applicationStatus = :applicationStatus
+              AND (
+                    a.student.id = :studentId
+                    OR p.author.id = :studentId
+              )
+            """)
+    Optional<Application> findFinishedByStudentId(
+            @Param("applicationId") UUID applicationId,
+            @Param("studentId") UUID studentId,
+            @Param("applicationStatus") ApplicationStatus applicationStatus
+    );
+
+    @Query("""
+            SELECT a FROM Application a
             WHERE (:status IS NULL OR a.applicationStatus = :status)
               AND (:cursor IS NULL OR a.id < :cursor)
             ORDER BY a.id DESC

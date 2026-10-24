@@ -13,7 +13,10 @@ public enum ReviewErrorCode implements BaseErrorCode {
     ALREADY_EXISTS("REVIEW_005", "This application has already been reviewed", HttpStatus.CONFLICT),
     INVALID_TUTOR_ID("REVIEW_006", "Tutor id is required", HttpStatus.BAD_REQUEST),
     INVALID_PAGINATION("REVIEW_007", "Limit must be between 1 and 100", HttpStatus.BAD_REQUEST),
-    INVALID_APPLICATION("REVIEW_008", "Application data is invalid", HttpStatus.BAD_REQUEST);
+    INVALID_APPLICATION("REVIEW_008", "Application data is invalid", HttpStatus.BAD_REQUEST),
+    COMPLAINT_NOT_FOUND("REVIEW_009", "Review complaint not found", HttpStatus.NOT_FOUND),
+    INVALID_COMPLAINT_STATUS("REVIEW_010", "Complaint status must be APPROVED or REJECTED", HttpStatus.BAD_REQUEST);
+    
 
     private final String code;
     private final String message;

@@ -13,7 +13,6 @@ import org.group3.tutorlink.features.review.entity.Review;
 import org.group3.tutorlink.features.review.exception.ReviewAccessDeniedException;
 import org.group3.tutorlink.features.review.exception.ReviewAlreadyExistsException;
 import org.group3.tutorlink.features.review.exception.ReviewApplicationNotFoundException;
-import org.group3.tutorlink.features.review.exception.ReviewInvalidApplicationStatusException;
 import org.group3.tutorlink.features.review.exception.ReviewInvalidApplicationException;
 import org.group3.tutorlink.features.review.exception.ReviewNotFoundException;
 import org.group3.tutorlink.features.review.mapper.ReviewMapper;
@@ -46,7 +45,11 @@ public class ReviewServiceImpl implements ReviewService {
         UUID userId = appUtil.userIdFromAuthentication();
         Student student = studentRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-        Application application = applicationRepository.findById(request.getApplicationId())
+        Application application = applicationRepository.findFinishedByStudentId(
+                        request.getApplicationId(),
+                        student.getId(),
+                        ApplicationStatus.FINISHED
+                )
                 .orElseThrow(ReviewApplicationNotFoundException::new);
         if (application.getPost() == null) {
             throw new ReviewInvalidApplicationException();
@@ -58,9 +61,6 @@ public class ReviewServiceImpl implements ReviewService {
         }
         if (application.getPost().getAuthor() instanceof Tutor postTutor) {
             applicationTutor = postTutor;
-        }
-        if (application.getApplicationStatus() != ApplicationStatus.FINISHED) {
-            throw new ReviewInvalidApplicationStatusException();
         }
         if (applicationStudent == null || applicationTutor == null) {
             throw new ReviewInvalidApplicationException();
