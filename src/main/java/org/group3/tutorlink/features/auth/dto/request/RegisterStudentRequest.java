@@ -17,8 +17,8 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class RegisterStudentRequest {
-    @NotBlank(message = "Fullname not be blank")
-    private String fullname;
+    @NotBlank(message = "FullName not be blank")
+    private String fullName;
     @Email(message = "Email not valid")
     @NotBlank(message = "Email not be blank")
     private String email;
