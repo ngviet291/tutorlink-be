@@ -88,6 +88,22 @@ public interface ApplicationRepository
     @Query("""
             SELECT a FROM Application a
             JOIN FETCH a.post p
+            JOIN FETCH p.author
+            WHERE a.id = :applicationId
+              AND a.applicationStatus = :applicationStatus
+              AND p.status = :postStatus
+              AND p.author.id = :userId
+            """)
+    Optional<Application> findSelectableApplication(
+            @Param("applicationId") UUID applicationId,
+            @Param("userId") UUID userId,
+            @Param("applicationStatus") ApplicationStatus applicationStatus,
+            @Param("postStatus") PostStatus postStatus
+    );
+
+    @Query("""
+            SELECT a FROM Application a
+            JOIN FETCH a.post p
             LEFT JOIN FETCH p.author
             LEFT JOIN FETCH a.student
             LEFT JOIN FETCH a.tutor
@@ -115,6 +131,25 @@ public interface ApplicationRepository
     Optional<Application> findByIdAndApplicantId(
             @Param("applicationId") UUID applicationId,
             @Param("userId") UUID userId
+    );
+
+    @Query("""
+            SELECT a FROM Application a
+            JOIN FETCH a.post p
+            LEFT JOIN FETCH p.author
+            LEFT JOIN FETCH a.student
+            LEFT JOIN FETCH a.tutor
+            WHERE a.id = :applicationId
+              AND a.applicationStatus = :applicationStatus
+              AND (
+                    a.student.id = :studentId
+                    OR p.author.id = :studentId
+              )
+            """)
+    Optional<Application> findFinishedByStudentId(
+            @Param("applicationId") UUID applicationId,
+            @Param("studentId") UUID studentId,
+            @Param("applicationStatus") ApplicationStatus applicationStatus
     );
 
     @Query("""

@@ -45,7 +45,15 @@ public interface ApplicationService {
             UUID applicationId
     );
 
+    ApplicationResponse rejectApplication(
+            UUID applicationId
+    );
+
     ApplicationResponse confirmApplication(
+            UUID applicationId
+    );
+
+    ApplicationResponse finishApplication(
             UUID applicationId
     );
 

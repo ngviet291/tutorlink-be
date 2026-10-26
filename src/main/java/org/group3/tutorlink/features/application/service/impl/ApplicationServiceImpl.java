@@ -9,6 +9,8 @@ import org.group3.tutorlink.features.application.dto.response.ApplicationRespons
 import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.exception.ApplicationNotFoundException;
+import org.group3.tutorlink.features.application.exception.ApplicationInvalidStatusException;
+import org.group3.tutorlink.features.application.exception.ApplicationNotAllowedException;
 import org.group3.tutorlink.features.application.exception.ErrorCodeApplication;
 import org.group3.tutorlink.features.application.mapper.ApplicationMapper;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
@@ -43,7 +45,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final AppUtil appUtil;
-    // Đã sửa
     private final ApplicationMapper applicationMapper;
 
     @Override
@@ -53,22 +54,12 @@ public class ApplicationServiceImpl implements ApplicationService {
         UUID userId = appUtil.userIdFromAuthentication();
         User currentUser = getUserOrThrow(userId);
 
-        Post post = postRepository.findById(request.getPostId())
+        Post post = postRepository.findAvailableForApplication(
+                        request.getPostId(),
+                        userId,
+                        Instant.now()
+                )
                 .orElseThrow(() -> new AppException(ErrorCodeApplication.POST_NOT_FOUND));
-
-        if (post.getStatus() != PostStatus.PUBLISHED) {
-            throw new AppException(ErrorCodeApplication.POST_NOT_AVAILABLE);
-        }
-
-        if (post.getDeadline() != null && Instant.now().isAfter(post.getDeadline())) {
-            throw new AppException(ErrorCodeApplication.APPLICATION_DEADLINE_EXPIRED);
-        }
-
-        if (post.getAuthor() != null
-                && post.getAuthor().getId().equals(currentUser.getId())) {
-            throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
-        }
-
         Application application = Application.builder()
                 .id(appUtil.generateUUID())
                 .post(post)
@@ -82,17 +73,24 @@ public class ApplicationServiceImpl implements ApplicationService {
             if (!(currentUser instanceof Tutor tutor)) {
                 throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
             }
+            if (!(post.getAuthor() instanceof Student student)) {
+                throw new AppException(ErrorCodeApplication.POST_NOT_AVAILABLE);
+            }
 
             if (applicationRepository.existsByPostIdAndTutorId(post.getId(), tutor.getId())) {
                 throw new AppException(ErrorCodeApplication.APPLICATION_ALREADY_EXISTS);
             }
 
             application.setTutor(tutor);
+            application.setStudent(student);
 
         } else if (post.getType() == PostType.FIND_STUDENT) {
 
             if (!(currentUser instanceof Student student)) {
                 throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
+            }
+            if (!(post.getAuthor() instanceof Tutor tutor)) {
+                throw new AppException(ErrorCodeApplication.POST_NOT_AVAILABLE);
             }
 
             if (applicationRepository.existsByPostIdAndStudentId(post.getId(), student.getId())) {
@@ -100,6 +98,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             }
 
             application.setStudent(student);
+            application.setTutor(tutor);
 
         } else {
             throw new AppException(ErrorCodeApplication.POST_NOT_AVAILABLE);
@@ -111,7 +110,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'STUDENT', 'TUTOR')")
     @Transactional(readOnly = true)
     public ApplicationResponse getApplicationById(UUID applicationId) {
 
@@ -145,10 +143,6 @@ public class ApplicationServiceImpl implements ApplicationService {
         UUID userId = appUtil.userIdFromAuthentication();
         User currentUser = getUserOrThrow(userId);
 
-        if (limit < 0 || limit > 100) {
-            throw new AppException(ErrorCodeApplication.INVALID_LIMIT);
-        }
-
         Pageable pageable = PageRequest.of(0, limit + 1);
         List<Application> applications;
         if (currentUser instanceof Student) {
@@ -175,10 +169,6 @@ public class ApplicationServiceImpl implements ApplicationService {
             UUID cursor,
             int limit
     ) {
-        if (limit < 0 || limit > 100) {
-            throw new AppException(ErrorCodeApplication.INVALID_LIMIT);
-        }
-
         Pageable pageable = PageRequest.of(0, limit + 1);
         List<Application> applications = applicationRepository
                 .findApplicationsAfterCursor(status, cursor, pageable);
@@ -197,23 +187,14 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         UUID userId = appUtil.userIdFromAuthentication();
         User currentUser = getUserOrThrow(userId);
-        Application application = applicationRepository.findByIdForSelection(applicationId)
+        Application application = applicationRepository.findSelectableApplication(
+                        applicationId,
+                        userId,
+                        ApplicationStatus.PENDING,
+                        PostStatus.PUBLISHED
+                )
                 .orElseThrow(ApplicationNotFoundException::new);
         Post post = application.getPost();
-
-        if (post == null
-                || post.getAuthor() == null
-                || !post.getAuthor().getId().equals(currentUser.getId())) {
-            throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
-        }
-
-        if (application.getApplicationStatus() != ApplicationStatus.PENDING) {
-            throw new AppException(ErrorCodeApplication.INVALID_APPLICATION_STATUS);
-        }
-
-        if (post.getStatus() != PostStatus.PUBLISHED) {
-            throw new AppException(ErrorCodeApplication.POST_NOT_AVAILABLE);
-        }
 
         boolean alreadySelected = applicationRepository
                 .existsByPostIdAndApplicationStatus(post.getId(), ApplicationStatus.ACCEPTED);
@@ -248,6 +229,27 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
+    public ApplicationResponse rejectApplication(UUID applicationId) {
+        UUID userId = appUtil.userIdFromAuthentication();
+        User currentUser = getUserOrThrow(userId);
+        Application application = applicationRepository.findByIdForSelection(applicationId)
+                .orElseThrow(ApplicationNotFoundException::new);
+        Post post = application.getPost();
+
+        if (post == null || post.getAuthor() == null
+                || !post.getAuthor().getId().equals(currentUser.getId())) {
+            throw new ApplicationNotAllowedException();
+        }
+        if (application.getApplicationStatus() != ApplicationStatus.PENDING) {
+            throw new ApplicationInvalidStatusException();
+        }
+        validateSelectorRole(post, currentUser);
+        application.setApplicationStatus(ApplicationStatus.REJECTED);
+        return applicationMapper.toApplicationResponse(applicationRepository.save(application));
+    }
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
     public ApplicationResponse confirmApplication(UUID applicationId) {
 
         UUID userId = appUtil.userIdFromAuthentication();
@@ -259,36 +261,60 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new AppException(ErrorCodeApplication.INVALID_APPLICATION_STATUS);
         }
 
-        // Chỉ người đã apply được xác nhận
+        // The post owner confirms the selected applicant.
         if (post.getType() == PostType.FIND_TUTOR) {
-
-            if (!(currentUser instanceof Tutor tutor)) {
+            if (!(currentUser instanceof Student student)
+                    || post.getAuthor() == null
+                    || !post.getAuthor().getId().equals(student.getId())) {
                 throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
             }
-            if (application.getTutor() == null
-                    || !application.getTutor().getId().equals(tutor.getId())) {
-                throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
-            }
-
         } else if (post.getType() == PostType.FIND_STUDENT) {
-
-            if (!(currentUser instanceof Student student)) {
+            if (!(currentUser instanceof Tutor tutor)
+                    || post.getAuthor() == null
+                    || !post.getAuthor().getId().equals(tutor.getId())) {
                 throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
             }
-            if (application.getStudent() == null
-                    || !application.getStudent().getId().equals(student.getId())) {
-                throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
-            }
-
         } else {
             throw new AppException(ErrorCodeApplication.POST_NOT_AVAILABLE);
         }
 
-        application.setApplicationStatus(ApplicationStatus.FINISHED);
+        application.setApplicationStatus(ApplicationStatus.CONFIRMED);
 
         Application saved = applicationRepository.save(application);
         // Đã sửa
         return applicationMapper.toApplicationResponse(saved);
+    }
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
+    public ApplicationResponse finishApplication(UUID applicationId) {
+        UUID userId = appUtil.userIdFromAuthentication();
+        User currentUser = getUserOrThrow(userId);
+        Application application = getApplicationOrThrow(applicationId);
+
+        if (application.getStudent() == null && application.getTutor() == null) {
+            throw new ApplicationNotAllowedException();
+        }
+        boolean isParticipant = isApplicationParticipant(application, userId);
+        boolean isStudentOrTutor = currentUser instanceof Student
+                || currentUser instanceof Tutor;
+        if (!isParticipant || !isStudentOrTutor) {
+            throw new ApplicationNotAllowedException();
+        }
+        if (application.getApplicationStatus() != ApplicationStatus.CONFIRMED
+                && application.getApplicationStatus() != ApplicationStatus.FINISHED) {
+            throw new ApplicationInvalidStatusException();
+        }
+        application.setApplicationStatus(ApplicationStatus.FINISHED);
+        return applicationMapper.toApplicationResponse(applicationRepository.save(application));
+    }
+
+    private boolean isApplicationParticipant(Application application, UUID userId) {
+        return isUserMatch(application.getStudent(), userId) || isUserMatch(application.getTutor(), userId) || isUserMatch(application.getPost().getAuthor(), userId);
+    }
+
+    private boolean isUserMatch(User user, UUID userId) {
+        return user != null && user.getId().equals(userId);
     }
 
     @Override

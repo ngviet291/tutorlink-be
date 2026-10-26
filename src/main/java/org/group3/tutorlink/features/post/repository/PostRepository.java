@@ -4,8 +4,10 @@ import org.group3.tutorlink.features.post.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +30,18 @@ public interface PostRepository extends JpaRepository<Post, UUID> , JpaSpecifica
     """)
     Optional<Post> findByIdAndStatusNot(UUID id);
 
-
+    @Query("""
+          SELECT p FROM Post p
+          JOIN FETCH p.author
+          WHERE p.id = :postId
+            AND p.status = 'PUBLISHED'
+            AND (p.deadline IS NULL OR p.deadline > :now)
+            AND p.author.id <> :userId
+    """)
+    Optional<Post> findAvailableForApplication(
+            @Param("postId") UUID postId,
+            @Param("userId") UUID userId,
+            @Param("now") Instant now
+    );
 
 }
