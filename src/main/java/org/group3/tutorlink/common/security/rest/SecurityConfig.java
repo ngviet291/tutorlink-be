@@ -40,6 +40,8 @@ public class SecurityConfig {
             "/v1/auth/forgot-password",
             "/v1/auth/reset-password",
             "/v1/auth/logout",
+            "/v1/payments/momo/ipn",
+            "/v1/payments/zalopay/callback",
     };
 
     /**

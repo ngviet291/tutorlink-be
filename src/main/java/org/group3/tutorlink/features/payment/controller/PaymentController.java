@@ -2,21 +2,31 @@ package org.group3.tutorlink.features.payment.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
+import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
+import org.group3.tutorlink.features.payment.dto.request.CreateFeeConfigRequest;
 import org.group3.tutorlink.features.payment.dto.request.TopUpRequest;
+import org.group3.tutorlink.features.payment.dto.response.FeeConfigResponse;
 import org.group3.tutorlink.features.payment.dto.response.RevenueStatisticsResponse;
 import org.group3.tutorlink.features.payment.dto.response.TransactionResponse;
 import org.group3.tutorlink.features.payment.dto.response.WalletBalanceResponse;
+import org.group3.tutorlink.features.payment.enums.PaymentMethod;
 import org.group3.tutorlink.features.payment.enums.PaymentResponseCode;
+import org.group3.tutorlink.features.payment.enums.TransactionStatus;
+import org.group3.tutorlink.features.payment.exception.PaymentErrorCode;
 import org.group3.tutorlink.features.payment.service.PaymentService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/v1/payments")
 @RequiredArgsConstructor
@@ -34,7 +44,7 @@ public class PaymentController {
                 .build();
     }
 
-    // 2. Nạp tiền vào ví - Tutor
+    // 2. Nạp tiền vào ví qua MoMo/ZaloPay - Tutor (trả paymentLink để chuyển sang trang thanh toán)
     @PostMapping("/wallet/top-up")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<TransactionResponse> topUp(@RequestBody @Valid TopUpRequest request) {
@@ -69,10 +79,10 @@ public class PaymentController {
                 .build();
     }
 
-    // 5. Danh sách giao dịch - Admin
+    // 5. Danh sách giao dịch - Admin (có thể lọc theo status và tutorId)
     @GetMapping
     public ApiResponse<CursorResponse<TransactionResponse>> getAllTransactions(
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) TransactionStatus status,
             @RequestParam(required = false) UUID cursor,
             @RequestParam(defaultValue = "10") int limit) {
 
@@ -80,6 +90,16 @@ public class PaymentController {
                 .code(PaymentResponseCode.GET_PAYMENTS.getCode())
                 .message(PaymentResponseCode.GET_PAYMENTS.getMessage())
                 .data(paymentService.getAllTransactions(status, cursor, limit))
+                .build();
+    }
+
+    // 5.1. Chi tiết giao dịch - Admin hoặc chủ giao dịch
+    @GetMapping("/{id}")
+    public ApiResponse<TransactionResponse> getTransactionDetail(@PathVariable UUID id) {
+        return ApiResponse.<TransactionResponse>builder()
+                .code(PaymentResponseCode.GET_PAYMENT_DETAIL.getCode())
+                .message(PaymentResponseCode.GET_PAYMENT_DETAIL.getMessage())
+                .data(paymentService.getTransactionDetail(id))
                 .build();
     }
 
@@ -103,6 +123,66 @@ public class PaymentController {
                 .code(PaymentResponseCode.GET_REVENUE_STATISTICS.getCode())
                 .message(PaymentResponseCode.GET_REVENUE_STATISTICS.getMessage())
                 .data(paymentService.getRevenueStatistics(from, to))
+                .build();
+    }
+
+    // 8. Trạng thái giao dịch nạp tiền - Tutor (FE gọi sau khi user quay về từ MoMo/ZaloPay)
+    @GetMapping("/wallet/top-up/{id}")
+    public ApiResponse<TransactionResponse> getTopUpStatus(@PathVariable UUID id) {
+        return ApiResponse.<TransactionResponse>builder()
+                .code(PaymentResponseCode.GET_TOP_UP_STATUS.getCode())
+                .message(PaymentResponseCode.GET_TOP_UP_STATUS.getMessage())
+                .data(paymentService.syncTopUpStatus(id))
+                .build();
+    }
+
+    // 9. IPN của MoMo (public, xác thực bằng chữ ký). MoMo yêu cầu phản hồi HTTP 204.
+    @PostMapping("/momo/ipn")
+    public ResponseEntity<Void> momoIpn(@RequestBody String rawBody) {
+        paymentService.handleGatewayCallback(PaymentMethod.MOMO, rawBody);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 10. Callback của ZaloPay (public, xác thực bằng key2). Phải trả JSON return_code theo quy ước của ZaloPay:
+    //  1 = thành công, -1 = sai mac (không retry), 0 = lỗi hệ thống (ZaloPay sẽ gọi lại)
+    @PostMapping("/zalopay/callback")
+    public Map<String, Object> zaloPayCallback(@RequestBody String rawBody) {
+        try {
+            paymentService.handleGatewayCallback(PaymentMethod.ZALOPAY, rawBody);
+            return Map.of("return_code", 1, "return_message", "success");
+        } catch (AppException ex) {
+            if (ex.getErrorCode() == PaymentErrorCode.INVALID_GATEWAY_SIGNATURE) {
+                return Map.of("return_code", -1, "return_message", "mac not equal");
+            }
+            log.error("ZaloPay callback rejected: {}", ex.getMessage());
+            return Map.of("return_code", 0, "return_message", ex.getMessage());
+        } catch (Exception ex) {
+            log.error("ZaloPay callback failed", ex);
+            return Map.of("return_code", 0, "return_message", "internal error");
+        }
+    }
+
+    // 11. Lịch sử cấu hình phí - Admin
+    @GetMapping("/fee-configs")
+    public ApiResponse<CursorResponse<FeeConfigResponse>> getFeeConfigs(
+            @RequestParam(required = false) UUID cursor,
+            @RequestParam(defaultValue = "10") int limit) {
+
+        return ApiResponse.<CursorResponse<FeeConfigResponse>>builder()
+                .code(PaymentResponseCode.GET_FEE_CONFIGS.getCode())
+                .message(PaymentResponseCode.GET_FEE_CONFIGS.getMessage())
+                .data(paymentService.getFeeConfigs(cursor, limit))
+                .build();
+    }
+
+    // 12. Tạo cấu hình phí mới - Admin
+    @PostMapping("/fee-configs")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<FeeConfigResponse> createFeeConfig(@RequestBody @Valid CreateFeeConfigRequest request) {
+        return ApiResponse.<FeeConfigResponse>builder()
+                .code(PaymentResponseCode.CREATE_FEE_CONFIG.getCode())
+                .message(PaymentResponseCode.CREATE_FEE_CONFIG.getMessage())
+                .data(paymentService.createFeeConfig(request))
                 .build();
     }
 }

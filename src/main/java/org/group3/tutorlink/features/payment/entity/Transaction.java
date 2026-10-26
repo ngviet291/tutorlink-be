@@ -41,6 +41,13 @@ public class Transaction extends BaseEntity {
 
     private Instant transactionDate;
 
+    // Mã đơn hàng phía cổng thanh toán (MoMo orderId / ZaloPay app_trans_id), chỉ có khi nạp tiền qua cổng
+    @Column(unique = true)
+    private String providerOrderId;
+
+    // Mã giao dịch do cổng thanh toán trả về khi thanh toán xong (MoMo transId / ZaloPay zp_trans_id)
+    private String providerTransId;
+
     // Transaction n -- 1 Tutor (chủ ví)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tutor_id", nullable = false)

@@ -10,11 +10,15 @@ public enum PaymentResponseCode implements ResponseCode {
 
     GET_WALLET_BALANCE("PAYMENT_200", "Wallet balance retrieved successfully!"),
     TOP_UP_SUCCESS("PAYMENT_201", "Wallet topped up successfully!"),
+    GET_TOP_UP_STATUS("PAYMENT_200", "Top-up status retrieved successfully!"),
     PAY_COMMISSION_SUCCESS("PAYMENT_201", "Commission paid successfully!"),
     GET_PAYMENT_HISTORY("PAYMENT_200", "Payment history retrieved successfully!"),
     GET_PAYMENTS("PAYMENT_200", "Payments retrieved successfully!"),
+    GET_PAYMENT_DETAIL("PAYMENT_200", "Payment detail retrieved successfully!"),
     REFUND_SUCCESS("PAYMENT_200", "Payment refunded successfully!"),
-    GET_REVENUE_STATISTICS("PAYMENT_200", "Revenue statistics retrieved successfully!");
+    GET_REVENUE_STATISTICS("PAYMENT_200", "Revenue statistics retrieved successfully!"),
+    GET_FEE_CONFIGS("PAYMENT_200", "Fee configurations retrieved successfully!"),
+    CREATE_FEE_CONFIG("PAYMENT_201", "Fee configuration created successfully!");
 
     private final String code;
     private final String message;
