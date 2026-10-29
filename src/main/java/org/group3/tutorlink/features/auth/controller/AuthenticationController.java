@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.features.auth.dto.request.*;
 import org.group3.tutorlink.features.auth.dto.response.AuthenticateResponse;
+import org.group3.tutorlink.features.auth.dto.response.IntrospectResponse;
 import org.group3.tutorlink.features.auth.enums.AuthResponseCode;
 import org.group3.tutorlink.features.auth.service.AuthenticationService;
 import org.springframework.http.HttpStatus;
@@ -88,7 +89,27 @@ public class AuthenticationController {
                 .message(AuthResponseCode.LOGOUT_SUCCESS.getMessage())
                 .build();
     }
+    @PostMapping("/forgot-password")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+        authService.forgotPassword(forgotPasswordRequest);
+    }
+    @PostMapping("/reset-password")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        authService.resetPassword(resetPasswordRequest);
+    }
 
+    @PostMapping("/introspect")
+    public ApiResponse<IntrospectResponse> introspect(@Valid @RequestBody IntrospectRequest introspectRequest) {
+        IntrospectResponse response = authService.introspect(introspectRequest);
+
+        return ApiResponse.<IntrospectResponse>builder()
+                .code(AuthResponseCode.INTROSPECT_SUCCESS.getCode())
+                .message(AuthResponseCode.INTROSPECT_SUCCESS.getMessage())
+                .data(response)
+                .build();
+    }
     @GetMapping("/test")
     public ApiResponse<String> test() {
         return ApiResponse.<String>builder()
@@ -97,4 +118,5 @@ public class AuthenticationController {
                 .data(authService.testAccessDenied())
                 .build();
     }
+
 }

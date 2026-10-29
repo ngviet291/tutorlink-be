@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -56,6 +57,9 @@ public class AuthenticationService {
     private final AppUtil appUtil;
     private final UserMapper userMapper;
     private final SubjectMapper subjectMapper;
+    private final ChangePasswordService changePasswordService;
+    private final PasswordGenerator passwordGenerator;
+    private final EmailService emailService;
 
     @Transactional
     public AuthenticateResponse registerStudent(RegisterStudentRequest req) {
@@ -238,5 +242,35 @@ public class AuthenticationService {
     @PreAuthorize("hasRole('STUDENT') or hasRole('TUTOR') or hasRole('ADMIN')")
     public String testAccessDenied() {
         return "DATA";
+    }
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        IntrospectResponse introspectResponse = introspect(new IntrospectRequest(request.getToken()));
+        User user = userRepository.findById(UUID.fromString(introspectResponse.getUserId()))
+                .orElseThrow(UserNotFoundException::new);
+        // Invalidate all tokens by saving the current timestamp in Redis
+        String changedPasswordDate = String.valueOf(Instant.now().toEpochMilli());
+        changePasswordService.saveTokenInvalidationTimestamp(user.getId().toString(), changedPasswordDate);
+        refreshTokenService.revokeAllRefreshTokens(user.getId().toString());
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+    }
+    @Transactional
+    public void forgotPassword(ForgotPasswordRequest request) {
+        userRepository.findByEmail(request.getEmail()).ifPresentOrElse(user -> {
+            String newPassword = passwordGenerator.generatePassword();
+
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+
+            // Invalidate all refresh tokens for the user
+            refreshTokenService.revokeAllRefreshTokens(user.getId().toString());
+
+            emailService.sendResetPasswordEmail(
+                    user.getEmail(),
+                    newPassword
+            );
+        }, () -> {
+            throw new UserNotFoundException();
+        });
     }
 }
