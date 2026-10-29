@@ -12,6 +12,7 @@ import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -47,10 +48,22 @@ public class Tutor extends User {
 
     @Enumerated(EnumType.STRING)
     private TeachingMode teachingMode;
-    // Tutor n -- 1 Subject (see README note: diagram reads Subject 1 -- 1..* Tutor)
+    @ElementCollection
+    @CollectionTable(name = "tutor_available_slots", joinColumns = @JoinColumn(name = "tutor_id"))
+    private List<AvailableSlot> availableSlots;
+
+    @ElementCollection
+    @CollectionTable(name = "tutor_teaching_areas", joinColumns = @JoinColumn(name = "tutor_id"))
+    private List<String> teachingAreas;
+
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_id")
+    @JoinTable(
+            name = "tutor_subjects",
+            joinColumns = @JoinColumn(name = "tutor_id"),
+            inverseJoinColumns = @JoinColumn(name = "subject_id")
+    )
     private Set<Subject> subjects;
+
 
 
     // Tutor 1 -- 1..* Certificate

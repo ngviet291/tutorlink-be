@@ -38,6 +38,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -86,15 +88,17 @@ public class AuthenticationService {
 
         Role role = getRoleOrThrow(RoleName.TUTOR);
 
-        Subject subject = subjectRepository.findById(req.getSubjectId())
-                .orElseThrow(() -> new AppException(ErrorCode.SUBJECT_NOT_FOUND));
+        List<Subject> subjects = subjectRepository.findAllById(req.getSubjectIds());
+        if (subjects.size() != req.getSubjectIds().size()) {
+            throw new AppException(ErrorCode.SUBJECT_NOT_FOUND);
+        }
 
         Tutor tutor = userMapper.toTutor(req);
         tutor.setId(appUtil.generateUUID());
         tutor.setPassword(passwordEncoder.encode(req.getPassword()));
         tutor.setRole(role);
         tutor.setUserStatus(UserStatus.ACTIVE);
-        tutor.setSubject(subject);
+        tutor.setSubjects(Set.copyOf(subjects));
         tutor.setAverageRating(0.0);
         tutor.setVerificationStatus(VerificationStatus.PENDING);
 
@@ -194,7 +198,9 @@ public class AuthenticationService {
         BaseUserResponse userResponse = switch (user) {
             case Tutor tutor -> {
                 TutorResponse r = userMapper.toTutorResponse(tutor);
-                r.setSubject(subjectMapper.toResponse(tutor.getSubject()));
+                r.setSubjects(tutor.getSubjects().stream()
+                        .map(subjectMapper::toUserSubjectResponse)
+                        .toList());
                 yield r;
             }
             case Student student -> userMapper.toStudentResponse(student);

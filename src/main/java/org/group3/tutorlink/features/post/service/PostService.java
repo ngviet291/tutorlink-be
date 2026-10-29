@@ -4,7 +4,9 @@ import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.group3.tutorlink.features.post.dto.request.CreatePostRequest;
 import org.group3.tutorlink.features.post.dto.request.UpdatePostRequest;
+import org.group3.tutorlink.features.post.dto.response.PostApplicationResponse;
 import org.group3.tutorlink.features.post.dto.response.PostResponse;
+import org.group3.tutorlink.features.post.dto.response.PostStatisticsByStatus;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
@@ -12,9 +14,11 @@ import org.group3.tutorlink.features.post.enums.TeachingMode;
 import org.group3.tutorlink.features.post.exception.PostErrorCode;
 import org.group3.tutorlink.features.post.exception.PostValidationException;
 import org.group3.tutorlink.features.user.entity.User;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 public interface PostService {
@@ -58,11 +62,28 @@ public interface PostService {
             int limit
     );
 
+    @Transactional(readOnly = true)
+    CursorResponse<PostResponse> getAllPostsAdmin(
+            String keyword,
+            PostType type,
+            String subjectName,
+            TeachingMode teachingMode,
+            EducationLevel educationLevel,
+            BigDecimal maxBudget,
+            BigDecimal minBudget,
+            UUID cursor,
+            int limit
+    );
+
     @Transactional
     PostResponse updatePost(UUID postId, UpdatePostRequest request);
 
     @Transactional
     void closePost(UUID postId);
+
+    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
+    void removePostAdmin(UUID postId);
 
     @Transactional
     void removePost(UUID postId);
@@ -80,4 +101,13 @@ public interface PostService {
             PostStatus postStatus,
             int limit
     );
+
+    @Transactional
+    PostResponse publishPost(UUID postId);
+
+    @Transactional(readOnly = true)
+    CursorResponse<PostApplicationResponse> getPostApplications(UUID postId, int limit, UUID cursor);
+
+    @Transactional(readOnly = true)
+    List<PostStatisticsByStatus> getStatisticsByStatus();
 }

@@ -15,7 +15,7 @@ public interface TutorRepository extends JpaRepository<Tutor, UUID> {
 
     @Query("""
             SELECT t FROM Tutor t
-            LEFT JOIN FETCH t.subject s
+            LEFT JOIN FETCH t.subjects s
             WHERE t.verificationStatus = :status
               AND t.userStatus = org.group3.tutorlink.features.user.enums.UserStatus.ACTIVE
               AND (:subjectName IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :subjectName, '%')))

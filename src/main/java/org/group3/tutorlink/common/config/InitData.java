@@ -42,10 +42,7 @@ import org.group3.tutorlink.features.review.repository.ReviewRepository;
 import org.group3.tutorlink.features.subject.entity.Certificate;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.subject.repository.SubjectRepository;
-import org.group3.tutorlink.features.user.entity.Admin;
-import org.group3.tutorlink.features.user.entity.Student;
-import org.group3.tutorlink.features.user.entity.Tutor;
-import org.group3.tutorlink.features.user.entity.User;
+import org.group3.tutorlink.features.user.entity.*;
 import org.group3.tutorlink.features.user.enums.Gender;
 import org.group3.tutorlink.features.user.enums.UserStatus;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
@@ -61,21 +58,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -169,6 +155,41 @@ public class InitData implements CommandLineRunner {
         log.info("========== INIT DATA COMPLETED ==========");
     }
 
+    private void initTutorSchedule(Tutor tutor) {
+        List<DayOfWeek> days = new ArrayList<>(List.of(DayOfWeek.values()));
+        Collections.shuffle(days);
+
+        List<AvailableSlot> slots = days.subList(0, 3 + ThreadLocalRandom.current().nextInt(3))
+                .stream()
+                .map(day -> {
+                    int startHour = ThreadLocalRandom.current().nextInt(7, 17);
+                    return AvailableSlot.builder()
+                            .dayOfWeek(day)
+                            .startTime(LocalDate.of(2026, 1, 5)
+                                    .with(TemporalAdjusters.nextOrSame(day))
+                                    .atTime(startHour, 0)
+                                    .toInstant(ZoneOffset.UTC))
+                            .endTime(LocalDate.of(2026, 1, 5)
+                                    .with(TemporalAdjusters.nextOrSame(day))
+                                    .atTime(startHour + 2, 0)
+                                    .toInstant(ZoneOffset.UTC))
+                            .build();
+                })
+                .toList();
+
+        List<String> areas = List.of(
+                "Quận 1", "Quận 3", "Quận 7", "Bình Thạnh",
+                "Gò Vấp", "Thủ Đức", "Tân Bình", "Phú Nhuận"
+        );
+
+        List<String> shuffledAreas = new ArrayList<>(areas);
+        Collections.shuffle(shuffledAreas);
+
+        tutor.setAvailableSlots(slots);
+        tutor.setTeachingAreas(shuffledAreas.subList(
+                0, ThreadLocalRandom.current().nextInt(2, 5)
+        ));
+    }
     // =========================================================
     // ROLE
     // =========================================================
@@ -401,7 +422,7 @@ public class InitData implements CommandLineRunner {
         cert(t11, "Bằng cử nhân Sư phạm Âm nhạc (ảnh mờ)", "ĐH Sư phạm Đà Nẵng",
                 LocalDate.of(2015, 7, 1), null, false);
         list.add(t11);
-
+        list.forEach(this::initTutorSchedule);
         tutorRepository.saveAll(list);
 
         log.info("✓ Initialized 11 tutors (8 APPROVED, 2 PENDING, 1 REJECTED) — Tutor@123");
