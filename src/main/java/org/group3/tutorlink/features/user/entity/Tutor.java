@@ -4,11 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.group3.tutorlink.features.chat.entity.ChatChannel;
+import org.group3.tutorlink.features.post.enums.EducationLevel;
+import org.group3.tutorlink.features.post.enums.TeachingMode;
 import org.group3.tutorlink.features.subject.entity.Certificate;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Entity
@@ -25,7 +28,7 @@ public class Tutor extends User {
 
     private int experienceYears;
 
-    private double hourlyRate;
+    private BigDecimal hourlyRate;
 
     private double averageRating;
 
@@ -36,10 +39,19 @@ public class Tutor extends User {
 
     private String education;
 
+    @ElementCollection(targetClass = EducationLevel.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "tutor_teaching_levels", joinColumns = @JoinColumn(name = "tutor_id"))
+    @Column(name = "teaching_level")
+    private Set<EducationLevel> teachingLevels;
+
+    @Enumerated(EnumType.STRING)
+    private TeachingMode teachingMode;
     // Tutor n -- 1 Subject (see README note: diagram reads Subject 1 -- 1..* Tutor)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_id")
-    private Subject subject;
+    private Set<Subject> subjects;
+
 
     // Tutor 1 -- 1..* Certificate
     @OneToMany(mappedBy = "tutor", cascade = CascadeType.ALL, orphanRemoval = true)

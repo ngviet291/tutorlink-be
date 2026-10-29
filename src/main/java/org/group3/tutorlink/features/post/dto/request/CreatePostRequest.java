@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import org.group3.tutorlink.features.post.enums.BudgetUnit;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
 import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.enums.TeachingMode;
@@ -43,6 +44,13 @@ public class CreatePostRequest {
             message = "Content must not exceed 5000 characters"
     )
     private String content;
+
+
+    @Schema(
+            description = "Budget unit for the tutoring sessions",
+            example = "PER_SESSION"
+    )
+    private BudgetUnit budgetUnit;
 
     @NotNull(message = "Post type is required")
     @Schema(

@@ -65,6 +65,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .post(post)
                 .applicationStatus(ApplicationStatus.PENDING)
                 .message(request.getMessage())
+                .proposedFee(request.getProposedFee())
                 .appliedAt(Instant.now())
                 .build();
 

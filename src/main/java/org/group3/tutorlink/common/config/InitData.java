@@ -32,10 +32,7 @@ import org.group3.tutorlink.features.payment.repository.RevenueReportRepository;
 import org.group3.tutorlink.features.payment.repository.TransactionRepository;
 import org.group3.tutorlink.features.payment.repository.WalletRepository;
 import org.group3.tutorlink.features.post.entity.Post;
-import org.group3.tutorlink.features.post.enums.EducationLevel;
-import org.group3.tutorlink.features.post.enums.PostStatus;
-import org.group3.tutorlink.features.post.enums.PostType;
-import org.group3.tutorlink.features.post.enums.TeachingMode;
+import org.group3.tutorlink.features.post.enums.*;
 import org.group3.tutorlink.features.post.repository.PostRepository;
 import org.group3.tutorlink.features.review.entity.Review;
 import org.group3.tutorlink.features.review.entity.ReviewComplaint;
@@ -79,20 +76,21 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
  * Dữ liệu mẫu cho môi trường dev (profile "dev"), sinh bằng Datafaker (locale vi, seed cố định
  * nên mỗi lần chạy ra cùng một bộ dữ liệu).
- *
+ * <p>
  * Email/mật khẩu cố định (để đăng nhập demo), phần còn lại (tên, SĐT, địa chỉ, ngày sinh,
  * tiểu sử, nội dung bài đăng, tin nhắn, đánh giá...) do Faker sinh:
- *   ADMIN   : admin@gmail.com                          / Admin@123
- *   STUDENT : student@gmail.com ... student7@gmail.com / Student@123
- *   TUTOR   : tutor@gmail.com, tutor2..tutor11@gmail.com / Tutor@123
- *
+ * ADMIN   : admin@gmail.com                          / Admin@123
+ * STUDENT : student@gmail.com ... student7@gmail.com / Student@123
+ * TUTOR   : tutor@gmail.com, tutor2..tutor11@gmail.com / Tutor@123
+ * <p>
  * Dependency: net.datafaker:datafaker (vd. 2.4.2).
- *
+ * <p>
  * Phí nhận lớp = maxBudget * 20% (khớp PaymentServiceImpl#calculateCommission).
  */
 @Slf4j
@@ -254,96 +252,172 @@ public class InitData implements CommandLineRunner {
             log.info("Tutors already exist. Skip.");
             return;
         }
+
         Role role = roleRepository.findByName(RoleName.TUTOR)
                 .orElseThrow(() -> new RuntimeException("ROLE_TUTOR not found"));
+
         Map<String, Subject> sub = subjectByName();
+
         if (sub.isEmpty()) {
             log.warn("⚠ No Subject found. Skip initializing tutors.");
             return;
         }
+
         String pw = passwordEncoder.encode("Tutor@123");
         List<Tutor> list = new ArrayList<>();
         VerificationStatus ok = VerificationStatus.APPROVED;
         String okNote = "Hồ sơ hợp lệ";
 
-        Tutor t1 = tutor(role, pw, "tutor@gmail.com", Gender.MALE, 28, HCM, 5, 150000,
-                "Cử nhân CNTT - ĐH Bách Khoa TP.HCM", sub.get(S_MATH), 4.8, ok, okNote, UserStatus.ACTIVE);
-        cert(t1, "Chứng chỉ nghiệp vụ sư phạm", "ĐH Sư phạm TP.HCM", LocalDate.of(2021, 6, 1), null, true);
-        cert(t1, "Giải Ba Olympic Toán sinh viên", "Hội Toán học Việt Nam", LocalDate.of(2019, 5, 20), null, true);
+        Tutor t1 = tutor(
+                role, pw, "tutor@gmail.com", Gender.MALE, 28, HCM, 5, 150000,
+                "Cử nhân CNTT - ĐH Bách Khoa TP.HCM",
+                sub.get(S_MATH), 4.8, ok, okNote, UserStatus.ACTIVE,
+                Set.of(EducationLevel.HIGH_SCHOOL, EducationLevel.UNIVERSITY),
+                TeachingMode.BOTH
+        );
+        cert(t1, "Chứng chỉ nghiệp vụ sư phạm", "ĐH Sư phạm TP.HCM",
+                LocalDate.of(2021, 6, 1), null, true);
+        cert(t1, "Giải Ba Olympic Toán sinh viên", "Hội Toán học Việt Nam",
+                LocalDate.of(2019, 5, 20), null, true);
         list.add(t1);
 
-        Tutor t2 = tutor(role, pw, "tutor2@gmail.com", Gender.FEMALE, 29, HCM, 7, 200000,
-                "Thạc sĩ CNTT - ĐH Khoa học Tự nhiên", sub.get(S_PHY), 0.0,
-                VerificationStatus.PENDING, null, UserStatus.ACTIVE);
-        cert(t2, "Bằng thạc sĩ", "ĐH Khoa học Tự nhiên", LocalDate.of(2022, 12, 1), null, false);
+        Tutor t2 = tutor(
+                role, pw, "tutor2@gmail.com", Gender.FEMALE, 29, HCM, 7, 200000,
+                "Thạc sĩ CNTT - ĐH Khoa học Tự nhiên",
+                sub.get(S_PHY), 0.0, VerificationStatus.PENDING, null, UserStatus.ACTIVE,
+                Set.of(EducationLevel.UNIVERSITY),
+                TeachingMode.ONLINE
+        );
+        cert(t2, "Bằng thạc sĩ", "ĐH Khoa học Tự nhiên",
+                LocalDate.of(2022, 12, 1), null, false);
         list.add(t2);
 
-        Tutor t3 = tutor(role, pw, "tutor3@gmail.com", Gender.MALE, 31, HN, 3, 80000,
-                "Cử nhân Toán ứng dụng - ĐH Bách Khoa Hà Nội", sub.get(S_MATH), 4.2, ok, okNote, UserStatus.ACTIVE);
-        cert(t3, "Chứng chỉ nghiệp vụ sư phạm", "ĐH Sư phạm Hà Nội", LocalDate.of(2020, 8, 15), null, true);
+        Tutor t3 = tutor(
+                role, pw, "tutor3@gmail.com", Gender.MALE, 31, HN, 3, 80000,
+                "Cử nhân Toán ứng dụng - ĐH Bách Khoa Hà Nội",
+                sub.get(S_MATH), 4.2, ok, okNote, UserStatus.ACTIVE,
+                Set.of(EducationLevel.PRIMARY, EducationLevel.SECONDARY,
+                        EducationLevel.HIGH_SCHOOL),
+                TeachingMode.OFFLINE
+        );
+        cert(t3, "Chứng chỉ nghiệp vụ sư phạm", "ĐH Sư phạm Hà Nội",
+                LocalDate.of(2020, 8, 15), null, true);
         list.add(t3);
 
-        Tutor t4 = tutor(role, pw, "tutor4@gmail.com", Gender.FEMALE, 30, DN, 4, 120000,
-                "Cử nhân Hóa học - ĐH Bách Khoa Đà Nẵng", sub.get(S_CHE), 4.5, ok, okNote, UserStatus.ACTIVE);
-        cert(t4, "Bằng cử nhân Hóa học loại Giỏi", "ĐH Bách Khoa Đà Nẵng", LocalDate.of(2018, 7, 10), null, true);
+        Tutor t4 = tutor(
+                role, pw, "tutor4@gmail.com", Gender.FEMALE, 30, DN, 4, 120000,
+                "Cử nhân Hóa học - ĐH Bách Khoa Đà Nẵng",
+                sub.get(S_CHE), 4.5, ok, okNote, UserStatus.ACTIVE,
+                Set.of(EducationLevel.SECONDARY, EducationLevel.HIGH_SCHOOL),
+                TeachingMode.BOTH
+        );
+        cert(t4, "Bằng cử nhân Hóa học loại Giỏi", "ĐH Bách Khoa Đà Nẵng",
+                LocalDate.of(2018, 7, 10), null, true);
         list.add(t4);
 
-        Tutor t5 = tutor(role, pw, "tutor5@gmail.com", Gender.MALE, 33, HCM, 8, 250000,
-                "Thạc sĩ Vật lý - ĐH Khoa học Tự nhiên TP.HCM", sub.get(S_PHY), 4.9, ok, okNote, UserStatus.ACTIVE);
-        cert(t5, "Bằng thạc sĩ Vật lý", "ĐH Khoa học Tự nhiên TP.HCM", LocalDate.of(2017, 11, 20), null, true);
-        cert(t5, "Chứng nhận bồi dưỡng học sinh giỏi", "Sở GD&ĐT TP.HCM", LocalDate.of(2020, 3, 5), null, true);
+        Tutor t5 = tutor(
+                role, pw, "tutor5@gmail.com", Gender.MALE, 33, HCM, 8, 250000,
+                "Thạc sĩ Vật lý - ĐH Khoa học Tự nhiên TP.HCM",
+                sub.get(S_PHY), 4.9, ok, okNote, UserStatus.ACTIVE,
+                Set.of(EducationLevel.HIGH_SCHOOL, EducationLevel.UNIVERSITY),
+                TeachingMode.ONLINE
+        );
+        cert(t5, "Bằng thạc sĩ Vật lý", "ĐH Khoa học Tự nhiên TP.HCM",
+                LocalDate.of(2017, 11, 20), null, true);
+        cert(t5, "Chứng nhận bồi dưỡng học sinh giỏi", "Sở GD&ĐT TP.HCM",
+                LocalDate.of(2020, 3, 5), null, true);
         list.add(t5);
 
-        Tutor t6 = tutor(role, pw, "tutor6@gmail.com", Gender.FEMALE, 22, CT, 1, 60000,
-                "Cử nhân Toán (đang học) - ĐH Cần Thơ", sub.get(S_MATH), 3.9, ok, okNote, UserStatus.ACTIVE);
-        cert(t6, "Giấy xác nhận sinh viên", "ĐH Cần Thơ", LocalDate.of(2026, 9, 1), LocalDate.of(2027, 6, 30), true);
+        Tutor t6 = tutor(
+                role, pw, "tutor6@gmail.com", Gender.FEMALE, 22, CT, 1, 60000,
+                "Cử nhân Toán (đang học) - ĐH Cần Thơ",
+                sub.get(S_MATH), 3.9, ok, okNote, UserStatus.ACTIVE,
+                Set.of(EducationLevel.PRIMARY, EducationLevel.SECONDARY),
+                TeachingMode.OFFLINE
+        );
+        cert(t6, "Giấy xác nhận sinh viên", "ĐH Cần Thơ",
+                LocalDate.of(2026, 9, 1), LocalDate.of(2027, 6, 30), true);
         list.add(t6);
 
-        Tutor t7 = tutor(role, pw, "tutor7@gmail.com", Gender.MALE, 34, HCM, 6, 180000,
-                "Cử nhân Ngôn ngữ Anh - ĐH Ngoại thương", sub.get(S_ENG), 4.7, ok, okNote, UserStatus.ACTIVE);
-        cert(t7, "IELTS Academic 8.0", "British Council", LocalDate.of(2024, 3, 12), LocalDate.of(2026, 3, 12), true);
-        cert(t7, "TESOL Certificate", "Arizona State University", LocalDate.of(2022, 9, 1), null, true);
+        Tutor t7 = tutor(
+                role, pw, "tutor7@gmail.com", Gender.MALE, 34, HCM, 6, 180000,
+                "Cử nhân Ngôn ngữ Anh - ĐH Ngoại thương",
+                sub.get(S_ENG), 4.7, ok, okNote, UserStatus.ACTIVE,
+                Set.of(EducationLevel.SECONDARY, EducationLevel.HIGH_SCHOOL,
+                        EducationLevel.UNIVERSITY),
+                TeachingMode.BOTH
+        );
+        cert(t7, "IELTS Academic 8.0", "British Council",
+                LocalDate.of(2024, 3, 12), LocalDate.of(2026, 3, 12), true);
+        cert(t7, "TESOL Certificate", "Arizona State University",
+                LocalDate.of(2022, 9, 1), null, true);
         list.add(t7);
 
-        Tutor t8 = tutor(role, pw, "tutor8@gmail.com", Gender.FEMALE, 32, HN, 5, 130000,
-                "Cử nhân Sư phạm Ngữ văn - ĐH Sư phạm Hà Nội", sub.get(S_LIT), 4.6, ok, okNote, UserStatus.ACTIVE);
-        cert(t8, "Bằng cử nhân Sư phạm Ngữ văn", "ĐH Sư phạm Hà Nội", LocalDate.of(2016, 6, 25), null, true);
+        Tutor t8 = tutor(
+                role, pw, "tutor8@gmail.com", Gender.FEMALE, 32, HN, 5, 130000,
+                "Cử nhân Sư phạm Ngữ văn - ĐH Sư phạm Hà Nội",
+                sub.get(S_LIT), 4.6, ok, okNote, UserStatus.ACTIVE,
+                Set.of(EducationLevel.PRIMARY, EducationLevel.SECONDARY,
+                        EducationLevel.HIGH_SCHOOL),
+                TeachingMode.OFFLINE
+        );
+        cert(t8, "Bằng cử nhân Sư phạm Ngữ văn", "ĐH Sư phạm Hà Nội",
+                LocalDate.of(2016, 6, 25), null, true);
         list.add(t8);
 
-        Tutor t9 = tutor(role, pw, "tutor9@gmail.com", Gender.MALE, 30, HCM, 4, 220000,
-                "Kỹ sư Công nghệ phần mềm - ĐH Công nghệ Thông tin", sub.get(S_IT), 4.4, ok, okNote, UserStatus.ACTIVE);
-        cert(t9, "AWS Certified Cloud Practitioner", "Amazon Web Services", LocalDate.of(2023, 4, 2), LocalDate.of(2026, 4, 2), true);
-        cert(t9, "Giải Nhì Olympic Tin học sinh viên", "Hội Tin học Việt Nam", LocalDate.of(2018, 11, 18), null, true);
+        Tutor t9 = tutor(
+                role, pw, "tutor9@gmail.com", Gender.MALE, 30, HCM, 4, 220000,
+                "Kỹ sư Công nghệ phần mềm - ĐH Công nghệ Thông tin",
+                sub.get(S_IT), 4.4, ok, okNote, UserStatus.ACTIVE,
+                Set.of(EducationLevel.HIGH_SCHOOL, EducationLevel.UNIVERSITY),
+                TeachingMode.ONLINE
+        );
+        cert(t9, "AWS Certified Cloud Practitioner", "Amazon Web Services",
+                LocalDate.of(2023, 4, 2), LocalDate.of(2026, 4, 2), true);
+        cert(t9, "Giải Nhì Olympic Tin học sinh viên", "Hội Tin học Việt Nam",
+                LocalDate.of(2018, 11, 18), null, true);
         list.add(t9);
 
-        Tutor t10 = tutor(role, pw, "tutor10@gmail.com", Gender.FEMALE, 24, HCM, 2, 110000,
-                "Sinh viên Y đa khoa - ĐH Y Dược TP.HCM", sub.get(S_BIO), 0.0,
-                VerificationStatus.PENDING, null, UserStatus.ACTIVE);
-        cert(t10, "Giấy xác nhận sinh viên Y khoa", "ĐH Y Dược TP.HCM", LocalDate.of(2026, 9, 1), LocalDate.of(2027, 6, 30), false);
+        Tutor t10 = tutor(
+                role, pw, "tutor10@gmail.com", Gender.FEMALE, 24, HCM, 2, 110000,
+                "Sinh viên Y đa khoa - ĐH Y Dược TP.HCM",
+                sub.get(S_BIO), 0.0, VerificationStatus.PENDING, null, UserStatus.ACTIVE,
+                Set.of(EducationLevel.SECONDARY, EducationLevel.HIGH_SCHOOL),
+                TeachingMode.BOTH
+        );
+        cert(t10, "Giấy xác nhận sinh viên Y khoa", "ĐH Y Dược TP.HCM",
+                LocalDate.of(2026, 9, 1), LocalDate.of(2027, 6, 30), false);
         list.add(t10);
 
-        Tutor t11 = tutor(role, pw, "tutor11@gmail.com", Gender.MALE, 35, DN, 3, 140000,
-                "Cử nhân Sư phạm Âm nhạc - ĐH Sư phạm Đà Nẵng", sub.get(S_ART), 0.0,
-                VerificationStatus.REJECTED,
+        Tutor t11 = tutor(
+                role, pw, "tutor11@gmail.com", Gender.MALE, 35, DN, 3, 140000,
+                "Cử nhân Sư phạm Âm nhạc - ĐH Sư phạm Đà Nẵng",
+                sub.get(S_ART), 0.0, VerificationStatus.REJECTED,
                 "Ảnh chụp bằng cấp bị mờ, không đọc được thông tin. Vui lòng tải lại bản rõ nét và bổ sung chứng chỉ giảng dạy.",
-                UserStatus.ACTIVE);
-        cert(t11, "Bằng cử nhân Sư phạm Âm nhạc (ảnh mờ)", "ĐH Sư phạm Đà Nẵng", LocalDate.of(2015, 7, 1), null, false);
+                UserStatus.ACTIVE,
+                Set.of(EducationLevel.PRIMARY, EducationLevel.SECONDARY),
+                TeachingMode.OFFLINE
+        );
+        cert(t11, "Bằng cử nhân Sư phạm Âm nhạc (ảnh mờ)", "ĐH Sư phạm Đà Nẵng",
+                LocalDate.of(2015, 7, 1), null, false);
         list.add(t11);
 
         tutorRepository.saveAll(list);
+
         log.info("✓ Initialized 11 tutors (8 APPROVED, 2 PENDING, 1 REJECTED) — Tutor@123");
     }
 
     private Tutor tutor(Role role, String pw, String email, Gender gender, int age, String province,
                         int exp, double rate, String edu, Subject subject, double rating,
-                        VerificationStatus vs, String note, UserStatus status) {
+                        VerificationStatus vs, String note, UserStatus status, Set<EducationLevel> levels, TeachingMode mode) {
         String bio = "Gia sư " + subject.getName() + " " + exp + " năm kinh nghiệm. " + sentence(16);
         return Tutor.builder()
                 .id(appUtil.generateUUID()).fullName(fullName()).email(email).password(pw).phone(phone())
                 .avatarUrl(avatar()).gender(gender).dateOfBirth(dob(age)).address(address(province))
-                .userStatus(status).role(role).bio(bio).experienceYears(exp).hourlyRate(rate)
-                .education(edu).subject(subject).averageRating(rating)
+                .userStatus(status).role(role).bio(bio).experienceYears(exp).hourlyRate(BigDecimal.valueOf(rate).setScale(0, RoundingMode.HALF_UP))
+                .education(edu).subjects(Set.of(subject)).averageRating(rating)
                 .verificationStatus(vs).verificationNote(note)
+                .teachingLevels(levels).teachingMode(mode)
                 .certificates(new HashSet<>())
                 .build();
     }
@@ -422,38 +496,39 @@ public class InitData implements CommandLineRunner {
         final PostStatus CLOSED = PostStatus.CLOSED, PUB = PostStatus.PUBLISHED;
         final EducationLevel HS = EducationLevel.HIGH_SCHOOL, SEC = EducationLevel.SECONDARY;
         final TeachingMode BOTH = TeachingMode.BOTH, OFF = TeachingMode.OFFLINE, ON = TeachingMode.ONLINE;
+        final BudgetUnit PER_SESSION = BudgetUnit.PER_SESSION, PER_HOUR = BudgetUnit.PER_HOUR, PER_MONTH = BudgetUnit.PER_MONTH;
 
         // ---------- POSTS: FIND_TUTOR (học viên tìm gia sư) ----------
-        post("P1", s1, FT, CLOSED, sub.get(S_MATH), HS, BOTH, 1_500_000, 2_000_000, 2, 90, -150, "Tìm gia sư Toán lớp 12");
-        post("P2", s1, FT, CLOSED, sub.get(S_PHY), HS, OFF, 2_500_000, 3_000_000, 3, 90, -130, "Tìm gia sư Lý ôn thi đại học");
-        post("P3", s2, FT, CLOSED, sub.get(S_MATH), HS, BOTH, 1_000_000, 1_500_000, 2, 90, -100, "Tìm gia sư Toán lớp 11");
-        post("P4", s3, FT, CLOSED, sub.get(S_MATH), HS, OFF, 900_000, 1_200_000, 2, 90, -80, "Tìm gia sư Toán lớp 10 tại Đống Đa");
-        post("P5", s4, FT, CLOSED, sub.get(S_CHE), SEC, OFF, 700_000, 1_000_000, 2, 90, -55, "Tìm gia sư Hóa lớp 9 ôn thi vào 10 chuyên");
-        post("P6", s2, FT, CLOSED, sub.get(S_ENG), HS, ON, 2_000_000, 2_500_000, 3, 120, -45, "Tìm gia sư IELTS mục tiêu 6.5");
-        post("P7", s5, FT, PUB, sub.get(S_MATH), SEC, BOTH, 800_000, 1_200_000, 2, 90, 10, "Tìm gia sư Toán lớp 6 xây nền tảng");
-        post("P8", s1, FT, PUB, sub.get(S_IT), HS, ON, 1_200_000, 1_800_000, 2, 90, 12, "Tìm gia sư Tin học học Python");
-        post("P9", s2, FT, PUB, sub.get(S_ENG), EducationLevel.OTHER, ON, 1_500_000, 2_000_000, 2, 60, 20, "Cần gia sư tiếng Anh giao tiếp");
-        post("P10", s1, FT, PUB, sub.get(S_MATH), HS, BOTH, 2_000_000, 2_500_000, 3, 120, 25, "Luyện thi Toán THPT quốc gia - cần gia sư giỏi");
-        post("P11", s3, FT, PUB, sub.get(S_PHY), HS, BOTH, 1_000_000, 1_500_000, 2, 90, 9, "Tìm gia sư Lý lớp 11 tại Hà Nội");
-        post("P12", s4, FT, PostStatus.DRAFT, sub.get(S_ENG), SEC, ON, 600_000, 900_000, 2, 60, 30, "Tìm gia sư tiếng Anh lớp 9 (bản nháp)");
+        post("P1", s1, FT, CLOSED, sub.get(S_MATH), HS, BOTH, 1_500_000, 2_000_000, 2, 90, -150, "Tìm gia sư Toán lớp 12", PER_HOUR);
+        post("P2", s1, FT, CLOSED, sub.get(S_PHY), HS, OFF, 2_500_000, 3_000_000, 3, 90, -130, "Tìm gia sư Lý ôn thi đại học", PER_HOUR);
+        post("P3", s2, FT, CLOSED, sub.get(S_MATH), HS, BOTH, 1_000_000, 1_500_000, 2, 90, -100, "Tìm gia sư Toán lớp 11", PER_HOUR);
+        post("P4", s3, FT, CLOSED, sub.get(S_MATH), HS, OFF, 900_000, 1_200_000, 2, 90, -80, "Tìm gia sư Toán lớp 10 tại Đống Đa", PER_HOUR);
+        post("P5", s4, FT, CLOSED, sub.get(S_CHE), SEC, OFF, 700_000, 1_000_000, 2, 90, -55, "Tìm gia sư Hóa lớp 9 ôn thi vào 10 chuyên", PER_HOUR);
+        post("P6", s2, FT, CLOSED, sub.get(S_ENG), HS, ON, 2_000_000, 2_500_000, 3, 120, -45, "Tìm gia sư IELTS mục tiêu 6.5", PER_HOUR);
+        post("P7", s5, FT, PUB, sub.get(S_MATH), SEC, BOTH, 800_000, 1_200_000, 2, 90, 10, "Tìm gia sư Toán lớp 6 xây nền tảng", PER_MONTH);
+        post("P8", s1, FT, PUB, sub.get(S_IT), HS, ON, 1_200_000, 1_800_000, 2, 90, 12, "Tìm gia sư Tin học học Python", PER_HOUR);
+        post("P9", s2, FT, PUB, sub.get(S_ENG), EducationLevel.OTHER, ON, 1_500_000, 2_000_000, 2, 60, 20, "Cần gia sư tiếng Anh giao tiếp", PER_HOUR);
+        post("P10", s1, FT, PUB, sub.get(S_MATH), HS, BOTH, 2_000_000, 2_500_000, 3, 120, 25, "Luyện thi Toán THPT quốc gia - cần gia sư giỏi", PER_HOUR);
+        post("P11", s3, FT, PUB, sub.get(S_PHY), HS, BOTH, 1_000_000, 1_500_000, 2, 90, 9, "Tìm gia sư Lý lớp 11 tại Hà Nội", PER_HOUR);
+        post("P12", s4, FT, PostStatus.DRAFT, sub.get(S_ENG), SEC, ON, 600_000, 900_000, 2, 60, 30, "Tìm gia sư tiếng Anh lớp 9 (bản nháp)", PER_HOUR);
         postFixed("P13", s5, FT, PostStatus.REMOVED, sub.get(S_CHE), SEC, OFF, 500_000, 800_000, 2, 90, -20,
                 "Tìm gia sư Hóa - liên hệ Zalo " + phone() + " để thỏa thuận riêng",
-                "Bài đăng bị gỡ do chèn thông tin liên hệ ngoài hệ thống.");
+                "Bài đăng bị gỡ do chèn thông tin liên hệ ngoài hệ thống.", PER_MONTH);
         postFixed("P14", s6, FT, PostStatus.REMOVED, sub.get(S_LIT), EducationLevel.UNIVERSITY, ON, 300_000, 500_000, 1, 60, -30,
-                "Nhận làm bài hộ tiểu luận Văn", "Bài đăng vi phạm quy định, tài khoản đã bị khóa.");
-        post("P15", s7, FT, PUB, sub.get(S_BIO), HS, OFF, 1_000_000, 1_400_000, 2, 90, 14, "Tìm gia sư Sinh học khối B");
-        post("P16", s3, FT, PUB, sub.get(S_LIT), HS, BOTH, 800_000, 1_300_000, 2, 90, 2, "Tìm gia sư Văn lớp 10 - sắp hết hạn");
-        post("P17", s4, FT, PUB, sub.get(S_ART), EducationLevel.OTHER, OFF, 600_000, 900_000, 1, 60, 18, "Tìm gia sư Piano cho bé");
-        post("P19", s4, FT, CLOSED, sub.get(S_ENG), SEC, ON, 600_000, 900_000, 2, 60, -90, "Tìm gia sư tiếng Anh lớp 8 học online");
-        post("P20", s2, FT, CLOSED, sub.get(S_IT), HS, ON, 700_000, 1_000_000, 2, 90, -75, "Tìm gia sư Tin học lớp 11");
+                "Nhận làm bài hộ tiểu luận Văn", "Bài đăng vi phạm quy định, tài khoản đã bị khóa.", PER_MONTH);
+        post("P15", s7, FT, PUB, sub.get(S_BIO), HS, OFF, 1_000_000, 1_400_000, 2, 90, 14, "Tìm gia sư Sinh học khối B", PER_HOUR);
+        post("P16", s3, FT, PUB, sub.get(S_LIT), HS, BOTH, 800_000, 1_300_000, 2, 90, 2, "Tìm gia sư Văn lớp 10 - sắp hết hạn", PER_HOUR);
+        post("P17", s4, FT, PUB, sub.get(S_ART), EducationLevel.OTHER, OFF, 600_000, 900_000, 1, 60, 18, "Tìm gia sư Piano cho bé", PER_HOUR);
+        post("P19", s4, FT, CLOSED, sub.get(S_ENG), SEC, ON, 600_000, 900_000, 2, 60, -90, "Tìm gia sư tiếng Anh lớp 8 học online", PER_HOUR);
+        post("P20", s2, FT, CLOSED, sub.get(S_IT), HS, ON, 700_000, 1_000_000, 2, 90, -75, "Tìm gia sư Tin học lớp 11", PER_HOUR);
 
         // ---------- POSTS: FIND_STUDENT (gia sư tìm học viên) ----------
-        post("FS1", t9, FS, CLOSED, sub.get(S_IT), HS, ON, 1_500_000, 2_000_000, 2, 90, -40, "Gia sư Python/C++ nhận học viên THPT");
-        post("FS2", t8, FS, CLOSED, sub.get(S_LIT), SEC, OFF, 1_200_000, 1_600_000, 2, 90, -55, "Gia sư Ngữ văn nhận học viên THCS tại Đống Đa");
-        post("FS3", t5, FS, PUB, sub.get(S_PHY), HS, BOTH, 2_000_000, 3_000_000, 3, 90, 15, "Thạc sĩ Vật lý nhận học viên luyện thi đại học");
-        post("FS4", t1, FS, PUB, sub.get(S_MATH), SEC, BOTH, 1_200_000, 1_800_000, 2, 90, 21, "Gia sư Toán nhận học viên THCS");
-        post("FS5", t7, FS, PostStatus.DRAFT, sub.get(S_ENG), HS, ON, 2_000_000, 3_000_000, 3, 120, 30, "Gia sư IELTS 8.0 nhận học viên (bản nháp)");
-        post("FS6", t4, FS, PUB, sub.get(S_CHE), HS, OFF, 1_000_000, 1_500_000, 2, 90, 30, "Gia sư Hóa nhận học viên THPT tại Đà Nẵng");
+        post("FS1", t9, FS, CLOSED, sub.get(S_IT), HS, ON, 1_500_000, 2_000_000, 2, 90, -40, "Gia sư Python/C++ nhận học viên THPT", PER_SESSION);
+        post("FS2", t8, FS, CLOSED, sub.get(S_LIT), SEC, OFF, 1_200_000, 1_600_000, 2, 90, -55, "Gia sư Ngữ văn nhận học viên THCS tại Đống Đa", PER_SESSION);
+        post("FS3", t5, FS, PUB, sub.get(S_PHY), HS, BOTH, 2_000_000, 3_000_000, 3, 90, 15, "Thạc sĩ Vật lý nhận học viên luyện thi đại học", PER_SESSION);
+        post("FS4", t1, FS, PUB, sub.get(S_MATH), SEC, BOTH, 1_200_000, 1_800_000, 2, 90, 21, "Gia sư Toán nhận học viên THCS", PER_SESSION);
+        post("FS5", t7, FS, PostStatus.DRAFT, sub.get(S_ENG), HS, ON, 2_000_000, 3_000_000, 3, 120, 30, "Gia sư IELTS 8.0 nhận học viên (bản nháp)", PER_SESSION);
+        post("FS6", t4, FS, PUB, sub.get(S_CHE), HS, OFF, 1_000_000, 1_500_000, 2, 90, 30, "Gia sư Hóa nhận học viên THPT tại Đà Nẵng", PER_SESSION);
 
         postRepository.saveAll(posts.values());
 
@@ -556,30 +631,36 @@ public class InitData implements CommandLineRunner {
     }
 
     // ---------- helpers: post / application / transaction ----------
-    /** Địa chỉ bài đăng lấy theo địa chỉ tác giả; nội dung do Faker sinh. */
+
+    /**
+     * Địa chỉ bài đăng lấy theo địa chỉ tác giả; nội dung do Faker sinh.
+     */
     private void post(String key, User author, PostType type, PostStatus status, Subject subject,
                       EducationLevel level, TeachingMode mode, long min, long max,
-                      int sessions, int minutes, int deadlineDays, String title) {
+                      int sessions, int minutes, int deadlineDays, String title, BudgetUnit unit) {
         postFixed(key, author, type, status, subject, level, mode, min, max, sessions, minutes,
-                deadlineDays, title, sentence(20));
+                deadlineDays, title, sentence(20), unit);
     }
 
     private void postFixed(String key, User author, PostType type, PostStatus status, Subject subject,
                            EducationLevel level, TeachingMode mode, long min, long max,
-                           int sessions, int minutes, int deadlineDays, String title, String content) {
+                           int sessions, int minutes, int deadlineDays, String title, String content, BudgetUnit unit) {
         posts.put(key, Post.builder()
                 .id(appUtil.generateUUID()).title(title).content(content).type(type).status(status)
                 .author(author).subject(subject).educationLevel(level).teachingMode(mode)
-                .address(author.getAddress()).minBudget(bd(min)).maxBudget(bd(max))
+                .address(author.getAddress()).minBudget(bd(min)).maxBudget(bd(max)).budgetUnit(unit)
                 .sessionsPerWeek(sessions).durationMinutes(minutes)
                 .deadline(Instant.now().plus(deadlineDays, ChronoUnit.DAYS))
                 .build());
     }
 
     private void tutorApp(String key, String postKey, Tutor tutor, ApplicationStatus status, int daysAgo) {
+        BigDecimal amount = BigDecimal.valueOf(
+                ThreadLocalRandom.current().nextLong(60_000, 600_001)
+        );
         Post p = posts.get(postKey);
         apps.put(key, Application.builder()
-                .id(appUtil.generateUUID()).applicationStatus(status).message(sentence(14))
+                .id(appUtil.generateUUID()).applicationStatus(status).message(sentence(14)).proposedFee(amount)
                 .appliedAt(ago(daysAgo)).post(p).student((Student) p.getAuthor()).tutor(tutor).build());
     }
 
@@ -928,7 +1009,9 @@ public class InitData implements CommandLineRunner {
         return faker.name().fullName();
     }
 
-    /** SĐT di động VN: 09xxxxxxxx. */
+    /**
+     * SĐT di động VN: 09xxxxxxxx.
+     */
     private String phone() {
         return "09" + faker.number().digits(8);
     }
