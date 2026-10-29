@@ -1,18 +1,23 @@
-        package org.group3.tutorlink.features.post.dto.request;
+package org.group3.tutorlink.features.post.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import lombok.*;
-
-import org.group3.tutorlink.common.entity.Address;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.enums.TeachingMode;
+import org.group3.tutorlink.features.post.validation.ValidPostRequest;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
+@ValidPostRequest
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,7 +25,11 @@ import java.time.Instant;
 @Schema(description = "Request used to update an existing post")
 public class UpdatePostRequest {
 
-    @Size(max = 255, message = "Title must not exceed 255 characters")
+    @NotBlank(message = "Title must not be blank")
+    @Size(
+            max = 255,
+            message = "Title must not exceed 255 characters"
+    )
     @Schema(
             description = "Title of the post",
             example = "Tìm gia sư Toán lớp 10 tại Quận 7",
@@ -28,6 +37,10 @@ public class UpdatePostRequest {
     )
     private String title;
 
+    @Size(
+            max = 5000,
+            message = "Content must not exceed 5000 characters"
+    )
     @Schema(
             description = "Detailed description of the tutoring request",
             example = "Cần tìm gia sư Toán lớp 10, học 3 buổi mỗi tuần."
@@ -42,9 +55,9 @@ public class UpdatePostRequest {
 
     @Schema(
             description = "ID of the subject",
-            example = "1"
+            example = "550e8400-e29b-41d4-a716-446655440000"
     )
-    private Long subjectId;
+    private UUID subjectId;
 
     @Schema(
             description = "Education level of the student",
@@ -58,33 +71,21 @@ public class UpdatePostRequest {
     )
     private TeachingMode teachingMode;
 
+    @Valid
     @Schema(
-            description = "Learning location",
-            implementation = Address.class
+            description = "Learning location"
     )
-    private Address address;
+    private AddressRequest address;
 
     @DecimalMin(
             value = "0.0",
-            inclusive = true,
             message = "Minimum budget must be greater than or equal to 0"
-    )
-    @Schema(
-            description = "Minimum budget per tutoring session",
-            example = "100000",
-            minimum = "0"
     )
     private BigDecimal minBudget;
 
     @DecimalMin(
             value = "0.0",
-            inclusive = true,
             message = "Maximum budget must be greater than or equal to 0"
-    )
-    @Schema(
-            description = "Maximum budget per tutoring session",
-            example = "150000",
-            minimum = "0"
     )
     private BigDecimal maxBudget;
 
@@ -92,29 +93,15 @@ public class UpdatePostRequest {
             value = 1,
             message = "Sessions per week must be at least 1"
     )
-    @Schema(
-            description = "Number of tutoring sessions per week",
-            example = "3",
-            minimum = "1"
-    )
     private Integer sessionsPerWeek;
 
     @Min(
             value = 15,
             message = "Duration must be at least 15 minutes"
     )
-    @Schema(
-            description = "Duration of each tutoring session in minutes",
-            example = "90",
-            minimum = "15"
-    )
     private Integer durationMinutes;
 
     @Future(message = "Deadline must be in the future")
-    @Schema(
-            description = "Deadline for accepting applications",
-            example = "2026-10-15T23:59:59Z"
-    )
     private Instant deadline;
 
     @Schema(

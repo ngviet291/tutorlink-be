@@ -1,4 +1,4 @@
-package org.group3.tutorlink.common.security;
+package org.group3.tutorlink.common.security.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.features.auth.dto.request.IntrospectRequest;

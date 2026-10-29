@@ -1,13 +1,17 @@
 package org.group3.tutorlink.features.post.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-import org.group3.tutorlink.common.entity.Address;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
+import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.enums.TeachingMode;
+import org.group3.tutorlink.features.post.validation.ValidPostRequest;
+import org.group3.tutorlink.features.post.validation.annotation.ValidPostStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -23,6 +27,7 @@ import java.util.UUID;
  * Validate address: address is required if teachingMode is OFFLINE or BOTH.
  *
  */
+@ValidPostRequest
 public class CreatePostRequest {
 
     @NotBlank(message = "Title must not be blank")
@@ -36,9 +41,9 @@ public class CreatePostRequest {
     private String title;
 
     @NotBlank(message = "Content must not be blank")
-    @Schema(
-            description = "Detailed description of the tutoring request",
-            example = "Cần tìm gia sư Toán lớp 10, học 3 buổi mỗi tuần tại Quận 7."
+    @Size(
+            max = 5000,
+            message = "Content must not exceed 5000 characters"
     )
     private String content;
 
@@ -74,6 +79,17 @@ public class CreatePostRequest {
     )
     private TeachingMode teachingMode;
 
+
+    @Schema(
+            description = "Status of the post. Default is PUBLISHED. DRAFT status is not allowed in this request.",
+            example = "PUBLISHED",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+
+    @ValidPostStatus
+    private PostStatus status;
+
+    @Valid
     @Schema(
             description = "Learning location. Required when teaching mode is OFFLINE or BOTH."
     )
@@ -131,5 +147,9 @@ public class CreatePostRequest {
             example = "2026-10-15T23:59:59Z"
     )
     private Instant deadline;
+    @JsonSetter("status")
+    public void setStatus(PostStatus status) {
+        this.status = status == null ? PostStatus.PUBLISHED : status;
+    }
 }
 

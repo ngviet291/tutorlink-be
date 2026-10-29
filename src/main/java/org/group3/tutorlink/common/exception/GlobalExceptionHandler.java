@@ -88,6 +88,7 @@ public class GlobalExceptionHandler {
                 errors
         );
 
+        log.info("Validation failed at [{}]: {}", request.getRequestURI(), errors);
         return ResponseEntity.badRequest().body(response);
     }
 
@@ -134,34 +135,57 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e, HttpServletRequest request) {
-        ErrorCode errorCode = ErrorCode.INVALID_PARAMETER_TYPE;
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException e,
+            HttpServletRequest request) {
 
+        ErrorCode errorCode = ErrorCode.INVALID_PARAMETER_TYPE;
 
         Class<?> errorTypeClass = e.getRequiredType();
 
-        Set<Class<?>> NUMBER_TYPES = Set.of(
+        log.info(
+                "MethodArgumentTypeMismatchException at [{}]: parameter={}, value={}, requiredType={}",
+                request.getRequestURI(),
+                e.getName(),
+                e.getValue(),
+                errorTypeClass != null ? errorTypeClass.getSimpleName() : "null"
+        );
+
+        Set<Class<?>> numberTypes = Set.of(
                 Byte.class, Short.class, Integer.class, Long.class,
                 Float.class, Double.class,
                 byte.class, short.class, int.class, long.class,
                 float.class, double.class
         );
+
         if (errorTypeClass == null) {
             errorTypeClass = e.getParameter().getParameterType();
         }
 
         if (errorTypeClass == LocalDate.class) {
             errorCode = ErrorCode.INVALID_DATE_FORMAT;
-        } else if (NUMBER_TYPES.contains(errorTypeClass)) {
+        } else if (numberTypes.contains(errorTypeClass)) {
             errorCode = ErrorCode.INVALID_NUMBER_FORMAT;
+        } else if (errorTypeClass.isEnum()) {
+            errorCode = ErrorCode.INVALID_ENUM_VALUE;
         }
-        String message = ErrorCode.INVALID_PARAMETER_TYPE.getMessage();
+
+        String message = errorCode.getMessage();
+
         if (e.getValue() != null) {
-            Map<String, Object> params = Map.of(
-                    "value", e.getValue(),
-                    "parameter", e.getName(),
-                    "type", errorTypeClass.getSimpleName()
-            );
+            Map<String, Object> params = new HashMap<>();
+            params.put("value", e.getValue());
+            params.put("parameter", e.getName());
+            params.put("type", errorTypeClass.getSimpleName());
+
+            if (errorTypeClass.isEnum()) {
+                String allowedValues = Arrays.stream(errorTypeClass.getEnumConstants())
+                        .map(Object::toString)
+                        .collect(Collectors.joining(", "));
+
+                params.put("allowedValues", allowedValues);
+            }
+
             message = mapAttributes(message, params);
         }
 
@@ -173,9 +197,10 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .build();
 
-        return ResponseEntity.status(errorCode.getHttpStatus()).body(response);
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(response);
     }
-
     @ExceptionHandler(ParameterizedException.class)
     public ResponseEntity<ErrorResponse> handleParameterizedException(ParameterizedException e, HttpServletRequest request) {
 

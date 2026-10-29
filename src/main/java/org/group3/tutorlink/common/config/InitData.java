@@ -7,22 +7,30 @@ import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.entity.Role;
 import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.group3.tutorlink.features.auth.repository.RoleRepository;
+import org.group3.tutorlink.features.notification.entity.Notification;
+import org.group3.tutorlink.features.notification.enums.NotificationType;
+import org.group3.tutorlink.features.notification.repository.NotificationRepository;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.subject.repository.SubjectRepository;
 import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
+import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.enums.Gender;
 import org.group3.tutorlink.features.user.enums.UserStatus;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.user.repository.StudentRepository;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
+import org.group3.tutorlink.features.user.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.group3.tutorlink.features.user.entity.Admin;
+import org.group3.tutorlink.features.user.repository.AdminRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -38,6 +46,9 @@ public class InitData implements CommandLineRunner {
     private final TutorRepository tutorRepository;
     private final PasswordEncoder passwordEncoder;
     private final SubjectRepository subjectRepo;
+    private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
 
     @Override
     @Transactional
@@ -47,12 +58,65 @@ public class InitData implements CommandLineRunner {
 
         initRoles();
         initStudents();
-        initTutors();
         initSubjects();
-
+        initTutors();
+        initAdmins();
+        initNotifications();
         log.info("========== INIT DATA COMPLETED ==========");
     }
+    private void initNotifications() {
+        if (notificationRepository.count() > 0) {
+            log.info("Notifications already exist. Skip.");
+            return;
+        }
 
+        var student = userRepository.findByEmail("student@gmail.com")
+                .orElseThrow(() -> new RuntimeException("student@gmail.com not found"));
+
+        var tutor1 = userRepository.findByEmail("tutor@gmail.com")
+                .orElseThrow(() -> new RuntimeException("tutor@gmail.com not found"));
+
+        var tutor2 = userRepository.findByEmail("tutor2@gmail.com")
+                .orElseThrow(() -> new RuntimeException("tutor2@gmail.com not found"));
+
+        List<Notification> notifications = new ArrayList<>( );
+
+        List<User> users = List.of(student, tutor1, tutor2);
+
+        for (User user : users) {
+            notifications.add(Notification.builder()
+                    .id(appUtil.generateUUID())
+                    .title("Chào mừng bạn đến với TutorLink")
+                    .content("Tài khoản của bạn đã được tạo thành công.")
+                    .notificationType(NotificationType.SYSTEM)
+                    .isRead(false)
+                    .recipient(user)
+                    .build());
+
+            notifications.add(Notification.builder()
+                    .id(appUtil.generateUUID())
+                    .title("Cập nhật hồ sơ")
+                    .content("Vui lòng kiểm tra và cập nhật thông tin hồ sơ của bạn.")
+                    .notificationType(NotificationType.APPLICATION)
+                    .isRead(false)
+                    .recipient(user)
+                    .build());
+
+            notifications.add(Notification.builder()
+                    .id(appUtil.generateUUID())
+                    .title("Thông báo mới")
+                    .content("Bạn có thông báo mới từ TutorLink.")
+                    .notificationType(NotificationType.SYSTEM)
+                    .isRead(true)
+                    .recipient(user)
+                    .build());
+        }
+
+        notificationRepository.saveAll(notifications);
+
+        log.info("Initialized {} notifications for {} users",
+                notifications.size(), users.size());
+    }
     private void initSubjects() {
         if (subjectRepository.count() > 0) {
             log.info("Subjects already exist. Skip.");
@@ -95,19 +159,19 @@ public class InitData implements CommandLineRunner {
 
         Role studentRole = Role.builder()
                 .id(appUtil.generateUUID())
-                .name(RoleName.STUDENT.name())
+                .name(RoleName.STUDENT)
                 .description("Student role")
                 .build();
 
         Role tutorRole = Role.builder()
                 .id(appUtil.generateUUID())
-                .name(RoleName.TUTOR.name())
+                .name(RoleName.TUTOR)
                 .description("Tutor role")
                 .build();
 
         Role adminRole = Role.builder()
                 .id(appUtil.generateUUID())
-                .name("ROLE_ADMIN")
+                .name(RoleName.ADMIN)
                 .description("Administrator role")
                 .build();
 
@@ -133,7 +197,7 @@ public class InitData implements CommandLineRunner {
             return;
         }
 
-        Role studentRole = roleRepository.findByName(RoleName.STUDENT.name())
+        Role studentRole = roleRepository.findByName(RoleName.STUDENT)
                 .orElseThrow(() ->
                         new RuntimeException("ROLE_STUDENT not found"));
 
@@ -141,7 +205,7 @@ public class InitData implements CommandLineRunner {
 
         Student student1 = Student.builder()
                 .id(appUtil.generateUUID())
-                .fullname("Nguyen Van Student")
+                .fullName("Nguyen Van Student")
                 .email("student@gmail.com")
                 .password(password)
                 .phone("0901234567")
@@ -160,7 +224,7 @@ public class InitData implements CommandLineRunner {
 
         Student student2 = Student.builder()
                 .id(appUtil.generateUUID())
-                .fullname("Tran Thi Student")
+                .fullName("Tran Thi Student")
                 .email("student2@gmail.com")
                 .password(password)
                 .phone("0901234568")
@@ -186,6 +250,44 @@ public class InitData implements CommandLineRunner {
         log.info("  Student 2: student2@gmail.com / Student@123");
     }
 
+    //Admin
+
+    private void initAdmins() {
+
+        if (adminRepository.count() > 0) {
+            log.info("Admins already exist. Skip.");
+            return;
+        }
+
+        Role adminRole = roleRepository.findByName(RoleName.ADMIN)
+                .orElseThrow(() ->
+                        new RuntimeException("ROLE_ADMIN not found"));
+
+        String password = passwordEncoder.encode("Admin@123");
+
+        Admin admin = Admin.builder()
+                .id(appUtil.generateUUID())
+                .fullName("System Admin")
+                .email("admin@gmail.com")
+                .password(password)
+                .phone("0901234571")
+                .gender(Gender.MALE)
+                .dateOfBirth(LocalDate.of(1995, 1, 1))
+                .address(Address.builder()
+                        .street("123 Nguyen Trai")
+                        .ward("Phuong 5")
+                        .province("Ho Chi Minh City")
+                        .build())
+                .userStatus(UserStatus.ACTIVE)
+                .role(adminRole)
+                .department("Administration")
+                .build();
+
+        adminRepository.save(admin);
+
+        log.info("✓ Initialized 1 admin");
+        log.info("  Admin: admin@gmail.com / Admin@123");
+    }
     // =========================================================
     // TUTOR
     // =========================================================
@@ -197,7 +299,7 @@ public class InitData implements CommandLineRunner {
             return;
         }
 
-        Role tutorRole = roleRepository.findByName(RoleName.TUTOR.name())
+        Role tutorRole = roleRepository.findByName(RoleName.TUTOR)
                 .orElseThrow(() ->
                         new RuntimeException("ROLE_TUTOR not found"));
 
@@ -214,7 +316,7 @@ public class InitData implements CommandLineRunner {
 
         Tutor tutor1 = Tutor.builder()
                 .id(appUtil.generateUUID())
-                .fullname("Nguyen Van Tutor")
+                .fullName("Nguyen Van Tutor")
                 .email("tutor@gmail.com")
                 .password(password)
                 .phone("0901234569")
@@ -231,12 +333,12 @@ public class InitData implements CommandLineRunner {
                 .education("Bachelor of Information Technology")
                 .subject(subject)
                 .averageRating(0.0)
-                .verificationStatus(VerificationStatus.PENDING)
+                .verificationStatus(VerificationStatus.APPROVED)
                 .build();
 
         Tutor tutor2 = Tutor.builder()
                 .id(appUtil.generateUUID())
-                .fullname("Tran Thi Tutor")
+                .fullName("Tran Thi Tutor")
                 .email("tutor2@gmail.com")
                 .password(password)
                 .phone("0901234570")
