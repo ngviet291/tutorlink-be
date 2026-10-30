@@ -17,6 +17,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
@@ -42,4 +43,13 @@ public class CreateApplicationRequest {
             maxLength = 1000
     )
     private String message;
+
+    @NotNull(message = "Proposed fee is required")
+    @Schema(
+            description = "Proposed fee for the tutoring sessions",
+            example = "500000.00",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    private BigDecimal proposedFee;
+
 }

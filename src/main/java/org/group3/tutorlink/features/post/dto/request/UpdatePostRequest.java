@@ -7,10 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.group3.tutorlink.features.post.enums.EducationLevel;
-import org.group3.tutorlink.features.post.enums.PostStatus;
-import org.group3.tutorlink.features.post.enums.PostType;
-import org.group3.tutorlink.features.post.enums.TeachingMode;
+import org.group3.tutorlink.features.post.enums.*;
 import org.group3.tutorlink.features.post.validation.ValidPostRequest;
 
 import java.math.BigDecimal;
@@ -46,6 +43,12 @@ public class UpdatePostRequest {
             example = "Cần tìm gia sư Toán lớp 10, học 3 buổi mỗi tuần."
     )
     private String content;
+
+    @Schema(
+            description = "Budget unit for the tutoring sessions",
+            example = "PER_SESSION"
+    )
+    private BudgetUnit budgetUnit;
 
     @Schema(
             description = "Type of the post",

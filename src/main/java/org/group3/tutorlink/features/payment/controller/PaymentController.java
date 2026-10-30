@@ -44,7 +44,7 @@ public class PaymentController {
                 .build();
     }
 
-    // 2. Nạp tiền vào ví qua MoMo/ZaloPay - Tutor (trả paymentLink để chuyển sang trang thanh toán)
+    // 2. Nạp tiền vào ví qua MoMo - Tutor (trả paymentLink để chuyển sang trang thanh toán)
     @PostMapping("/wallet/top-up")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<TransactionResponse> topUp(@RequestBody @Valid TopUpRequest request) {
@@ -126,7 +126,7 @@ public class PaymentController {
                 .build();
     }
 
-    // 8. Trạng thái giao dịch nạp tiền - Tutor (FE gọi sau khi user quay về từ MoMo/ZaloPay)
+    // 8. Trạng thái giao dịch nạp tiền - Tutor (FE gọi sau khi user quay về từ MoMo)
     @GetMapping("/wallet/top-up/{id}")
     public ApiResponse<TransactionResponse> getTopUpStatus(@PathVariable UUID id) {
         return ApiResponse.<TransactionResponse>builder()
@@ -136,33 +136,15 @@ public class PaymentController {
                 .build();
     }
 
-    // 9. IPN của MoMo (public, xác thực bằng chữ ký). MoMo yêu cầu phản hồi HTTP 204.
+    // 9. IPN callback từ MoMo (public endpoint, xác thực bằng chữ ký HMAC-SHA256)
+    // MoMo yêu cầu phản hồi HTTP 204 No Content
     @PostMapping("/momo/ipn")
     public ResponseEntity<Void> momoIpn(@RequestBody String rawBody) {
         paymentService.handleGatewayCallback(PaymentMethod.MOMO, rawBody);
         return ResponseEntity.noContent().build();
     }
 
-    // 10. Callback của ZaloPay (public, xác thực bằng key2). Phải trả JSON return_code theo quy ước của ZaloPay:
-    //  1 = thành công, -1 = sai mac (không retry), 0 = lỗi hệ thống (ZaloPay sẽ gọi lại)
-    @PostMapping("/zalopay/callback")
-    public Map<String, Object> zaloPayCallback(@RequestBody String rawBody) {
-        try {
-            paymentService.handleGatewayCallback(PaymentMethod.ZALOPAY, rawBody);
-            return Map.of("return_code", 1, "return_message", "success");
-        } catch (AppException ex) {
-            if (ex.getErrorCode() == PaymentErrorCode.INVALID_GATEWAY_SIGNATURE) {
-                return Map.of("return_code", -1, "return_message", "mac not equal");
-            }
-            log.error("ZaloPay callback rejected: {}", ex.getMessage());
-            return Map.of("return_code", 0, "return_message", ex.getMessage());
-        } catch (Exception ex) {
-            log.error("ZaloPay callback failed", ex);
-            return Map.of("return_code", 0, "return_message", "internal error");
-        }
-    }
-
-    // 11. Lịch sử cấu hình phí - Admin
+    // 10. Lịch sử cấu hình phí - Admin
     @GetMapping("/fee-configs")
     public ApiResponse<CursorResponse<FeeConfigResponse>> getFeeConfigs(
             @RequestParam(required = false) UUID cursor,

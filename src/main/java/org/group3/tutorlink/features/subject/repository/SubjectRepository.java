@@ -11,9 +11,13 @@ import java.util.UUID;
 
 public interface SubjectRepository extends JpaRepository<Subject, UUID> {
 
-    @Query("select count(t) > 0 from Tutor t where t.subject.id = :subjectId")
+    @Query("""
+    SELECT COUNT(t) > 0
+    FROM Tutor t
+    JOIN t.subjects s
+    WHERE s.id = :subjectId
+    """)
     boolean isUsedByTutor(@Param("subjectId") UUID subjectId);
-
     @Query("""
         SELECT s FROM Subject s
         WHERE (:cursor IS NULL OR s.id < :cursor)

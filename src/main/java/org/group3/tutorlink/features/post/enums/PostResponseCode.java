@@ -11,7 +11,11 @@ public enum PostResponseCode implements ResponseCode {
     POST_NOT_FOUND("POST_404", "Post not found"),
     GET_POSTS("POST_200", "Posts retrieved successfully"),
     POST_LIST_RETRIEVED("POST_200", "Post list retrieved successfully"),
-    POST_FOUND("POST_200", "Post found successfully");
+    POST_FOUND("POST_200", "Post found successfully"),
+    POST_PUBLISHED("POST_200", "Post published successfully"),
+    GET_POSTS_BY_STATUS("POST_200", "Posts by status retrieved successfully"),
+    GET_STATISTICS_BY_STATUS("POST_200", "Statistics by status retrieved successfully"),
+    GET_POST_APPLICATIONS("POST_200", "Post applications retrieved successfully");
     private final String code;
     private final String message;
 

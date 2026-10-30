@@ -3,62 +3,128 @@ package org.group3.tutorlink.features.payment.gateway.mock;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.features.payment.enums.PaymentMethod;
 import org.group3.tutorlink.features.payment.gateway.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Mock gateway để test payment flow không cần test app hay ngrok.
- * Transaction luôn SUCCESS ngay lập tức (giả lập thanh toán thành công).
+ * Mock Payment Gateway for development/testing without real payment provider.
+ * 
+ * Simulates payment flow:
+ * 1. createPayment() returns a mock payment URL
+ * 2. verifyCallback() always returns SUCCESS (simulates IPN)
+ * 3. queryOrder() returns stored payment state
+ * 
+ * Enable by setting profile: dev-mock or add @Profile("dev-mock")
  */
 @Slf4j
 @Component
+@Profile("dev-mock") // Only enable when explicitly set to dev-mock
 public class MockPaymentGateway implements PaymentGateway {
+
+    // In-memory storage for mock orders
+    private final Map<String, MockOrder> orders = new ConcurrentHashMap<>();
+
+    @Value("${payment.redirect-url:http://localhost:5173/wallet/top-up/result}")
+    private String redirectUrl;
 
     @Override
     public PaymentMethod method() {
-        return PaymentMethod.MOCK;  // Payment method mới
+        return PaymentMethod.MOMO; // Pretend to be MoMo
     }
 
     @Override
     public String newProviderOrderId() {
-        return "MOCK-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        return "MOCK" + UUID.randomUUID().toString().replace("-", "");
     }
 
     @Override
     public GatewayPaymentResult createPayment(GatewayPaymentRequest request) {
-        log.info("Mock payment created: orderId={}, amount={}", request.providerOrderId(), request.amount());
+        String orderId = request.providerOrderId();
         
-        // Mock: luôn trả success ngay lập tức (không cần redirect)
-        return new GatewayPaymentResult(
-                "mock://payment-success",  // payUrl (không dùng)
-                null,
-                null
+        // Store order in memory
+        MockOrder order = new MockOrder(
+                orderId,
+                "MOCK_TRANS_" + System.currentTimeMillis(),
+                request.amount(),
+                GatewayPaymentState.PENDING
         );
+        orders.put(orderId, order);
+
+        log.info("🧪 MOCK: Created payment order={}, amount={}", orderId, request.amount());
+
+        // Return mock payment URL
+        String mockPayUrl = "http://localhost:8080/api/v1/payments/mock/pay?orderId=" + orderId;
+        String mockQrUrl = "http://localhost:8080/api/v1/payments/mock/qr?orderId=" + orderId;
+        
+        return new GatewayPaymentResult(mockPayUrl, mockQrUrl, null);
     }
 
     @Override
     public GatewayCallbackResult verifyCallback(String rawBody) {
-        // Mock: không cần verify signature, chấp nhận tất cả
-        log.info("Mock callback accepted");
+        // Parse mock IPN (assuming JSON with orderId field)
+        Map<String, Object> ipn = GatewayHttp.parse(rawBody);
+        String orderId = GatewayHttp.str(ipn, "orderId");
+        
+        MockOrder order = orders.get(orderId);
+        if (order == null) {
+            log.warn("🧪 MOCK: Unknown order in IPN: {}", orderId);
+            return new GatewayCallbackResult(orderId, null, null, GatewayPaymentState.FAILED);
+        }
+
+        // Simulate successful payment
+        order.state = GatewayPaymentState.SUCCESS;
+        orders.put(orderId, order);
+
+        log.info("🧪 MOCK: IPN callback - order={} -> SUCCESS", orderId);
+
         return new GatewayCallbackResult(
-                "MOCK-ORDER",
-                "MOCK-TRANS-" + UUID.randomUUID().toString().substring(0, 8),
-                null,
+                orderId,
+                order.transId,
+                order.amount,
                 GatewayPaymentState.SUCCESS
         );
     }
 
     @Override
     public GatewayCallbackResult queryOrder(String providerOrderId) {
-        log.info("Mock query: {}", providerOrderId);
+        MockOrder order = orders.get(providerOrderId);
         
-        // Mock: luôn trả success
+        if (order == null) {
+            log.warn("🧪 MOCK: Query unknown order: {}", providerOrderId);
+            return new GatewayCallbackResult(providerOrderId, null, null, GatewayPaymentState.FAILED);
+        }
+
+        // Auto-complete pending orders after query (simulate payment completion)
+        if (order.state == GatewayPaymentState.PENDING) {
+            order.state = GatewayPaymentState.SUCCESS;
+            orders.put(providerOrderId, order);
+            log.info("🧪 MOCK: Query order={} -> AUTO SUCCESS", providerOrderId);
+        }
+
         return new GatewayCallbackResult(
                 providerOrderId,
-                "MOCK-TRANS-" + UUID.randomUUID().toString().substring(0, 8),
-                null,
-                GatewayPaymentState.SUCCESS
+                order.transId,
+                order.amount,
+                order.state
         );
+    }
+
+    private static class MockOrder {
+        String orderId;
+        String transId;
+        java.math.BigDecimal amount;
+        GatewayPaymentState state;
+
+        MockOrder(String orderId, String transId, java.math.BigDecimal amount, GatewayPaymentState state) {
+            this.orderId = orderId;
+            this.transId = transId;
+            this.amount = amount;
+            this.state = state;
+        }
     }
 }

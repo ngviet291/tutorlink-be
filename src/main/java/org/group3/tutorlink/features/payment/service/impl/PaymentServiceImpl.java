@@ -83,7 +83,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final TransactionMapper transactionMapper;
     private final RevenueStatisticsMapper revenueStatisticsMapper;
     private final FeeConfigMapper feeConfigMapper;
-    // Spring tự inject tất cả cổng thanh toán (MomoGateway, ZaloPayGateway, ...)
+    // Spring tự inject tất cả payment gateways (MomoGateway, ...)
     private final List<PaymentGateway> paymentGateways;
     private final AppUtil appUtil;
 
@@ -104,14 +104,15 @@ public class PaymentServiceImpl implements PaymentService {
     @PreAuthorize("hasAuthority('TUTOR')")
     public TransactionResponse topUp(TopUpRequest request) {
         UUID tutorId = appUtil.userIdFromAuthentication();
-        PaymentMethod method = request.getPaymentMethod();
+        // Only MoMo payment gateway is supported
+        PaymentMethod method = PaymentMethod.MOMO;
         PaymentGateway gateway = findGateway(method);
         BigDecimal amount = request.getAmount().setScale(0, RoundingMode.HALF_UP);
 
         Wallet wallet = walletRepository.findByTutorId(tutorId)
                 .orElseGet(() -> createWallet(tutorId));
 
-        // Tạo đơn bên MoMo/ZaloPay trước; lỗi cổng -> ném exception, không lưu giao dịch rác
+        // Tạo đơn bên MoMo trước; lỗi cổng -> ném exception, không lưu giao dịch rác
         String providerOrderId = gateway.newProviderOrderId();
         GatewayPaymentResult payment = gateway.createPayment(new GatewayPaymentRequest(
                 providerOrderId, amount, "Nap tien vao vi TutorLink", tutorId));

@@ -1,9 +1,6 @@
 package org.group3.tutorlink.features.payment.enums;
 
 public enum PaymentMethod {
-    BANK_TRANSFER,
-    WALLET,
-    MOMO,
-    ZALOPAY,
-    MOCK  // Test only - instant success
+    WALLET,  // Internal wallet payment
+    MOMO     // MoMo e-wallet payment gateway
 }

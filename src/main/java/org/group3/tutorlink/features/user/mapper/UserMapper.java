@@ -33,7 +33,7 @@ public interface UserMapper {
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "userStatus", ignore = true)
-    @Mapping(target = "subject", ignore = true)
+    @Mapping(target = "subjects", ignore = true)
     @Mapping(target = "averageRating", ignore = true)
     @Mapping(target = "verificationStatus", ignore = true)
     @Mapping(target = "verificationNote", ignore = true)

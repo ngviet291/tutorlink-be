@@ -6,10 +6,7 @@ import lombok.*;
 import org.group3.tutorlink.common.entity.Address;
 import org.group3.tutorlink.common.entity.BaseEntity;
 import org.group3.tutorlink.features.application.entity.Application;
-import org.group3.tutorlink.features.post.enums.EducationLevel;
-import org.group3.tutorlink.features.post.enums.PostStatus;
-import org.group3.tutorlink.features.post.enums.PostType;
-import org.group3.tutorlink.features.post.enums.TeachingMode;
+import org.group3.tutorlink.features.post.enums.*;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.user.entity.User;
 
@@ -72,6 +69,8 @@ public class Post extends BaseEntity {
     private BigDecimal minBudget;
 
     private BigDecimal maxBudget;
+    @Enumerated(EnumType.STRING)
+    private BudgetUnit budgetUnit;
 
     // Số buổi / tuần
     private Integer sessionsPerWeek;

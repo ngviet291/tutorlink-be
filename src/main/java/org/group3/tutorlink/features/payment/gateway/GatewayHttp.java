@@ -43,6 +43,7 @@ public final class GatewayHttp {
             String response = CLIENT.post()
                     .uri(url)
                     .contentType(MediaType.APPLICATION_JSON)
+                    .header("User-Agent", "TutorLink/1.0")
                     .body(MAPPER.writeValueAsString(body))
                     .retrieve()
                     .body(String.class);

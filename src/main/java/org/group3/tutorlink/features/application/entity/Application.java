@@ -11,6 +11,7 @@ import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -58,4 +59,7 @@ public class Application extends BaseEntity {
     // Application 1 -- 0..1 Transaction
     @OneToOne(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private Transaction transaction;
+
+    @Column(precision = 15, scale = 2)
+    private BigDecimal proposedFee;
 }

@@ -19,6 +19,7 @@ import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.user.exception.UserErrorCode;
 import org.group3.tutorlink.features.user.exception.UserValidationException;
 import org.group3.tutorlink.features.user.mapper.UserMapper;
+import org.group3.tutorlink.features.user.repository.TutorRepository;
 import org.group3.tutorlink.features.user.repository.UserRepository;
 import org.group3.tutorlink.features.user.specification.UserSpecification;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +41,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final AppUtil appUtil;
+    private final TutorRepository tutorRepository;
 
     @Transactional(readOnly = true)
     public BaseUserResponse getMyProfile() {
@@ -153,5 +155,35 @@ public class UserService {
         }
         user.setUserStatus(request.getUserStatus());
         return userMapper.toBaseUserResponse(userRepository.save(user));
+    }
+    @Transactional(readOnly = true)
+    public CursorResponse<TutorResponse> getTutors(
+            String subjectName,
+            String province,
+            Double minRate,
+            Double maxRate,
+            Double minRating,
+            UUID cursor,
+            int limit
+    ) {
+        Pageable pageable = PageRequest.of(0, limit + 1, Sort.by(Sort.Order.desc("id")));
+
+        List<Tutor> tutors = tutorRepository.findApprovedTutors(
+                VerificationStatus.APPROVED,
+                subjectName,
+                province,
+                minRate,
+                maxRate,
+                minRating,
+                cursor,
+                pageable
+        );
+
+        return appUtil.buildCursorResponse(
+                tutors,
+                limit,
+                Tutor::getId,
+                userMapper::toTutorResponse
+        );
     }
 }
