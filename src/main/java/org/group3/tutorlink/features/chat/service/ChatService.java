@@ -52,6 +52,8 @@ public class ChatService {
             throw new CannotMessageSelfException();
         }
 
+        // yêu cầu bắt buộc application của sender và receiver phải tồn tại, và đã thanh toán
+
         User sender = userRepository.findById(senderId)
                 .orElseThrow(UserNotFoundException::new);
         User receiver = userRepository.findById(req.getReceiverId())
@@ -59,7 +61,7 @@ public class ChatService {
 
         validateUser(sender, receiver);
 
-        ChatChannel channel = findOrCreateChannel(sender, receiver);
+        ChatChannel channel = findChannelOrThrow(sender, receiver);
         Instant now = Instant.now();
 
         Message message = Message.builder()
@@ -99,12 +101,12 @@ public class ChatService {
         }
     }
 
-    private ChatChannel findOrCreateChannel(User sender, User receiver) {
+    private ChatChannel findChannelOrThrow(User sender, User receiver) {
         return chatChannelRepository.findBetween(sender.getId(), receiver.getId())
-                .orElseGet(() -> createChannel(sender, receiver));
+                .orElseThrow(ChatChannelNotFound::new);
     }
 
-    private ChatChannel createChannel(User sender, User receiver) {
+    public ChatChannel createChannel(User sender, User receiver) {
         ChatChannel channel = ChatChannel.builder()
                 .id(appUtil.generateUUID())
                 .sender(sender)     // người khởi tạo cuộc trò chuyện

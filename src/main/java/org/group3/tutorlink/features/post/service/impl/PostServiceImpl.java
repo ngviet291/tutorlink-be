@@ -7,7 +7,9 @@ import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.post.dto.request.CreatePostRequest;
 import org.group3.tutorlink.features.post.dto.request.UpdatePostRequest;
+import org.group3.tutorlink.features.post.dto.response.PostApplicationResponse;
 import org.group3.tutorlink.features.post.dto.response.PostResponse;
+import org.group3.tutorlink.features.post.dto.response.PostStatisticsByStatus;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
 import org.group3.tutorlink.features.post.enums.PostStatus;
@@ -26,12 +28,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Slf4j
 @Service
@@ -42,6 +46,8 @@ public class PostServiceImpl implements org.group3.tutorlink.features.post.servi
     private final PostMapper postMapper;
     private final AppUtil appUtil;
     private final UserRepository userRepository;
+
+
 
     @Transactional
     @Override
@@ -127,6 +133,52 @@ public class PostServiceImpl implements org.group3.tutorlink.features.post.servi
 
     }
 
+
+    @Transactional(readOnly = true)
+    @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public CursorResponse<PostResponse> getAllPostsAdmin(
+            String keyword,
+            PostType type,
+            String subjectName,
+            TeachingMode teachingMode,
+            EducationLevel educationLevel,
+            BigDecimal maxBudget,
+            BigDecimal minBudget,
+            UUID cursor,
+            int limit
+    ) {
+
+        Specification<Post> spec = Specification
+                .where(PostSpecification.keyword(keyword))
+                .and(PostSpecification.hasStatus(PostStatus.PUBLISHED, PostStatus.CLOSED, PostStatus.REMOVED, PostStatus.DRAFT))
+                .and(PostSpecification.hasType(type))
+                .and(PostSpecification.hasSubject(subjectName))
+                .and(PostSpecification.hasTeachingMode(teachingMode))
+                .and(PostSpecification.hasEducationLevel(educationLevel))
+                .and(PostSpecification.maxBudgetLessThanOrEqual(maxBudget))
+                .and(PostSpecification.minBudgetGreaterThanOrEqual(minBudget))
+                .and(PostSpecification.fetchSubject())
+                .and(PostSpecification.cursor(cursor));
+
+        Pageable pageable = PageRequest.of(
+                0,
+                limit + 1,
+                Sort.by(Sort.Order.desc("id"))
+        );
+
+        List<Post> posts = postRepository.findAll(spec, pageable).getContent();
+
+        return appUtil.buildCursorResponse(
+                posts,
+                limit,
+                Post::getId,
+                postMapper::toPostResponse
+        );
+
+    }
+
+
     @Transactional
     @Override
     public PostResponse updatePost(UUID postId, UpdatePostRequest request) {
@@ -154,6 +206,14 @@ public class PostServiceImpl implements org.group3.tutorlink.features.post.servi
         post.setStatus(PostStatus.CLOSED);
     }
 
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Override
+    public void removePostAdmin(UUID postId){
+        Post post = postRepository.findByIdWithSubjectAndWithAuthor(postId, appUtil.userIdFromAuthentication())
+                .orElseThrow(PostNotFoundException::new);
+        post.setStatus(PostStatus.REMOVED);
+    }
 
     @Override
     public void removePost(UUID postId){
@@ -195,5 +255,34 @@ public class PostServiceImpl implements org.group3.tutorlink.features.post.servi
         );
     }
 
+    @Override
+    public PostResponse publishPost(UUID postId) {
+        Post post = postRepository.findByIdWithSubjectAndWithAuthor(postId, appUtil.userIdFromAuthentication())
+                .orElseThrow(PostNotFoundException::new);
+        post.setStatus(PostStatus.PUBLISHED);
+        return postMapper.toPostResponse(post);
+    }
+
+    @Override
+    public CursorResponse<PostApplicationResponse> getPostApplications(UUID postId, int limit, UUID cursor) {
+        Pageable pageable = PageRequest.of(
+                0,
+                limit + 1,
+                Sort.by(Sort.Order.desc("id"))
+        );
+        List<PostApplicationResponse> posts = postRepository.findPostApplications(postId, appUtil.userIdFromAuthentication(), pageable, cursor);
+        return appUtil.buildCursorResponse(
+                posts,
+                posts.size(),
+                PostApplicationResponse::getApplicationId,
+                Function.identity()
+        );
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<PostStatisticsByStatus> getStatisticsByStatus() {
+        return postRepository.getStatisticsByStatus();
+    }
 
 }

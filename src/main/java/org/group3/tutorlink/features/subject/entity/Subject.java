@@ -29,7 +29,8 @@ public class Subject extends BaseEntity {
     private String category;
 
     // Subject 1 -- 1..* Tutor
-    @OneToMany(mappedBy = "subject")
+    @ManyToMany(mappedBy = "subjects")
+
     private Set<Tutor> tutors ;
 
     @OneToMany(mappedBy = "subject")
