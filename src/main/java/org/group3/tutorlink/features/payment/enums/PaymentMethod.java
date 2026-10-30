@@ -4,5 +4,6 @@ public enum PaymentMethod {
     BANK_TRANSFER,
     WALLET,
     MOMO,
-    ZALOPAY
+    ZALOPAY,
+    MOCK  // Test only - instant success
 }
