@@ -3,12 +3,11 @@ package org.group3.tutorlink.features.user.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.group3.tutorlink.features.chat.entity.ChatChannel;
+import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
 import org.group3.tutorlink.features.post.enums.TeachingMode;
 import org.group3.tutorlink.features.subject.entity.Certificate;
 import org.group3.tutorlink.features.subject.entity.Subject;
-import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 
 import java.math.BigDecimal;

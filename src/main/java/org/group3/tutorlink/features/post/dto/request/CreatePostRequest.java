@@ -95,7 +95,8 @@ public class CreatePostRequest {
     )
 
     @ValidPostStatus
-    private PostStatus status;
+    @Builder.Default
+    private PostStatus status = PostStatus.PUBLISHED;
 
     @Valid
     @Schema(
@@ -155,9 +156,6 @@ public class CreatePostRequest {
             example = "2026-10-15T23:59:59Z"
     )
     private Instant deadline;
-    @JsonSetter("status")
-    public void setStatus(PostStatus status) {
-        this.status = status == null ? PostStatus.PUBLISHED : status;
-    }
+
 }
 

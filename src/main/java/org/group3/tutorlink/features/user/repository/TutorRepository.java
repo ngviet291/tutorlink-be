@@ -4,6 +4,7 @@ import org.group3.tutorlink.features.user.entity.Tutor;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
+
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -27,13 +28,26 @@ public interface TutorRepository extends JpaRepository<Tutor, UUID> {
             ORDER BY t.id DESC
             """)
     List<Tutor> findApprovedTutors(
-            @Param("status")      VerificationStatus status,
+            @Param("status") VerificationStatus status,
             @Param("subjectName") String subjectName,
-            @Param("province")    String province,
-            @Param("minRate")     Double minRate,
-            @Param("maxRate")     Double maxRate,
-            @Param("minRating")   Double minRating,
-            @Param("cursor")      UUID cursor,
+            @Param("province") String province,
+            @Param("minRate") Double minRate,
+            @Param("maxRate") Double maxRate,
+            @Param("minRating") Double minRating,
+            @Param("cursor") UUID cursor,
             Pageable pageable
+    );
+
+
+    @Query("""
+                SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END
+                FROM Tutor t
+                JOIN t.subjects s
+                WHERE t.id = :tutorId
+                  AND s.id = :subjectId
+            """)
+    boolean existsSubject(
+            @Param("tutorId") UUID tutorId,
+            @Param("subjectId") UUID subjectId
     );
 }

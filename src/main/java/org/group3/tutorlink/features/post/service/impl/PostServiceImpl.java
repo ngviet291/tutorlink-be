@@ -16,13 +16,16 @@ import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.enums.TeachingMode;
 import org.group3.tutorlink.features.post.exception.PostNotFoundException;
+import org.group3.tutorlink.features.post.exception.SubjectNotBelongToTutorException;
 import org.group3.tutorlink.features.post.mapper.PostMapper;
 import org.group3.tutorlink.features.post.repository.PostRepository;
 import org.group3.tutorlink.features.post.specification.PostSpecification;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.subject.exception.SubjectNotFoundException;
 import org.group3.tutorlink.features.subject.repository.SubjectRepository;
+import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
+import org.group3.tutorlink.features.user.repository.TutorRepository;
 import org.group3.tutorlink.features.user.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,7 +49,7 @@ public class PostServiceImpl implements org.group3.tutorlink.features.post.servi
     private final PostMapper postMapper;
     private final AppUtil appUtil;
     private final UserRepository userRepository;
-
+    private final TutorRepository tutorRepository;
 
 
     @Transactional
@@ -54,6 +57,7 @@ public class PostServiceImpl implements org.group3.tutorlink.features.post.servi
     public PostResponse createPost(CreatePostRequest request) {
         User user = userRepository.findById(appUtil.userIdFromAuthentication())
                 .orElseThrow(UserNotFoundException::new);
+
         /*
             type = FIND_TUTOR → author phải là Student
             type = FIND_STUDENT → author phải là Tutor
@@ -62,10 +66,14 @@ public class PostServiceImpl implements org.group3.tutorlink.features.post.servi
 
         Subject subject = subjectRepository.findById(request.getSubjectId())
                 .orElseThrow(SubjectNotFoundException::new);
-
+        if (user instanceof Tutor tutor &&
+                !tutorRepository.existsSubject(tutor.getId(), subject.getId())) {
+            throw new SubjectNotBelongToTutorException();
+        }
 
         Post post = postMapper.toPost(appUtil.generateUUID(), user, subject, request);
         Post savedPost = postRepository.saveAndFlush(post);
+
         return postMapper.toPostResponse(savedPost);
     }
 
@@ -200,7 +208,7 @@ public class PostServiceImpl implements org.group3.tutorlink.features.post.servi
     }
 
     @Override
-    public void closePost(UUID postId){
+    public void closePost(UUID postId) {
         Post post = postRepository.findByIdWithSubjectAndWithAuthor(postId, appUtil.userIdFromAuthentication())
                 .orElseThrow(PostNotFoundException::new);
         post.setStatus(PostStatus.CLOSED);
@@ -209,14 +217,14 @@ public class PostServiceImpl implements org.group3.tutorlink.features.post.servi
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
-    public void removePostAdmin(UUID postId){
+    public void removePostAdmin(UUID postId) {
         Post post = postRepository.findByIdWithSubjectAndWithAuthor(postId, appUtil.userIdFromAuthentication())
                 .orElseThrow(PostNotFoundException::new);
         post.setStatus(PostStatus.REMOVED);
     }
 
     @Override
-    public void removePost(UUID postId){
+    public void removePost(UUID postId) {
         Post post = postRepository.findByIdWithSubjectAndWithAuthor(postId, appUtil.userIdFromAuthentication())
                 .orElseThrow(PostNotFoundException::new);
         post.setStatus(PostStatus.REMOVED);
@@ -236,8 +244,7 @@ public class PostServiceImpl implements org.group3.tutorlink.features.post.servi
                 .and(PostSpecification.fetchSubject())
                 .and(PostSpecification.cursor(cursor))
                 .and(PostSpecification.hasStatusNotRemoved(postStatus))
-                .and(PostSpecification.hasAuthorId(appUtil.userIdFromAuthentication()))
-                ;
+                .and(PostSpecification.hasAuthorId(appUtil.userIdFromAuthentication()));
 
         Pageable pageable = PageRequest.of(
                 0,
