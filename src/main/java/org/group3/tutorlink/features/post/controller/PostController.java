@@ -69,13 +69,14 @@ public class PostController {
         return ApiResponse.<CursorResponse<PostResponse>>builder()
                 .code(PostResponseCode.GET_POSTS.getCode())
                 .message(PostResponseCode.GET_POSTS.getMessage())
-                .data(postService.getAllPosts(keyword,
+                .data(postService.getAllPosts(
+                        keyword,
                         type,
                         subjectName,
                         teachingMode,
                         educationLevel,
-                        minBudget,
                         maxBudget,
+                        minBudget,
                         cursor,
                         limit)
                 )
@@ -103,8 +104,8 @@ public class PostController {
                         subjectName,
                         teachingMode,
                         educationLevel,
-                        minBudget,
                         maxBudget,
+                        minBudget,
                         cursor,
                         limit)
                 )
@@ -171,8 +172,8 @@ public class PostController {
                         subjectName,
                         teachingMode,
                         educationLevel,
-                        minBudget,
                         maxBudget,
+                        minBudget,
                         cursor,
                         postStatus,
                         limit)

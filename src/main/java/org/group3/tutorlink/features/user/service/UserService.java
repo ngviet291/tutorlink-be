@@ -88,7 +88,6 @@ public class UserService {
         return response;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     @Transactional(readOnly = true)
     public BaseUserResponse getUserById(UUID userId) {
         User user = userRepository.findById(userId)
@@ -163,6 +162,7 @@ public class UserService {
             Double minRate,
             Double maxRate,
             Double minRating,
+            Integer minExperience,
             UUID cursor,
             int limit
     ) {
@@ -175,6 +175,7 @@ public class UserService {
                 minRate,
                 maxRate,
                 minRating,
+                minExperience,
                 cursor,
                 pageable
         );
