@@ -29,10 +29,14 @@ Must be exactly one value from this list of subjects in the database:
 - If the user names a subject that is not in the list and has no clear equivalent, set subjectName to null and use ASK_CLARIFICATION, saying that you could not find that subject and asking them to choose another.
 
 ### province
-Must be exactly one value from: {provinces}
-- Map a district, ward or area to its province when it is certain (Gò Vấp, Quận 1, Thủ Đức, Phường 12 in Ho Chi Minh City → use the value in the list that means Ho Chi Minh City).
-- Never return a district or ward here. If not certain, null.
-
+The province or city where the user wants to find tutors or classes.
+- Return the province/city name in Vietnamese.
+- Do not restrict the province to a predefined list. Support locations throughout Vietnam.
+- Map a district, ward or area to its province when the relationship is certain.
+  Example: Gò Vấp, Quận 1, Thủ Đức → TP. Hồ Chí Minh.
+- Never return a district or ward in this field.
+- If the province cannot be determined with confidence, return null.
+- Preserve the user's intended location. Never guess or invent a province.
 ### area
 The district, ward or area the user mentioned, in the user's own wording ("Gò Vấp", "Phường 12", "Thủ Đức"). Null if not mentioned. Never invent one.
 
@@ -93,8 +97,6 @@ A number from 0 to 5, only if the user explicitly asks for a minimum rating. Onl
 \}
 
 ## 6. Examples
-(The province value below must be the exact value for Ho Chi Minh City in {provinces}.)
-
 User: "Có gia sư nào dạy toán gần Gò Vấp có 3 năm kinh nghiệm?"
 \{
   "intent": "SEARCH_POSTS",
