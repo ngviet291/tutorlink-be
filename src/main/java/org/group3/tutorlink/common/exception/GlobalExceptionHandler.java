@@ -6,9 +6,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.AccountBanErrorResponse;
 import org.group3.tutorlink.common.dto.response.ErrorResponse;
+import org.group3.tutorlink.common.logging.SystemLogPublisher;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.common.utils.MessageUtil;
 import org.group3.tutorlink.features.auth.exception.AccountBanException;
+import org.group3.tutorlink.features.tracking.enums.SystemAction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -36,6 +38,8 @@ public class GlobalExceptionHandler {
     private final AppUtil appUtil;
 //    private final MessageUtil messageUtil;
 
+    private final SystemLogPublisher systemLogPublisher;
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex, HttpServletRequest request) {
 
@@ -46,9 +50,10 @@ public class GlobalExceptionHandler {
                 .error(ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
+        systemLogPublisher.failed(SystemAction.API_ERROR, ex.getClass().getSimpleName(),
+                Map.of("path", request.getRequestURI(),
+                        "method", request.getMethod()));
 
-
-        log.error("Uncaught exception at [{}]", request.getRequestURI(), ex);
 
         return ResponseEntity
                 .status(ErrorCode.UNCATEGORIZED_EXCEPTION.getHttpStatus()).body(response);
@@ -201,6 +206,7 @@ public class GlobalExceptionHandler {
                 .status(errorCode.getHttpStatus())
                 .body(response);
     }
+
     @ExceptionHandler(ParameterizedException.class)
     public ResponseEntity<ErrorResponse> handleParameterizedException(ParameterizedException e, HttpServletRequest request) {
 

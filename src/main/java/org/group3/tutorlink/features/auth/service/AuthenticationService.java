@@ -5,11 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.common.exception.ErrorCode;
+import org.group3.tutorlink.common.logging.SystemLogPublisher;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.dto.request.*;
 import org.group3.tutorlink.features.auth.dto.response.AuthenticateResponse;
 import org.group3.tutorlink.features.auth.dto.response.IntrospectResponse;
 import org.group3.tutorlink.features.subject.mapper.SubjectMapper;
+import org.group3.tutorlink.features.tracking.enums.SystemAction;
 import org.group3.tutorlink.features.user.dto.response.BaseUserResponse;
 import org.group3.tutorlink.features.auth.entity.Role;
 import org.group3.tutorlink.features.auth.enums.RoleName;
@@ -37,10 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -62,6 +61,7 @@ public class AuthenticationService {
     private final ChangePasswordService changePasswordService;
     private final PasswordGenerator passwordGenerator;
     private final EmailService emailService;
+    private final SystemLogPublisher systemLogPublisher;
 
     @Transactional
     public AuthenticateResponse registerStudent(RegisterStudentRequest req) {
@@ -76,7 +76,9 @@ public class AuthenticationService {
         student.setUserStatus(UserStatus.ACTIVE);
 
         studentRepository.save(student);
-
+        systemLogPublisher.success(student.getId(), SystemAction.REGISTER,
+                User.class.getSimpleName(), student.getId(),
+                Map.of("role", RoleName.STUDENT.name()));
         log.info("Registered new student account: {}", student.getEmail());
 
         return buildAuthResponse(student);
@@ -103,29 +105,39 @@ public class AuthenticationService {
         tutor.setVerificationStatus(VerificationStatus.PENDING);
 
         tutorRepository.save(tutor);
+        systemLogPublisher.success(tutor.getId(), SystemAction.REGISTER,
+                User.class.getSimpleName(), tutor.getId(),
+                Map.of("role", RoleName.TUTOR.name(),
+                        "subjectCount", subjects.size()));
 
-        log.info("Registered new tutor account: {}", tutor.getEmail());
+        log.info("Registered new tutor account: {}", tutor.getId());
 
         return buildAuthResponse(tutor);
     }
 
     @Transactional(readOnly = true)
     public AuthenticateResponse authenticate(LoginRequest req) {
-        User user = userRepository.findByEmail(req.getEmail())
-                .orElseThrow(() -> new AppException(ErrorCode.INVALID_CREDENTIALS));
+        User user = userRepository.findByEmail(req.getEmail()).orElse(null);
 
-        if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
+        if (user == null || !passwordEncoder.matches(req.getPassword(), user.getPassword())) {
+            systemLogPublisher.failed(SystemAction.LOGIN, "INVALID_CREDENTIALS", null);
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
 
         if (user.getUserStatus() == UserStatus.BANNED) {
+            systemLogPublisher.failed(SystemAction.LOGIN, "ACCOUNT_BANNED",
+                    Map.of("userId", user.getId().toString()));
             throw new AppException(ErrorCode.ACCOUNT_BANNED);
         }
+
         String refreshToken = jwtService.generateRefreshToken(user);
+        AuthenticateResponse response = buildAuthResponse(user, refreshToken);
 
-        log.info("User {} logged in", user.getEmail());
+        systemLogPublisher.success(user.getId(), SystemAction.LOGIN, User.class.getSimpleName(), user.getId(),
+                Map.of("method", "password"));
 
-        return buildAuthResponse(user, refreshToken);
+
+        return response;
     }
 
     @Transactional(readOnly = true)
@@ -164,6 +176,8 @@ public class AuthenticationService {
             tokenBlackListService.blacklistToken(jitToken, expirationTime);
 
             refreshTokenService.deleteRefreshToken(refreshToken);
+            systemLogPublisher.success(UUID.fromString(signedJWT.getJWTClaimsSet().getSubject()), SystemAction.LOGOUT,
+                    User.class.getSimpleName(),signedJWT.getJWTClaimsSet().getSubject() , null);
         } catch (ParseException e) {
             throw new UnauthenticatedException();
         }
@@ -245,10 +259,6 @@ public class AuthenticationService {
     }
 
 
-    @PreAuthorize("hasRole('STUDENT') or hasRole('TUTOR') or hasRole('ADMIN')")
-    public String testAccessDenied() {
-        return "DATA";
-    }
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
         IntrospectResponse introspectResponse = introspect(new IntrospectRequest(request.getToken()));
@@ -259,6 +269,8 @@ public class AuthenticationService {
         changePasswordService.saveTokenInvalidationTimestamp(user.getId().toString(), changedPasswordDate);
         refreshTokenService.revokeAllRefreshTokens(user.getId().toString());
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        systemLogPublisher.success(user.getId(), SystemAction.PASSWORD_RESET,
+                User.class.getSimpleName(), user.getId(), null);
     }
     @Transactional
     public void forgotPassword(ForgotPasswordRequest request) {
@@ -266,6 +278,8 @@ public class AuthenticationService {
             String newPassword = passwordGenerator.generatePassword();
 
             user.setPassword(passwordEncoder.encode(newPassword));
+            systemLogPublisher.success(user.getId(), SystemAction.PASSWORD_FORGOT,
+                    User.class.getSimpleName(), user.getId(), null);
             userRepository.save(user);
 
             // Invalidate all refresh tokens for the user
