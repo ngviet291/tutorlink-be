@@ -14,12 +14,9 @@ import org.group3.tutorlink.features.user.entity.Tutor;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 public class PostSpecification {
     public static Specification<Post> keyword(String keyword) {
@@ -40,14 +37,20 @@ public class PostSpecification {
     }
 
     public static Specification<Post> hasStatus(PostStatus... statuses) {
-
         return (root, query, cb) -> {
-
             if (statuses == null || statuses.length == 0) {
                 return null;
             }
 
-            return root.get("status").in((Object[]) statuses);
+            List<PostStatus> validStatuses = Arrays.stream(statuses)
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            if (validStatuses.isEmpty()) {
+                return null;
+            }
+
+            return root.get("status").in(validStatuses);
         };
     }
 

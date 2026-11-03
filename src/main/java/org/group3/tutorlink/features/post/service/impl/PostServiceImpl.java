@@ -300,7 +300,21 @@ public class PostServiceImpl implements PostService {
             int limit
     ) {
         UUID currentUserId = appUtil.userIdFromAuthentication();
-
+        log.info(
+                "[GET_MY_POSTS] userId={}, keyword={}, type={}, subjectName={}, " +
+                        "teachingMode={}, educationLevel={}, maxBudget={}, minBudget={}, " +
+                        "cursor={}, postStatus={}, limit={}",
+                currentUserId,
+                keyword,
+                type,
+                subjectName,
+                teachingMode,
+                educationLevel,
+                maxBudget,
+                minBudget,
+                cursor,
+                postStatus,
+                limit);
         Specification<Post> spec = Specification
                 .where(PostSpecification.keyword(keyword))
                 .and(PostSpecification.hasStatus(postStatus))
