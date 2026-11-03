@@ -1,8 +1,10 @@
+
 package org.group3.tutorlink.features.chatbot.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.entity.Address;
+import org.group3.tutorlink.common.service.AddressService;
 import org.group3.tutorlink.features.chatbot.ai.PostSearchFilters;
 import org.group3.tutorlink.features.chatbot.config.ChatbotProperties;
 import org.group3.tutorlink.features.chatbot.dto.request.UserLocation;
@@ -36,43 +38,78 @@ public class PostSearcher {
     private final PostRepository postRepository;
     private final PostProximityRanker proximityRanker;
     private final ChatbotProperties properties;
+    private final AddressService provinceNormalizationService;
 
     @Transactional(readOnly = true)
     public PostSearchResult search(PostSearchFilters filters, UserLocation userLocation, int limit) {
-        PostType type = filters.getPostType() != null ? filters.getPostType() : properties.getDefaultPostType();
-        PostSearchFilters subjectOnly = PostSearchFilters.builder().subjectName(filters.getSubjectName()).build();
+        PostType type = filters.getPostType() != null
+                ? filters.getPostType()
+                : properties.getDefaultPostType();
 
-        List<Post> posts = find(filters, type);
-        boolean relaxed = posts.isEmpty();
+        // Bộ lọc chỉ theo môn học, dùng khi fallback
+        PostSearchFilters subjectOnly = PostSearchFilters.builder()
+                .subjectName(filters.getSubjectName())
+                .build();
+        List<Post> strictPosts = find(filters, type);
 
-        // Nếu người dùng chỉ nói môn học thì bước này sẽ trùng hệt câu query trên, bỏ qua cho đỡ tốn 1 lần query
-        if (posts.isEmpty() && hasExtraFilters(filters)) {
+        log.info(
+                "[CHATBOT DEBUG] Strict search: subject={}, province={}, type={}, education={}, resultCount={}",
+                filters.getSubjectName(),
+                filters.getProvince(),
+                type,
+                filters.getEducationLevel(),
+                strictPosts.size()
+        );
+
+        boolean relaxed = false;
+        List<Post> posts = strictPosts;
+
+        if (strictPosts.isEmpty() && hasExtraFilters(filters)) {
             posts = find(subjectOnly, type);
+            relaxed = !posts.isEmpty();
+
+            log.info("[CHATBOT DEBUG] Fallback cùng loại bài: resultCount={}", posts.size());
         }
+
         if (posts.isEmpty()) {
             posts = find(subjectOnly, null);
+            relaxed = !posts.isEmpty();
+
+            log.info("[CHATBOT DEBUG] Fallback cùng môn học: resultCount={}", posts.size());
         }
 
+        log.info(
+                "[CHATBOT DEBUG] FINAL: strictCount={}, finalCount={}, relaxed={}",
+                strictPosts.size(),
+                posts.size(),
+                relaxed
+        );
+
         List<PostSummaryResponse> summaries = proximityRanker
-                .sortNearestFirst(posts, filters.getArea(), userLocation).stream()
+                .sortNearestFirst(posts, filters.getArea(), userLocation)
+                .stream()
                 .limit(limit)
                 .map(this::toSummary)
                 .toList();
+
         return new PostSearchResult(summaries, relaxed);
     }
 
-    /** Lấy tóm tắt các bài theo id bằng 1 query. Bài đã đóng, hết hạn hoặc bị gỡ sẽ không có trong kết quả. */
+    // Lấy tóm tắt các bài theo ID bằng một query.
+    // Bài đã đóng, hết hạn hoặc bị gỡ sẽ không có trong kết quả.
     @Transactional(readOnly = true)
     public Map<UUID, PostSummaryResponse> findByIds(Collection<UUID> postIds) {
         if (postIds.isEmpty()) {
             return Map.of();
         }
+
         Specification<Post> spec = Specification.allOf(
                 PostSpecification.fetchSubject(),
                 PostSpecification.fetchAuthor(),
                 PostSpecification.hasStatus(PostStatus.PUBLISHED),
                 PostSpecification.notExpired(Instant.now()),
-                idIn(postIds));
+                idIn(postIds)
+        );
 
         return postRepository.findAll(spec).stream()
                 .collect(Collectors.toMap(Post::getId, this::toSummary));
@@ -92,6 +129,17 @@ public class PostSearcher {
     }
 
     private List<Post> find(PostSearchFilters f, PostType type) {
+
+        // Chuẩn hóa tên tỉnh/thành phố trước khi tạo điều kiện SQL.
+        String normalizedProvince =
+                provinceNormalizationService.normalize(f.getProvince());
+
+        log.info(
+                "[CHATBOT DEBUG] Province gốc={}, province chuẩn hóa={}",
+                f.getProvince(),
+                normalizedProvince
+        );
+
         Specification<Post> spec = Specification.allOf(
                 PostSpecification.fetchSubject(),
                 PostSpecification.fetchAuthor(),
@@ -99,23 +147,40 @@ public class PostSearcher {
                 PostSpecification.notExpired(Instant.now()),
                 PostSpecification.hasType(type),
                 PostSpecification.subjectContains(f.getSubjectName()),
-                PostSpecification.provinceContains(f.getProvince()),
+                PostSpecification.provinceContains(normalizedProvince),
                 PostSpecification.hasEducationLevel(f.getEducationLevel()),
                 PostSpecification.authorTutorMatches(
-                        f.getMinExperienceYears(), f.getMinRate(), f.getMaxRate(), f.getMinRating()));
+                        f.getMinExperienceYears(),
+                        f.getMinRate(),
+                        f.getMaxRate(),
+                        f.getMinRating()
+                )
+        );
 
-        PageRequest page = PageRequest.of(0, properties.getCandidatePoolSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
+        PageRequest page = PageRequest.of(
+                0,
+                properties.getCandidatePoolSize(),
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
+
         List<Post> posts = postRepository.findAll(spec, page).getContent();
-        log.debug("Chatbot search (subject={}, province={}, type={}) -> {} bài",
-                f.getSubjectName(), f.getProvince(), type, posts.size());
+
+        log.debug(
+                "Chatbot search (subject={}, province={}, type={}) -> {} bài",
+                f.getSubjectName(),
+                normalizedProvince,
+                type,
+                posts.size()
+        );
+
         return posts;
     }
 
     private PostSummaryResponse toSummary(Post post) {
         return PostSummaryResponse.builder()
                 .id(post.getId())
-                .title(post.getTitle())
                 .subjectName(post.getSubject().getName())
+                .title(post.getTitle())
                 .location(formatAddress(post.getAddress()))
                 .minBudget(post.getMinBudget())
                 .maxBudget(post.getMaxBudget())
@@ -129,7 +194,12 @@ public class PostSearcher {
         if (address == null) {
             return null;
         }
-        return Stream.of(address.getStreet(), address.getWard(), address.getProvince())
+
+        return Stream.of(
+                        address.getStreet(),
+                        address.getWard(),
+                        address.getProvince()
+                )
                 .filter(StringUtils::hasText)
                 .collect(Collectors.joining(", "));
     }

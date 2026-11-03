@@ -18,9 +18,7 @@ import java.net.URI;
 public class CertificateReviewAiService {
 
     private final ChatClient chatClient;
-    private final PromptLoader promptLoader;
-    private final String systemPromptPath;
-    private final String userPromptPath;
+    private final String userTemplate;
     private final int maxTextLength;
 
     public CertificateReviewAiService(
@@ -29,10 +27,13 @@ public class CertificateReviewAiService {
             @Value("${app.ai.prompt.path.certificate-review-system}") String systemPromptPath,
             @Value("${app.ai.prompt.path.certificate-review-user}") String userPromptPath,
             @Value("${app.ai.certificate.max-text-length}") int maxTextLength) {
-        this.chatClient = builder.build();
-        this.promptLoader = promptLoader;
-        this.systemPromptPath = systemPromptPath;
-        this.userPromptPath = userPromptPath;
+        // Load một lần khi bean được tạo (lúc server khởi động)
+        String systemTemplate = promptLoader.load(systemPromptPath);
+        this.userTemplate = promptLoader.load(userPromptPath);
+
+        this.chatClient = builder
+                .defaultSystem(systemTemplate)
+                .build();
         this.maxTextLength = maxTextLength;
     }
 
@@ -42,13 +43,10 @@ public class CertificateReviewAiService {
      * @throws AiProviderException khi gọi AI thất bại hoặc AI không trả kết quả
      */
     public CertificateCheck check(String fullName, String imageUrl) {
-        String systemTemplate = promptLoader.load(systemPromptPath);
-        String userTemplate = promptLoader.load(userPromptPath);
 
         CertificateCheck result;
         try {
             result = chatClient.prompt()
-                    .system(s -> s.text(systemTemplate))
                     .user(u -> u.text(userTemplate)
                             .param("fullName", sanitize(fullName))
                             .media(mimeOf(imageUrl), UrlResource.from(URI.create(imageUrl))))

@@ -110,7 +110,7 @@ public class AuthenticationService {
         if (subjects.size() != req.getSubjectIds().size()) {
             throw new AppException(ErrorCode.SUBJECT_NOT_FOUND);
         }
-
+        log.info("Certificates count: {}", certificates == null ? 0 : certificates.size());
         Tutor tutor = userMapper.toTutor(req);
         tutor.setId(appUtil.generateUUID());
         tutor.setPassword(passwordEncoder.encode(req.getPassword()));
@@ -119,7 +119,6 @@ public class AuthenticationService {
         tutor.setSubjects(Set.copyOf(subjects));
         tutor.setAverageRating(0.0);
         tutor.setVerificationStatus(VerificationStatus.PENDING);
-
         List<MultipartFile> files = Optional.ofNullable(certificates).orElse(List.of())
                 .stream().filter(f -> !f.isEmpty()).toList();
 
