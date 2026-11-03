@@ -17,16 +17,11 @@ import java.util.UUID;
 public class PostSummaryResponse {
     private UUID id;
     private String title;
-    private PostType type;
     private String subjectName;
-    private EducationLevel educationLevel;
-    private TeachingMode teachingMode;
     private String location;
     private BigDecimal minBudget;
     private BigDecimal maxBudget;
     private BudgetUnit budgetUnit;
-    private Instant deadline;
-    private UUID authorId;
     private String authorName;
     private String authorAvatarUrl;
 }

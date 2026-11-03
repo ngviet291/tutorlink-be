@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.group3.tutorlink.features.chatbot.enums.ChatRole;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -14,4 +15,5 @@ public class ChatMessageResponse {
     private ChatRole role;
     private String content;
     private Instant createdAt;
+    private List<PostSummaryResponse> posts;
 }

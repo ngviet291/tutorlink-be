@@ -12,4 +12,5 @@ public interface ChatbotMapper {
     ConversationResponse toConversationResponse(ChatConversation conversation);
 
     ChatMessageResponse toChatMessageResponse(ChatMessage message);
+
 }
