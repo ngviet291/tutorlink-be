@@ -7,6 +7,16 @@ import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.enums.TeachingMode;
 import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import org.group3.tutorlink.features.user.entity.Tutor;
+import org.springframework.util.StringUtils;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -192,5 +202,67 @@ public class PostSpecification {
 
             return null;
         };
+    }
+    public static Specification<Post> fetchAuthor() {
+        return (root, query, cb) -> {
+            if (query.getResultType() != Long.class
+                    && query.getResultType() != long.class) {
+                root.fetch("author", JoinType.LEFT);
+            }
+            return null;
+        };
+    }
+
+    public static Specification<Post> notExpired(Instant now) {
+        return (root, query, cb) -> cb.or(
+                cb.isNull(root.get("deadline")),
+                cb.greaterThan(root.<Instant>get("deadline"), now)
+        );
+    }
+
+    public static Specification<Post> subjectContains(String subjectName) {
+        return (root, query, cb) -> !StringUtils.hasText(subjectName) ? null
+                : cb.like(cb.lower(root.get("subject").<String>get("name")), like(subjectName));
+    }
+
+    public static Specification<Post> provinceContains(String province) {
+        return (root, query, cb) -> !StringUtils.hasText(province) ? null
+                : cb.like(cb.lower(root.get("address").<String>get("province")), like(province));
+    }
+
+    public static Specification<Post> authorTutorMatches(Integer minExperienceYears,
+                                                         Double minRate,
+                                                         Double maxRate,
+                                                         Double minRating) {
+        boolean noTutorCondition = minExperienceYears == null && minRate == null
+                && maxRate == null && minRating == null;
+        if (noTutorCondition) {
+            return (root, query, cb) -> null;
+        }
+        return (root, query, cb) -> {
+            Subquery<UUID> subquery = query.subquery(UUID.class);
+            Root<Tutor> tutor = subquery.from(Tutor.class);
+
+            List<Predicate> conditions = new ArrayList<>();
+            conditions.add(cb.equal(tutor.get("id"), root.get("author").get("id")));
+            if (minExperienceYears != null) {
+                conditions.add(cb.greaterThanOrEqualTo(tutor.<Integer>get("experienceYears"), minExperienceYears));
+            }
+            if (minRate != null) {
+                conditions.add(cb.greaterThanOrEqualTo(tutor.<Double>get("hourlyRate"), minRate));
+            }
+            if (maxRate != null) {
+                conditions.add(cb.lessThanOrEqualTo(tutor.<Double>get("hourlyRate"), maxRate));
+            }
+            if (minRating != null) {
+                conditions.add(cb.greaterThanOrEqualTo(tutor.<Double>get("averageRating"), minRating));
+            }
+            subquery.select(tutor.<UUID>get("id")).where(conditions.toArray(Predicate[]::new));
+            return cb.exists(subquery);
+        };
+    }
+
+    private static String like(String value) {
+        return "%" + value.trim().toLowerCase(Locale.ROOT) + "%";
     }
 }

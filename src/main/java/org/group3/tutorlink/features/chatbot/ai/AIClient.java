@@ -14,17 +14,16 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/** Nhờ Gemini đọc tin nhắn của người dùng và cho biết họ muốn gì (intent + bộ lọc tìm bài đăng). */
 @Slf4j
 @Component
-public class GeminiClient {
+public class AIClient {
 
     private final ChatClient chatClient;
     private final String userPrompt;
 
-    public GeminiClient(ChatClient.Builder builder,
-                        ChatbotProperties properties,
-                        PromptLoader promptLoader) {
+    public AIClient(ChatClient.Builder builder,
+                    ChatbotProperties properties,
+                    PromptLoader promptLoader) {
         // Prompt chỉ đọc file 1 lần lúc khởi động
         String systemPrompt = promptLoader.load(properties.getPrompts().getSystem());
         this.userPrompt = promptLoader.load(properties.getPrompts().getUser());
@@ -36,11 +35,10 @@ public class GeminiClient {
                 .build();
     }
 
-    /** Lỗi, quá thời gian hoặc Gemini không trả về intent đều báo AiUnavailableException. */
     public AssistantTurn analyze(String history, String message) {
         long startedAt = System.currentTimeMillis();
         try {
-            AssistantTurn turn = askGemini(history, message);
+            AssistantTurn turn = ask(history, message);
             log.info("Gemini trả lời sau {} ms (intent={})", elapsedSince(startedAt), turn.getIntent());
             return turn;
         } catch (Exception e) {
@@ -68,14 +66,14 @@ public class GeminiClient {
         return false;
     }
 
-    private AssistantTurn askGemini(String history, String message) {
+    private AssistantTurn ask(String history, String message) {
         AssistantTurn turn = chatClient.prompt()
                 .user(user -> user.text(userPrompt).param("history", history).param("message", message))
                 .call()
                 .entity(AssistantTurn.class);
 
         if (turn == null || turn.getIntent() == null) {
-            throw new IllegalStateException("Gemini did not return an intent");
+            throw new IllegalStateException("AI did not return an intent");
         }
         return turn;
     }

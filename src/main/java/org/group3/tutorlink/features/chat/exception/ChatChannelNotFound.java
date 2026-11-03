@@ -1,7 +1,6 @@
-package org.group3.tutorlink.features.chat.expection;
+package org.group3.tutorlink.features.chat.exception;
 
 import org.group3.tutorlink.common.exception.AppException;
-import org.group3.tutorlink.common.exception.BaseErrorCode;
 
 public class ChatChannelNotFound extends AppException {
     public ChatChannelNotFound() {

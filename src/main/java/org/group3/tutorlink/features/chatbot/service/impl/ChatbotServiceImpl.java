@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.chatbot.ai.AssistantTurn;
-import org.group3.tutorlink.features.chatbot.ai.GeminiClient;
+import org.group3.tutorlink.features.chatbot.ai.PostSearchFilters;
+import org.group3.tutorlink.features.chatbot.ai.AIClient;
 import org.group3.tutorlink.features.chatbot.config.ChatbotProperties;
 import org.group3.tutorlink.features.chatbot.dto.request.ChatMessageRequest;
+import org.group3.tutorlink.features.chatbot.dto.request.UserLocation;
 import org.group3.tutorlink.features.chatbot.dto.response.ChatMessageResponse;
 import org.group3.tutorlink.features.chatbot.dto.response.ChatResponse;
 import org.group3.tutorlink.features.chatbot.dto.response.ConversationResponse;
@@ -44,7 +46,7 @@ public class ChatbotServiceImpl implements ChatbotService {
     private static final String HISTORY_LINE_SEPARATOR = "\n";
     private static final String HISTORY_ROLE_SEPARATOR = ": ";
 
-    private final GeminiClient geminiClient;
+    private final AIClient aiClient;
     private final PostSearcher postSearcher;
     private final ChatConversationRepository conversationRepository;
     private final ChatMessageRepository messageRepository;
@@ -62,36 +64,29 @@ public class ChatbotServiceImpl implements ChatbotService {
         ChatConversation conversation = isGuest ? null : findOrCreateConversation(request, userId);
         String history = isGuest ? messages.get(ChatbotMessageKey.HISTORY_EMPTY) : loadHistory(conversation);
 
-        // 1. Hỏi Gemini: người dùng muốn gì?
-        AssistantTurn turn = geminiClient.analyze(history, request.getMessage());
+        // Bước 1: nhờ AI hiểu người dùng muốn gì.
+        AssistantTurn turn = aiClient.analyze(history, request.getMessage());
 
-        // 2. Nếu muốn tìm bài đăng thì tự query DB (không tin AI)
+        // Bước 2: tùy ý định mà trả lời. Việc tìm bài đăng do code làm, không tin AI.
         ChatIntent intent = turn.getIntent();
-        String answer = turn.getMessage();
         List<PostSummaryResponse> posts = List.of();
+        String answer;
 
-        if (intent == ChatIntent.SEARCH_POSTS) {
-            if (turn.getFilters() == null || !StringUtils.hasText(turn.getFilters().getSubjectName())) {
-                intent = ChatIntent.ASK_CLARIFICATION;
-                answer = messages.get(ChatbotMessageKey.ASK_SUBJECT);
-            } else {
-                log.info("Chatbot filters: {}", turn.getFilters());
-                int limit = isGuest ? properties.getGuestPostLimit() : properties.getMemberPostLimit();
-                long searchStart = System.currentTimeMillis();
-                posts = postSearcher.search(turn.getFilters(), limit);
-                log.info("Chatbot: query DB mất {} ms, {} kết quả", System.currentTimeMillis() - searchStart, posts.size());
-                answer = describeResult(posts.size(), isGuest);
-            }
-        } else if (!StringUtils.hasText(answer)) {
-            answer = messages.get(ChatbotMessageKey.NOT_UNDERSTOOD);
+        if (intent != ChatIntent.SEARCH_POSTS) {
+            answer = StringUtils.hasText(turn.getMessage())
+                    ? turn.getMessage()
+                    : messages.get(ChatbotMessageKey.NOT_UNDERSTOOD);
+        } else if (!hasSubject(turn.getFilters())) {
+            intent = ChatIntent.ASK_CLARIFICATION;
+            answer = messages.get(ChatbotMessageKey.ASK_SUBJECT);
+        } else {
+            posts = searchPosts(turn.getFilters(), request, userId);
+            answer = describeResult(posts.size(), isGuest);
         }
 
-        // 3. Thành viên: lưu lại cả câu hỏi lẫn câu trả lời
+        // Bước 3: thành viên thì lưu lại cuộc trò chuyện.
         if (!isGuest) {
-            saveMessage(conversation, ChatRole.USER, request.getMessage());
-            saveMessage(conversation, ChatRole.ASSISTANT, answer);
-            conversation.setLastMessageAt(Instant.now());
-            conversationRepository.save(conversation);
+            saveExchange(conversation, request.getMessage(), answer);
         }
 
         return ChatResponse.builder()
@@ -132,6 +127,37 @@ public class ChatbotServiceImpl implements ChatbotService {
     }
 
     // ---------- helpers ----------
+
+    private boolean hasSubject(PostSearchFilters filters) {
+        return filters != null && StringUtils.hasText(filters.getSubjectName());
+    }
+
+    // Guest được xem ít bài hơn thành viên (giới hạn nằm trong application.properties).
+    private List<PostSummaryResponse> searchPosts(PostSearchFilters filters, ChatMessageRequest request, UUID userId) {
+        int limit = (userId == null) ? properties.getGuestPostLimit() : properties.getMemberPostLimit();
+        log.info("Chatbot filters: {}", filters);
+        return postSearcher.search(filters, resolveLocation(request, userId), limit);
+    }
+
+    private void saveExchange(ChatConversation conversation, String question, String answer) {
+        saveMessage(conversation, ChatRole.USER, question);
+        saveMessage(conversation, ChatRole.ASSISTANT, answer);
+        conversation.setLastMessageAt(Instant.now());
+        conversationRepository.save(conversation);
+    }
+
+    // Ưu tiên vị trí user gửi lên, không có thì thành viên dùng địa chỉ hồ sơ, guest thì không biết.
+    private UserLocation resolveLocation(ChatMessageRequest request, UUID userId) {
+        if (request.getLocation() != null && request.getLocation().isKnown()) {
+            return request.getLocation();
+        }
+        if (userId == null) {
+            return UserLocation.unknown();
+        }
+        return userRepository.findById(userId)
+                .map(user -> UserLocation.fromAddress(user.getAddress()))
+                .orElse(UserLocation.unknown());
+    }
 
     private ChatConversation findOrCreateConversation(ChatMessageRequest request, UUID userId) {
         if (request.getConversationId() != null) {

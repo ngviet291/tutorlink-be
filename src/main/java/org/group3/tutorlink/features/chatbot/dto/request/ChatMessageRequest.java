@@ -1,5 +1,6 @@
 package org.group3.tutorlink.features.chatbot.dto.request;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -18,4 +19,7 @@ public class ChatMessageRequest {
     @NotBlank(message = "Message cannot be empty")
     @Size(max = 1000, message = "Message is too long")
     private String message;
+    //Tùy chọn
+    @Valid
+    private UserLocation location;
 }
