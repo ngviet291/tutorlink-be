@@ -1,0 +1,6 @@
+<POST>
+Tiêu đề: {title}
+Nội dung: {content}
+Môn: {subject}
+Cấp học: {level}
+</POST>

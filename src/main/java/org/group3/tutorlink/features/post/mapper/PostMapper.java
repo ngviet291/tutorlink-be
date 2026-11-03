@@ -3,13 +3,13 @@ package org.group3.tutorlink.features.post.mapper;
 import org.group3.tutorlink.common.entity.Address;
 import org.group3.tutorlink.features.post.dto.request.AddressRequest;
 import org.group3.tutorlink.features.post.dto.request.CreatePostRequest;
+import org.group3.tutorlink.features.post.dto.request.UpdatePostRequest;
 import org.group3.tutorlink.features.post.dto.response.PostResponse;
 import org.group3.tutorlink.features.post.dto.response.SubjectSummaryResponse;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.user.entity.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 import java.util.UUID;
 
@@ -19,7 +19,7 @@ public interface PostMapper {
     @Mapping(target = "author", source = "user")
     @Mapping(target = "subject", source = "subject")
     @Mapping(target = "address", source = "request.address")
-    @Mapping(target = "status", constant = "PUBLISHED")
+    @Mapping(target = "status", source = "request.status")
     @Mapping(target = "applications", ignore = true)
     Post toPost(
             UUID id,
@@ -33,5 +33,22 @@ public interface PostMapper {
     SubjectSummaryResponse toSubjectSummaryResponse(Subject subject);
     @Mapping(target = "author.id", source = "post.author.id")
     @Mapping(target = "author.email", source = "post.author.email")
+    @Mapping(target = "author.fullName", source = "post.author.fullName")
+    @Mapping(target = "author.avatarUrl", source = "post.author.avatarUrl")
+    @Mapping(target = "author.role", source = "post.author.role.name")
     PostResponse toPostResponse(Post post);
+
+    @BeanMapping(
+            nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+    )
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "author", ignore = true)
+    @Mapping(target = "subject", ignore = true)
+    @Mapping(target = "applications", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    void updatePostFromRequest(
+            @MappingTarget Post post,
+            UpdatePostRequest request
+    );
 }

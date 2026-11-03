@@ -3,6 +3,7 @@ package org.group3.tutorlink.features.subject.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.group3.tutorlink.common.entity.BaseEntity;
+import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.user.entity.Tutor;
 
 import java.util.Set;
@@ -28,6 +29,10 @@ public class Subject extends BaseEntity {
     private String category;
 
     // Subject 1 -- 1..* Tutor
-    @OneToMany(mappedBy = "subject")
+    @ManyToMany(mappedBy = "subjects")
+
     private Set<Tutor> tutors ;
+
+    @OneToMany(mappedBy = "subject")
+    private Set<Post> posts;
 }

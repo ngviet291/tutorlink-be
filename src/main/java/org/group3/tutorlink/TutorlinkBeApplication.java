@@ -9,6 +9,7 @@ import java.util.TimeZone;
 public class TutorlinkBeApplication {
 
     public static void main(String[] args) {
+        System.setProperty("user.timezone", "UTC");
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         SpringApplication.run(TutorlinkBeApplication.class, args);
     }

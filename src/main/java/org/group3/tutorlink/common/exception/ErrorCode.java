@@ -23,10 +23,17 @@ public enum ErrorCode implements BaseErrorCode{
     INVALID_DATE_FORMAT("VAL_003", "Invalid date format", HttpStatus.BAD_REQUEST),
     INVALID_NUMBER_FORMAT("VAL_004", "Invalid number format", HttpStatus.BAD_REQUEST),
     FILE_SIZE_EXCEEDED("VAL_005", "File size exceeded the limit", HttpStatus.BAD_REQUEST),
+    INVALID_ENUM_VALUE("VAL_006", "Invalid enum value for parameter '{parameter}': '{value}'. Expected one of {allowedValues}.", HttpStatus.BAD_REQUEST),
     FORBIDDEN("GEN_002", "Forbidden", HttpStatus.FORBIDDEN),
     BAD_REQUEST("GEN_003", "Bad request", HttpStatus.BAD_REQUEST),
     TOKEN_EXPIRED("AUTH_006", "Token has expired", HttpStatus.UNAUTHORIZED),
     USER_NOT_SUPPORTED("USER_008", "Unsupported user type", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_UUID("VAL_006", "Invalid UUID format", HttpStatus.BAD_REQUEST),
+
+    UPLOAD_MEDIA_FAILED("MEDIA_001", "Upload media failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    LOAD_PROMPT_FAILED("PROMPT_001", "Load prompt failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    EXTERNAL_SERVICE_ERROR("EXT_001", "External service error", HttpStatus.INTERNAL_SERVER_ERROR),
+    PROVINCE_NOT_FOUND("ADDR_001", "Province not found", HttpStatus.NOT_FOUND),
     ;
     private final String code;
     private final String message;

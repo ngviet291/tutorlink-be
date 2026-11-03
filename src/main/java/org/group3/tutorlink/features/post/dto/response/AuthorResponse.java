@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
+import org.group3.tutorlink.features.auth.enums.RoleName;
 
 @Data
 @AllArgsConstructor
@@ -14,4 +15,7 @@ import java.util.UUID;
 public class AuthorResponse {
     private UUID id;
     private String email;
+    private String fullName;
+    private String avatarUrl;
+    private RoleName role;
 }

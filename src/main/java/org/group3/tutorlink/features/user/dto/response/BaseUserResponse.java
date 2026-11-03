@@ -15,7 +15,7 @@ import java.util.UUID;
 @SuperBuilder
 public class BaseUserResponse {
     private UUID id;
-    private String fullname;
+    private String fullName;
     private String email;
     private String phone;
     private String avatarUrl;

@@ -20,7 +20,6 @@ public class Certificate extends BaseEntity {
     @Id
     private UUID id;
 
-    @Column(nullable = false)
     private String name;
 
     private String issuedBy;
@@ -30,6 +29,8 @@ public class Certificate extends BaseEntity {
     private LocalDate expiryDate;
 
     private String fileUrl;
+
+    private String cloudinaryPublicId;
 
     private boolean verified;
 

@@ -71,8 +71,7 @@ public class JwtService {
         if (user.getRole() == null) {
             return "";
         }
-
-        return user.getRole().getName();
+        return user.getRole().getName().name();
     }
 
     public long getExpiration() {
