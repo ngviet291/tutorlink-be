@@ -4,6 +4,7 @@ package org.group3.tutorlink.features.post.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
+import org.group3.tutorlink.common.logging.SystemLogPublisher;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.post.dto.request.CreatePostRequest;
@@ -25,6 +26,7 @@ import org.group3.tutorlink.features.post.service.PostService;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.subject.exception.SubjectNotFoundException;
 import org.group3.tutorlink.features.subject.repository.SubjectRepository;
+import org.group3.tutorlink.features.tracking.enums.SystemAction;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
@@ -34,11 +36,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -53,6 +57,7 @@ public class PostServiceImpl implements PostService {
     private final AppUtil appUtil;
     private final UserRepository userRepository;
     private final TutorRepository tutorRepository;
+    private final SystemLogPublisher systemLogPublisher;
 
     @Transactional
     @Override
@@ -71,15 +76,12 @@ public class PostServiceImpl implements PostService {
             throw new SubjectNotBelongToTutorException();
         }
 
-        Post post = postMapper.toPost(
-                appUtil.generateUUID(),
-                user,
-                subject,
-                request
-        );
-
-        Post savedPost = postRepository.saveAndFlush(post);
-
+        Post post = postMapper.toPost(appUtil.generateUUID(), user, subject, request);
+        Post savedPost = postRepository.save(post);
+        systemLogPublisher.success(user.getId(), SystemAction.POST_CREATED,
+                Post.class.getSimpleName(), savedPost.getId(),
+                Map.of("type", request.getType().name(),
+                        "subjectId", subject.getId().toString()));
         return postMapper.toPostResponse(savedPost);
     }
 
@@ -279,7 +281,7 @@ public class PostServiceImpl implements PostService {
 
     /**
      * Lấy tất cả bài đăng của người dùng hiện tại.
-     *
+     * <p>
      * postStatus == null: lấy tất cả trạng thái.
      * postStatus != null: chỉ lấy đúng trạng thái được yêu cầu.
      */

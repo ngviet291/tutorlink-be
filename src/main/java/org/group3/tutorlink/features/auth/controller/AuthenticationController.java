@@ -8,12 +8,19 @@ import org.group3.tutorlink.features.auth.dto.response.AuthenticateResponse;
 import org.group3.tutorlink.features.auth.dto.response.IntrospectResponse;
 import org.group3.tutorlink.features.auth.enums.AuthResponseCode;
 import org.group3.tutorlink.features.auth.service.AuthenticationService;
+import org.group3.tutorlink.features.auth.validation.annotation.ValidImageFiles;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
+@Validated
 public class AuthenticationController {
 
     private final AuthenticationService authService;
@@ -48,12 +55,15 @@ public class AuthenticationController {
     }
 
     // POST /v1/auth/register/tutor
-    @PostMapping("/register/tutor")
+    @PostMapping(value = "/register/tutor", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<AuthenticateResponse> registerTutor(
-            @Valid @RequestBody RegisterTutorRequest req) {
+            @Valid @RequestPart("data") RegisterTutorRequest req,
+            @RequestPart(value = "certificates", required = false)
+            @ValidImageFiles(maxFiles = 5, maxSizeBytes = 5L * 1024 * 1024)
+            List<MultipartFile> certificates) {
 
-        AuthenticateResponse response = authService.registerTutor(req);
+        AuthenticateResponse response = authService.registerTutor(req, certificates);
 
         return ApiResponse.<AuthenticateResponse>builder()
                 .code(AuthResponseCode.REGISTER_SUCCESS.getCode())
@@ -89,11 +99,13 @@ public class AuthenticationController {
                 .message(AuthResponseCode.LOGOUT_SUCCESS.getMessage())
                 .build();
     }
+
     @PostMapping("/forgot-password")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         authService.forgotPassword(forgotPasswordRequest);
     }
+
     @PostMapping("/reset-password")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {

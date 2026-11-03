@@ -2,6 +2,7 @@ package org.group3.tutorlink.features.application.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
+import org.group3.tutorlink.common.logging.SystemLogPublisher;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.features.application.dto.request.CreateApplicationRequest;
@@ -20,6 +21,7 @@ import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.repository.PostRepository;
+import org.group3.tutorlink.features.tracking.enums.SystemAction;
 import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
@@ -34,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -46,6 +49,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final UserRepository userRepository;
     private final AppUtil appUtil;
     private final ApplicationMapper applicationMapper;
+    private final SystemLogPublisher systemLogPublisher;
 
     @Override
     @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
@@ -53,6 +57,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         UUID userId = appUtil.userIdFromAuthentication();
         User currentUser = getUserOrThrow(userId);
+
+        String applicant = currentUser instanceof Student ? "Student" : currentUser instanceof Tutor ? "Tutor" : "Unknown";
 
         Post post = postRepository.findAvailableForApplication(
                         request.getPostId(),
@@ -106,6 +112,9 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         Application saved = applicationRepository.save(application);
+        systemLogPublisher.success(userId, SystemAction.APPLICATION_CREATED,
+                Application.class.getSimpleName(), saved.getId(),
+                Map.of("postId", post.getId().toString(), "proposedFee", saved.getProposedFee().toString(), "applicant", applicant));
         // Đã sửa
         return applicationMapper.toApplicationResponse(saved);
     }

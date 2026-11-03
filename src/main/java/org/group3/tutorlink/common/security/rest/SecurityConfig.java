@@ -42,6 +42,7 @@ public class SecurityConfig {
             "/v1/auth/logout",
             "/v1/payments/momo/ipn",
             "/v1/payments/zalopay/callback",
+            "/v1/tracking/events",
             "/v1/chatbot/messages"
     };
 
@@ -53,6 +54,7 @@ public class SecurityConfig {
             "/v1/subjects/**",
             "/v1/users/*/public-profile",
             "/v1/users/tutors/search",
+            "/v1/addresses/**",
             "/v1/posts",
             "/v1/posts/*"
     };

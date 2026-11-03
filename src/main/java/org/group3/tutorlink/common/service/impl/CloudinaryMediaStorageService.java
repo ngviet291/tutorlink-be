@@ -13,8 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -83,12 +86,30 @@ public class CloudinaryMediaStorageService implements MediaStorageService {
     }
 
     @Override
+    public List<UploadMediaResponse> uploads(List<MultipartFile> files, String folder, MediaType mediaType) {
+        List<UploadMediaResponse> uploaded = new ArrayList<>();
+        try {
+            for (MultipartFile file : files) {
+                uploaded.add(uploadSync(file, folder, mediaType));
+            }
+            return uploaded;
+        } catch (RuntimeException e) {
+            // Một ảnh lỗi thì xóa các ảnh đã lên để không để rác trên Cloudinary
+            uploaded.forEach(u -> delete(u.getPublicId()));
+            throw e;
+        }
+    }
+
+    @Override
     public UploadMediaResponse uploadSync(MultipartFile file, String folder, MediaType mediaType) {
             try {
                 return upload(file.getBytes(), folder, mediaType).join();
             } catch (IOException e) {
                 log.error("Upload media failed", e);
                 throw new UploadMediaException();
+            }catch (CompletionException e) {
+                log.error("Upload media failed", e);
+                throw e.getCause() instanceof UploadMediaException ex ? ex : new UploadMediaException();
             }
     }
 }

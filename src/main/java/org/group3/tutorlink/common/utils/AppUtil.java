@@ -76,6 +76,24 @@ public class AppUtil {
         }
     }
 
+    public UUID userIdFromAuthenticationOrNull() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+
+        String principal = authentication.getName();
+        if (principal == null || principal.isBlank()) {
+            return null;
+        }
+
+        try {
+            return UUID.fromString(principal);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
+    }
 
     /**
      * Build a cursor-based pagination response.

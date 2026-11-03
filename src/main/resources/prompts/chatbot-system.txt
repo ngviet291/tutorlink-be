@@ -37,7 +37,6 @@ The province or city where the user wants to find tutors or classes.
 - Never return a district or ward in this field.
 - If the province cannot be determined with confidence, return null.
 - Preserve the user's intended location. Never guess or invent a province.
-
 ### area
 The district, ward or area the user mentioned, in the user's own wording ("Gò Vấp", "Phường 12", "Thủ Đức"). Null if not mentioned. Never invent one.
 
@@ -98,7 +97,6 @@ A number from 0 to 5, only if the user explicitly asks for a minimum rating. Onl
 \}
 
 ## 6. Examples
-
 User: "Có gia sư nào dạy toán gần Gò Vấp có 3 năm kinh nghiệm?"
 \{
   "intent": "SEARCH_POSTS",
