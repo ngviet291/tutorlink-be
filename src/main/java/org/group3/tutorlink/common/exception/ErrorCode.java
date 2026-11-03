@@ -32,6 +32,8 @@ public enum ErrorCode implements BaseErrorCode{
 
     UPLOAD_MEDIA_FAILED("MEDIA_001", "Upload media failed", HttpStatus.INTERNAL_SERVER_ERROR),
     LOAD_PROMPT_FAILED("PROMPT_001", "Load prompt failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    EXTERNAL_SERVICE_ERROR("EXT_001", "External service error", HttpStatus.INTERNAL_SERVER_ERROR),
+    PROVINCE_NOT_FOUND("ADDR_001", "Province not found", HttpStatus.NOT_FOUND),
     ;
     private final String code;
     private final String message;

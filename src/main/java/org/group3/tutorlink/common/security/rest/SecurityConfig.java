@@ -53,6 +53,7 @@ public class SecurityConfig {
             "/v1/subjects/**",
             "/v1/users/*/public-profile",
             "/v1/users/tutors/search",
+            "/v1/addresses/**",
     };
 
     private static final String[] PUBLIC_ENDPOINTS_HANDSHAKE = {
