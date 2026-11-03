@@ -2,14 +2,21 @@ package org.group3.tutorlink.features.auth.service;
 
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.group3.tutorlink.common.dto.response.UploadMediaResponse;
+import org.group3.tutorlink.common.enums.MediaType;
 import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.common.exception.ErrorCode;
 import org.group3.tutorlink.common.logging.SystemLogPublisher;
+import org.group3.tutorlink.common.service.MediaStorageService;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.dto.request.*;
 import org.group3.tutorlink.features.auth.dto.response.AuthenticateResponse;
 import org.group3.tutorlink.features.auth.dto.response.IntrospectResponse;
+import org.group3.tutorlink.features.auth.event.TutorCertificatesSubmittedEvent;
+import org.group3.tutorlink.features.subject.entity.Certificate;
+import org.group3.tutorlink.features.subject.mapper.CertificateMapper;
 import org.group3.tutorlink.features.subject.mapper.SubjectMapper;
 import org.group3.tutorlink.features.tracking.enums.SystemAction;
 import org.group3.tutorlink.features.user.dto.response.BaseUserResponse;
@@ -32,20 +39,26 @@ import org.group3.tutorlink.features.user.mapper.UserMapper;
 import org.group3.tutorlink.features.user.repository.StudentRepository;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
 import org.group3.tutorlink.features.user.repository.UserRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
 @Service
 public class AuthenticationService {
 
+    public static final String TUTOR_CERTIFICATES = "tutor-certificates/";
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final TutorRepository tutorRepository;
@@ -62,6 +75,9 @@ public class AuthenticationService {
     private final PasswordGenerator passwordGenerator;
     private final EmailService emailService;
     private final SystemLogPublisher systemLogPublisher;
+    private final MediaStorageService mediaStorageService;
+    private final ApplicationEventPublisher eventPublisher;
+    private final CertificateMapper certificateMapper;
 
     @Transactional
     public AuthenticateResponse registerStudent(RegisterStudentRequest req) {
@@ -85,7 +101,7 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public AuthenticateResponse registerTutor(RegisterTutorRequest req) {
+    public AuthenticateResponse registerTutor(RegisterTutorRequest req, List<MultipartFile> certificates) {
         assertEmailNotTaken(req.getEmail());
 
         Role role = getRoleOrThrow(RoleName.TUTOR);
@@ -104,6 +120,27 @@ public class AuthenticationService {
         tutor.setAverageRating(0.0);
         tutor.setVerificationStatus(VerificationStatus.PENDING);
 
+        List<MultipartFile> files = Optional.ofNullable(certificates).orElse(List.of())
+                .stream().filter(f -> !f.isEmpty()).toList();
+
+        if (!files.isEmpty()) {
+
+            List<UploadMediaResponse> uploaded =
+                    mediaStorageService.uploads(files, TUTOR_CERTIFICATES + tutor.getId(), MediaType.IMAGE);
+            log.info("Uploaded {} certificates for tutor {}", uploaded.size(), tutor.getId());
+            // Rollback DB thì xóa ảnh đã lên Cloudinary
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCompletion(int status) {
+                    if (status == STATUS_ROLLED_BACK)
+                        uploaded.forEach(u -> mediaStorageService.delete(u.getPublicId()));
+                }
+            });
+
+            tutor.setCertificates(Set.copyOf(certificateMapper.toCertificates(uploaded, tutor)));
+        }
+
+
         tutorRepository.save(tutor);
         systemLogPublisher.success(tutor.getId(), SystemAction.REGISTER,
                 User.class.getSimpleName(), tutor.getId(),
@@ -111,7 +148,9 @@ public class AuthenticationService {
                         "subjectCount", subjects.size()));
 
         log.info("Registered new tutor account: {}", tutor.getId());
-
+        if (!files.isEmpty()) {
+            eventPublisher.publishEvent(TutorCertificatesSubmittedEvent.builder().tutorId(tutor.getId()).build());
+        }
         return buildAuthResponse(tutor);
     }
 
@@ -120,12 +159,12 @@ public class AuthenticationService {
         User user = userRepository.findByEmail(req.getEmail()).orElse(null);
 
         if (user == null || !passwordEncoder.matches(req.getPassword(), user.getPassword())) {
-            systemLogPublisher.failed(SystemAction.LOGIN, "INVALID_CREDENTIALS", null);
+            systemLogPublisher.failed(SystemAction.LOGIN, ErrorCode.INVALID_CREDENTIALS.name(), null);
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
 
         if (user.getUserStatus() == UserStatus.BANNED) {
-            systemLogPublisher.failed(SystemAction.LOGIN, "ACCOUNT_BANNED",
+            systemLogPublisher.failed(SystemAction.LOGIN, ErrorCode.ACCOUNT_BANNED.name(),
                     Map.of("userId", user.getId().toString()));
             throw new AppException(ErrorCode.ACCOUNT_BANNED);
         }
@@ -177,7 +216,7 @@ public class AuthenticationService {
 
             refreshTokenService.deleteRefreshToken(refreshToken);
             systemLogPublisher.success(UUID.fromString(signedJWT.getJWTClaimsSet().getSubject()), SystemAction.LOGOUT,
-                    User.class.getSimpleName(),signedJWT.getJWTClaimsSet().getSubject() , null);
+                    User.class.getSimpleName(), signedJWT.getJWTClaimsSet().getSubject(), null);
         } catch (ParseException e) {
             throw new UnauthenticatedException();
         }
@@ -272,6 +311,7 @@ public class AuthenticationService {
         systemLogPublisher.success(user.getId(), SystemAction.PASSWORD_RESET,
                 User.class.getSimpleName(), user.getId(), null);
     }
+
     @Transactional
     public void forgotPassword(ForgotPasswordRequest request) {
         userRepository.findByEmail(request.getEmail()).ifPresentOrElse(user -> {

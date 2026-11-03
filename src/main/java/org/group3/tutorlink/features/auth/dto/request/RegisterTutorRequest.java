@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.group3.tutorlink.features.user.dto.request.AddressRequest;
 import org.group3.tutorlink.features.user.enums.Gender;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
