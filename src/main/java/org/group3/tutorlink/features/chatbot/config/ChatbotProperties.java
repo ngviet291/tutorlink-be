@@ -2,7 +2,6 @@ package org.group3.tutorlink.features.chatbot.config;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.group3.tutorlink.features.post.enums.PostType;
@@ -10,9 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.Duration;
-import java.util.List;
 
-// Toàn bộ cấu hình của chatbot nằm ở application.properties, prefix "app.chatbot".
 @Data
 @Validated
 @ConfigurationProperties(prefix = "app.chatbot")
@@ -29,7 +26,7 @@ public class ChatbotProperties {
     @Min(1)
     private int candidatePoolSize;
 
-    // Chỉ gửi bấy nhiêu tin nhắn gần nhất cho AI để prompt không phình to
+    // Chỉ gửi bấy nhiêu tin nhắn gần nhất cho AI
     @Min(1)
     private int historyLimit;
 
@@ -38,9 +35,6 @@ public class ChatbotProperties {
 
     @NotNull
     private PostType defaultPostType;
-
-    @NotEmpty
-    private List<String> provinces;
 
     // Danh sách môn học đưa vào prompt được cache bấy nhiêu lâu
     @NotNull
