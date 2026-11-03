@@ -145,8 +145,8 @@ public class PaymentServiceImpl implements PaymentService {
         Transaction transaction = transactionRepository.findForUpdateByProviderOrderId(result.providerOrderId())
                 .orElse(null);
         if (transaction == null) {
-            log.warn("{} callback for unknown order {}", method, result.providerOrderId());
-            return;
+            // Ask the provider to retry if the create transaction has not committed yet.
+            throw new AppException(PaymentErrorCode.TRANSACTION_NOT_FOUND);
         }
         settleTopUp(transaction, method, result);
     }
@@ -178,7 +178,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     // Chốt kết quả giao dịch nạp tiền. Idempotent: chỉ xử lý khi giao dịch còn PENDING.
     private void settleTopUp(Transaction transaction, PaymentMethod method, GatewayCallbackResult result) {
-        if (transaction.getType() != TransactionType.TOP_UP || transaction.getPaymentMethod() != method) {
+        if (!java.util.Objects.equals(transaction.getProviderOrderId(), result.providerOrderId())
+                || transaction.getType() != TransactionType.TOP_UP || transaction.getPaymentMethod() != method) {
             log.warn("Ignore {} result for transaction {}: type/method mismatch", method, transaction.getId());
             return;
         }
@@ -187,7 +188,8 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         if (result.state() == GatewayPaymentState.SUCCESS) {
-            if (result.amount() != null && transaction.getAmount().compareTo(result.amount()) != 0) {
+            if (result.amount() == null || transaction.getAmount().compareTo(result.amount()) != 0
+                    || result.providerTransId() == null || result.providerTransId().isBlank()) {
                 // Chữ ký hợp lệ nhưng số tiền lệch với đơn đã tạo -> không cộng ví, cần đối soát thủ công
                 log.error("{} amount mismatch for transaction {}: expected {}, gateway {}",
                         method, transaction.getId(), transaction.getAmount(), result.amount());

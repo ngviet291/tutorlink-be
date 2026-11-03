@@ -7,6 +7,7 @@ import org.group3.tutorlink.features.payment.exception.PaymentErrorCode;
 import org.group3.tutorlink.features.payment.gateway.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.math.RoundingMode;
 import java.util.LinkedHashMap;
@@ -15,7 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Tích hợp MoMo Payment Gateway - "Thanh toán một lần" (payWithATM) - API v2.
+ * Tích hợp MoMo Payment Gateway - "Thanh toán một lần" (captureWallet) - API v2.
  * 
  * Luồng thanh toán:
  * 1. Backend tạo đơn hàng với MoMo -> nhận payUrl
@@ -29,11 +30,12 @@ import java.util.UUID;
  */
 @Slf4j
 @Component
+// Giữ gateway QR MoMo làm mặc định; cờ demo không thay profile của ứng dụng.
+@ConditionalOnProperty(name = "payment.demo.enabled", havingValue = "false", matchIfMissing = true)
 public class MomoGateway implements PaymentGateway {
 
-    // Payment request type - ATM/Visa payment method
-    // For QR code payment: use "captureWallet" (requires MoMo test app)
-    private static final String REQUEST_TYPE = "payWithATM";
+    // One-time MoMo wallet payment.
+    private static final String REQUEST_TYPE = "captureWallet";
     
     private static final String IPN_PATH = "/v1/payments/momo/ipn";
 
@@ -41,28 +43,28 @@ public class MomoGateway implements PaymentGateway {
     // 1000: initialized, 7000/7002: processing, 9000: authorized -> not final result yet
     private static final Set<Integer> PENDING_CODES = Set.of(1000, 7000, 7002, 9000);
 
-    @Value("${payment.momo.base-url:https://payment.momo.vn}")
+    @Value("${MOMO_BASE_URL:}")
     private String baseUrl;
 
-    @Value("${payment.momo.endpoint-create:https://payment.momo.vn/v2/gateway/api/create}")
+    @Value("${MOMO_ENDPOINT_CREATE:}")
     private String endpointCreate;
 
-    @Value("${payment.momo.endpoint-query:https://payment.momo.vn/v2/gateway/api/query}")
+    @Value("${MOMO_ENDPOINT_QUERY:}")
     private String endpointQuery;
 
-    @Value("${payment.momo.partner-code:}")
+    @Value("${MOMO_PARTNER_CODE:}")
     private String partnerCode;
 
-    @Value("${payment.momo.access-key:}")
+    @Value("${MOMO_ACCESS_KEY:}")
     private String accessKey;
 
-    @Value("${payment.momo.secret-key:}")
+    @Value("${MOMO_SECRET_KEY:}")
     private String secretKey;
 
-    @Value("${payment.ipn-base-url:http://localhost:8080/api}")
+    @Value("${MOMO_IPN_BASE_URL:}")
     private String ipnBaseUrl;
 
-    @Value("${payment.redirect-url:http://localhost:5173/wallet/top-up/result}")
+    @Value("${MOMO_REDIRECT_URL:}")
     private String redirectUrl;
 
     @Override
@@ -78,11 +80,12 @@ public class MomoGateway implements PaymentGateway {
 
     @Override
     public GatewayPaymentResult createPayment(GatewayPaymentRequest request) {
+        validateConfiguration();
         String requestId = UUID.randomUUID().toString();
-        String amount = request.amount().setScale(0, RoundingMode.HALF_UP).toPlainString();
+        String amount = request.amount().setScale(0, RoundingMode.UNNECESSARY).toPlainString();
         String orderInfo = request.description();
         String extraData = "";
-        String ipnUrl = ipnBaseUrl + IPN_PATH;
+        String ipnUrl = ipnBaseUrl.replaceAll("/+$", "") + IPN_PATH;
 
         // Build signature - fields must be in alphabetical order as per MoMo documentation
         String rawSignature = "accessKey=" + accessKey
@@ -111,23 +114,18 @@ public class MomoGateway implements PaymentGateway {
         body.put("lang", "vi");
         body.put("signature", signature);
 
-        log.info("🔵 MoMo Request URL: {}", endpointCreate);
-        log.info("🔵 MoMo Raw Signature String: {}", rawSignature);
-        log.info("🔵 MoMo Signature: {}", signature);
-        log.info("🔵 MoMo Request Body: {}", body);
-        
-        Map<String, Object> response = GatewayHttp.postJson(endpointCreate, body);
-        
-        log.info("🔵 MoMo Response: {}", response);
+        Map<String, Object> response = GatewayHttp.postJson(createEndpoint(), body);
 
         Integer resultCode = GatewayHttp.intValue(response, "resultCode");
         String payUrl = GatewayHttp.str(response, "payUrl");
-        if (resultCode == null || resultCode != 0 || payUrl.isBlank()) {
-            log.error("❌ MoMo create order failed: resultCode={}, message={}, localMessage={}", 
-                resultCode, 
-                GatewayHttp.str(response, "message"),
-                GatewayHttp.str(response, "localMessage"));
-            throw new AppException(PaymentErrorCode.GATEWAY_ERROR);
+        if (resultCode == null) {
+            throw GatewayHttp.diagnostic(GatewayHttp.Failure.INVALID_RESPONSE, null, null);
+        }
+        if (resultCode != 0) {
+            throw GatewayHttp.diagnostic(GatewayHttp.Failure.MOMO_REJECTED, null, resultCode);
+        }
+        if (payUrl.isBlank()) {
+            throw GatewayHttp.diagnostic(GatewayHttp.Failure.MISSING_PAYMENT_LINK, null, resultCode);
         }
 
         return new GatewayPaymentResult(
@@ -138,6 +136,7 @@ public class MomoGateway implements PaymentGateway {
 
     @Override
     public GatewayCallbackResult verifyCallback(String rawBody) {
+        validateConfiguration();
         Map<String, Object> ipn = GatewayHttp.parse(rawBody);
 
         // Verify signature - fields must be in alphabetical order
@@ -161,6 +160,7 @@ public class MomoGateway implements PaymentGateway {
             throw new AppException(PaymentErrorCode.INVALID_GATEWAY_SIGNATURE);
         }
 
+        validateResult(ipn, null);
         return new GatewayCallbackResult(
                 GatewayHttp.str(ipn, "orderId"),
                 GatewayHttp.str(ipn, "transId"),
@@ -170,6 +170,7 @@ public class MomoGateway implements PaymentGateway {
 
     @Override
     public GatewayCallbackResult queryOrder(String providerOrderId) {
+        validateConfiguration();
         String requestId = UUID.randomUUID().toString();
         
         // Build signature for query API
@@ -185,13 +186,74 @@ public class MomoGateway implements PaymentGateway {
         body.put("lang", "vi");
         body.put("signature", HmacUtil.hmacSha256Hex(secretKey, rawSignature));
 
-        Map<String, Object> response = GatewayHttp.postJson(endpointQuery, body);
+        Map<String, Object> response = GatewayHttp.postJson(queryEndpoint(), body);
 
+        validateResult(response, providerOrderId);
         return new GatewayCallbackResult(
                 providerOrderId,
                 GatewayHttp.str(response, "transId"),
                 GatewayHttp.decimal(response, "amount"),
                 toState(GatewayHttp.intValue(response, "resultCode")));
+    }
+
+    private void validateConfiguration() {
+        if (partnerCode == null || partnerCode.isBlank()
+                || accessKey == null || accessKey.isBlank()
+                || secretKey == null || secretKey.isBlank()) {
+            throw new AppException(PaymentErrorCode.GATEWAY_NOT_CONFIGURED);
+        }
+        validateHttpsUrl(createEndpoint(), PaymentErrorCode.GATEWAY_ENDPOINT_INVALID);
+        validateHttpsUrl(queryEndpoint(), PaymentErrorCode.GATEWAY_ENDPOINT_INVALID);
+        validateHttpsUrl(ipnBaseUrl, PaymentErrorCode.GATEWAY_IPN_INVALID);
+        try {
+            java.net.URI redirect = java.net.URI.create(redirectUrl);
+            boolean localHttp = "http".equalsIgnoreCase(redirect.getScheme())
+                    && ("localhost".equalsIgnoreCase(redirect.getHost())
+                        || "127.0.0.1".equals(redirect.getHost()));
+            if ((!"https".equalsIgnoreCase(redirect.getScheme()) && !localHttp)
+                    || redirect.getHost() == null || redirect.getUserInfo() != null
+                    || redirect.getFragment() != null) {
+                throw new IllegalArgumentException();
+            }
+        } catch (IllegalArgumentException ex) {
+            throw new AppException(PaymentErrorCode.GATEWAY_REDIRECT_INVALID);
+        }
+    }
+
+    private String createEndpoint() {
+        return endpointCreate == null || endpointCreate.isBlank()
+                ? baseUrl.replaceAll("/+$", "") + "/v2/gateway/api/create" : endpointCreate;
+    }
+
+    private String queryEndpoint() {
+        return endpointQuery == null || endpointQuery.isBlank()
+                ? baseUrl.replaceAll("/+$", "") + "/v2/gateway/api/query" : endpointQuery;
+    }
+
+    private void validateHttpsUrl(String url, PaymentErrorCode errorCode) {
+        try {
+            java.net.URI uri = java.net.URI.create(url);
+            if (!"https".equalsIgnoreCase(uri.getScheme()) || uri.getHost() == null
+                    || uri.getUserInfo() != null || uri.getFragment() != null) {
+                throw new IllegalArgumentException();
+            }
+        } catch (IllegalArgumentException ex) {
+            throw new AppException(errorCode);
+        }
+    }
+
+    private void validateResult(Map<String, Object> result, String expectedOrderId) {
+        String orderId = GatewayHttp.str(result, "orderId");
+        java.math.BigDecimal amount = GatewayHttp.decimal(result, "amount");
+        if (!partnerCode.equals(GatewayHttp.str(result, "partnerCode"))
+                || orderId.isBlank()
+                || (expectedOrderId != null && !expectedOrderId.equals(orderId))
+                || GatewayHttp.intValue(result, "resultCode") == null
+                || amount == null || amount.signum() <= 0
+                || (GatewayHttp.intValue(result, "resultCode") == 0
+                    && GatewayHttp.str(result, "transId").isBlank())) {
+            throw GatewayHttp.diagnostic(GatewayHttp.Failure.INVALID_RESPONSE, null, null);
+        }
     }
 
     private GatewayPaymentState toState(Integer resultCode) {
@@ -209,3 +271,4 @@ public class MomoGateway implements PaymentGateway {
         return value == null || value.isBlank() ? null : value;
     }
 }
+
