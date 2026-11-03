@@ -15,6 +15,8 @@ import org.group3.tutorlink.features.chat.entity.ChatChannel;
 import org.group3.tutorlink.features.chat.entity.Message;
 import org.group3.tutorlink.features.chat.repository.ChatChannelRepository;
 import org.group3.tutorlink.features.chat.repository.MessageRepository;
+import org.group3.tutorlink.features.chatbot.repository.ChatConversationRepository;
+import org.group3.tutorlink.features.chatbot.repository.ChatMessageRepository;
 import org.group3.tutorlink.features.favorite.entity.Favorite;
 import org.group3.tutorlink.features.favorite.repository.FavoriteRepository;
 import org.group3.tutorlink.features.notification.entity.Notification;
@@ -55,7 +57,17 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.group3.tutorlink.features.chatbot.entity.ChatConversation;
+import org.group3.tutorlink.features.chatbot.entity.ChatMessage;
+import org.group3.tutorlink.features.chatbot.enums.ChatRole;
+import org.group3.tutorlink.features.chatbot.repository.ChatConversationRepository;
+import org.group3.tutorlink.features.chatbot.repository.ChatMessageRepository;
+import org.group3.tutorlink.features.user.entity.Student;
+import org.group3.tutorlink.features.user.entity.User;
+import org.group3.tutorlink.features.user.repository.UserRepository;
 
+import java.time.Instant;
+import java.util.List;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.*;
@@ -125,6 +137,8 @@ public class InitData implements CommandLineRunner {
     private final ChatChannelRepository chatChannelRepository;
     private final MessageRepository messageRepository;
     private final NotificationRepository notificationRepository;
+    private final ChatConversationRepository chatConversationRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     // ---- trạng thái dùng chung giữa các bước (chỉ sống trong 1 lần chạy) ----
     private final Map<String, Post> posts = new LinkedHashMap<>();
@@ -143,6 +157,7 @@ public class InitData implements CommandLineRunner {
         initStudents();
         initTutors();
         initAdmins();
+        initChatbotData();
         initFeeConfigs();
         initMarketplaceData();      // posts -> applications -> wallets -> transactions
         initReviews();
@@ -154,7 +169,67 @@ public class InitData implements CommandLineRunner {
 
         log.info("========== INIT DATA COMPLETED ==========");
     }
+    private void initChatbotData() {
 
+        Student student = userRepository.findAll()
+                .stream()
+                .filter(Student.class::isInstance)
+                .map(Student.class::cast)
+                .findFirst()
+                .orElse(null);
+
+        if (student == null) {
+            log.warn("No student found. Skip chatbot initialization.");
+            return;
+        }
+
+        if (!chatConversationRepository
+                .findAllByUser_IdOrderByLastMessageAtDesc(student.getId())
+                .isEmpty()) {
+            log.info("Chatbot data already exists. Skip initialization.");
+            return;
+        }
+
+        // Conversation 1: Tìm gia sư
+        ChatConversation searchConversation = createConversation(student, "Tìm gia sư Toán tại TP.HCM");
+        chatMessageRepository.saveAll(List.of(
+                message(searchConversation, ChatRole.USER, "Xin chào, mình muốn tìm gia sư."),
+                message(searchConversation, ChatRole.ASSISTANT, "Chào bạn! Mình có thể giúp bạn tìm gia sư. Bạn muốn học môn nào?"),
+                message(searchConversation, ChatRole.USER, "Mình muốn tìm gia sư Toán tại TP.HCM, học phí dưới 200000 đồng một giờ."),
+                message(searchConversation, ChatRole.ASSISTANT, "Mình tìm thấy 3 gia sư phù hợp với yêu cầu của bạn.")
+        ));
+
+        // Conversation 2: Hỏi đáp thông thường
+        ChatConversation generalConversation = createConversation(student, "Tìm hiểu về TutorLink");
+        chatMessageRepository.saveAll(List.of(
+                message(generalConversation, ChatRole.USER, "TutorLink là nền tảng gì?"),
+                message(generalConversation, ChatRole.ASSISTANT, "TutorLink là nền tảng kết nối học sinh với gia sư, giúp học sinh tìm kiếm gia sư phù hợp với nhu cầu học tập."),
+                message(generalConversation, ChatRole.USER, "Mình có thể tìm gia sư theo môn học không?"),
+                message(generalConversation, ChatRole.ASSISTANT, "Có nhé! Bạn có thể tìm gia sư theo môn học, khu vực, mức học phí và đánh giá.")
+        ));
+
+        log.info("Chatbot sample data initialized successfully.");
+    }
+
+    private ChatConversation createConversation(Student student, String title) {
+        return chatConversationRepository.save(
+                ChatConversation.builder()
+                        .id(appUtil.generateUUID())
+                        .user(student)
+                        .title(title)
+                        .lastMessageAt(Instant.now())
+                        .build()
+        );
+    }
+
+    private ChatMessage message(ChatConversation conversation, ChatRole role, String content) {
+        return ChatMessage.builder()
+                .id(appUtil.generateUUID())
+                .conversation(conversation)
+                .role(role)
+                .content(content)
+                .build();
+    }
     private void initTutorSchedule(Tutor tutor) {
         List<DayOfWeek> days = new ArrayList<>(List.of(DayOfWeek.values()));
         Collections.shuffle(days);

@@ -42,6 +42,7 @@ public class SecurityConfig {
             "/v1/auth/logout",
             "/v1/payments/momo/ipn",
             "/v1/payments/zalopay/callback",
+            "/v1/chatbot/messages"
     };
 
     /**
