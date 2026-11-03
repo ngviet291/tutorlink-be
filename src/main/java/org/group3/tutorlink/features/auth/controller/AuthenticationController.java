@@ -110,13 +110,6 @@ public class AuthenticationController {
                 .data(response)
                 .build();
     }
-    @GetMapping("/test")
-    public ApiResponse<String> test() {
-        return ApiResponse.<String>builder()
-                .code(AuthResponseCode.LOGIN_SUCCESS.getCode())
-                .message(AuthResponseCode.LOGIN_SUCCESS.getMessage())
-                .data(authService.testAccessDenied())
-                .build();
-    }
+
 
 }
