@@ -30,7 +30,6 @@ public class AIClient {
     private final SubjectCatalog subjectCatalog;
     private final String systemPrompt;
     private final String userPrompt;
-    private final String provinces;
 
     public AIClient(ChatClient.Builder builder,
                     ChatbotProperties properties,
@@ -39,7 +38,6 @@ public class AIClient {
         // Prompt chỉ đọc file 1 lần lúc khởi động
         this.systemPrompt = promptLoader.load(properties.getPrompts().getSystem());
         this.userPrompt = promptLoader.load(properties.getPrompts().getUser());
-        this.provinces = formatQuoted(properties.getProvinces());
         this.subjectCatalog = subjectCatalog;
 
         // Không dùng defaultSystem: danh sách môn học lấy từ DB nên phải gán lúc gọi
@@ -63,7 +61,6 @@ public class AIClient {
 
         AssistantTurn turn = chatClient.prompt()
                 .system(system -> system.text(systemPrompt)
-                        .param("provinces", provinces)
                         .param("subjects", subjects))
                 .user(user -> user.text(userPrompt).param("history", history).param("message", message))
                 .call()

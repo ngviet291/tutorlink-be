@@ -39,8 +39,6 @@ public class ChatbotProperties {
     @NotNull
     private PostType defaultPostType;
 
-    @NotEmpty
-    private List<String> provinces;
 
     // Danh sách môn học đưa vào prompt được cache bấy nhiêu lâu
     @NotNull
