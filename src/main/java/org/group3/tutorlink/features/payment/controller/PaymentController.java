@@ -8,10 +8,7 @@ import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.features.payment.dto.request.CreateFeeConfigRequest;
 import org.group3.tutorlink.features.payment.dto.request.TopUpRequest;
-import org.group3.tutorlink.features.payment.dto.response.FeeConfigResponse;
-import org.group3.tutorlink.features.payment.dto.response.RevenueStatisticsResponse;
-import org.group3.tutorlink.features.payment.dto.response.TransactionResponse;
-import org.group3.tutorlink.features.payment.dto.response.WalletBalanceResponse;
+import org.group3.tutorlink.features.payment.dto.response.*;
 import org.group3.tutorlink.features.payment.enums.PaymentMethod;
 import org.group3.tutorlink.features.payment.enums.PaymentResponseCode;
 import org.group3.tutorlink.features.payment.enums.TransactionStatus;
@@ -184,5 +181,13 @@ public class PaymentController {
                 .message(PaymentResponseCode.CREATE_FEE_CONFIG.getMessage())
                 .data(paymentService.createFeeConfig(request))
                 .build();
+    }
+    // 13. Lấy báo giá phí cho một application - Admin hoặc Tutor của application đó
+    @GetMapping("/applications/{id}/fee-quote")
+    public ApiResponse<FeeQuoteResponse> getFeeQuote(@PathVariable UUID id) {
+        return ApiResponse.<FeeQuoteResponse>builder()
+                .code(PaymentResponseCode.GET_PAYMENTS.getCode())
+                .message(PaymentResponseCode.GET_PAYMENTS.getMessage())
+                .data(paymentService.getFeeQuote(id)).build();
     }
 }

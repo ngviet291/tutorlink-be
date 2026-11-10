@@ -87,4 +87,6 @@ public class Post extends BaseEntity {
             orphanRemoval = true
     )
     private Set<Application> applications;
+    @Column(columnDefinition = "TEXT")
+    private String removalReason;
 }

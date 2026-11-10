@@ -1,6 +1,5 @@
 package org.group3.tutorlink.features.chat.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.exception.AccessDeniedException;
@@ -12,9 +11,9 @@ import org.group3.tutorlink.features.chat.dto.response.MessageResponse;
 import org.group3.tutorlink.features.chat.entity.ChatChannel;
 import org.group3.tutorlink.features.chat.entity.Media;
 import org.group3.tutorlink.features.chat.entity.Message;
-import org.group3.tutorlink.features.chat.expection.CannotMessageSelfException;
-import org.group3.tutorlink.features.chat.expection.ChatChannelNotFound;
-import org.group3.tutorlink.features.chat.expection.ChatErrorCode;
+import org.group3.tutorlink.features.chat.exception.CannotMessageSelfException;
+import org.group3.tutorlink.features.chat.exception.ChatChannelNotFound;
+import org.group3.tutorlink.features.chat.exception.ChatErrorCode;
 import org.group3.tutorlink.features.chat.mapper.ChatMapper;
 import org.group3.tutorlink.features.chat.repository.ChatChannelRepository;
 import org.group3.tutorlink.features.chat.repository.MessageRepository;

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.group3.tutorlink.features.post.enums.BudgetUnit;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
@@ -41,6 +42,8 @@ public class PostResponse {
     private BigDecimal minBudget;
 
     private BigDecimal maxBudget;
+
+    private BudgetUnit budgetUnit;
 
     private Integer sessionsPerWeek;
 

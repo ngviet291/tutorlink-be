@@ -5,6 +5,7 @@ import org.group3.tutorlink.common.dto.response.UploadMediaResponse;
 import org.group3.tutorlink.common.enums.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface MediaStorageService {
@@ -20,6 +21,8 @@ public interface MediaStorageService {
             String folder,
             MediaType mediaType
     );
+
+    List<UploadMediaResponse> uploads(List<MultipartFile> files, String folder, MediaType mediaType);
 
     UploadMediaResponse uploadSync(MultipartFile file, String folder, MediaType mediaType);
 }

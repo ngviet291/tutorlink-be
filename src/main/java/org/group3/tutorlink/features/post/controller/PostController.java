@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.features.post.dto.request.CreatePostRequest;
+import org.group3.tutorlink.features.post.dto.request.RemovePostRequest;
 import org.group3.tutorlink.features.post.dto.request.UpdatePostRequest;
 import org.group3.tutorlink.features.post.dto.response.PostApplicationResponse;
 import org.group3.tutorlink.features.post.dto.response.PostResponse;
@@ -69,13 +70,14 @@ public class PostController {
         return ApiResponse.<CursorResponse<PostResponse>>builder()
                 .code(PostResponseCode.GET_POSTS.getCode())
                 .message(PostResponseCode.GET_POSTS.getMessage())
-                .data(postService.getAllPosts(keyword,
+                .data(postService.getAllPosts(
+                        keyword,
                         type,
                         subjectName,
                         teachingMode,
                         educationLevel,
-                        minBudget,
                         maxBudget,
+                        minBudget,
                         cursor,
                         limit)
                 )
@@ -103,8 +105,8 @@ public class PostController {
                         subjectName,
                         teachingMode,
                         educationLevel,
-                        minBudget,
                         maxBudget,
+                        minBudget,
                         cursor,
                         limit)
                 )
@@ -171,8 +173,8 @@ public class PostController {
                         subjectName,
                         teachingMode,
                         educationLevel,
-                        minBudget,
                         maxBudget,
+                        minBudget,
                         cursor,
                         postStatus,
                         limit)
@@ -191,8 +193,9 @@ public class PostController {
     }
 
     @PatchMapping("/{postId}/remove")
-    public void removePost(@PathVariable UUID postId) {
-        postService.removePostAdmin(postId);
+    public void removePost(@PathVariable UUID postId,
+                           @RequestBody(required = false) RemovePostRequest body) {
+        postService.removePostAdmin(postId, body == null ? null : body.getReason());
     }
 
     @GetMapping("/statistics/posts-by-status")

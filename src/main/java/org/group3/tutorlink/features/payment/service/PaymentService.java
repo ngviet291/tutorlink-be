@@ -3,10 +3,7 @@ package org.group3.tutorlink.features.payment.service;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.features.payment.dto.request.CreateFeeConfigRequest;
 import org.group3.tutorlink.features.payment.dto.request.TopUpRequest;
-import org.group3.tutorlink.features.payment.dto.response.FeeConfigResponse;
-import org.group3.tutorlink.features.payment.dto.response.RevenueStatisticsResponse;
-import org.group3.tutorlink.features.payment.dto.response.TransactionResponse;
-import org.group3.tutorlink.features.payment.dto.response.WalletBalanceResponse;
+import org.group3.tutorlink.features.payment.dto.response.*;
 import org.group3.tutorlink.features.payment.enums.PaymentMethod;
 import org.group3.tutorlink.features.payment.enums.TransactionStatus;
 
@@ -40,4 +37,5 @@ public interface PaymentService {
 
     // Hỏi lại cổng về trạng thái giao dịch nạp tiền đang PENDING (Tutor sở hữu giao dịch)
     TransactionResponse syncTopUpStatus(UUID transactionId);
+    FeeQuoteResponse getFeeQuote(UUID applicationId);
 }

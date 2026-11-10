@@ -7,11 +7,13 @@ import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.group3.tutorlink.features.user.dto.request.ApproveTutorRequest;
 import org.group3.tutorlink.features.user.dto.request.UpdateProfileRequest;
+import org.group3.tutorlink.features.user.dto.request.UpdateTutorProfileRequest;
 import org.group3.tutorlink.features.user.dto.request.UpdateUserStatusRequest;
 import org.group3.tutorlink.features.user.dto.response.BaseUserResponse;
 import org.group3.tutorlink.features.user.dto.response.TutorResponse;
 import org.group3.tutorlink.features.user.enums.UserResponseCode;
 import org.group3.tutorlink.features.user.enums.UserStatus;
+import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.user.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -61,15 +63,16 @@ public class UserController {
     public ApiResponse<CursorResponse<BaseUserResponse>> getAllUsers(
             @RequestParam(required = false) RoleName role,
             @RequestParam(required = false) UserStatus status,
+            @RequestParam(required = false) VerificationStatus verificationStatus,
             @RequestParam(required = false) UUID cursor,
             @RequestParam(defaultValue = "10") int limit) {
         return ApiResponse.<CursorResponse<BaseUserResponse>>builder()
                 .code(UserResponseCode.GET_USERS.getCode())
                 .message(UserResponseCode.GET_USERS.getMessage())
-                .data(userService.getAllUsers(role, status, cursor, limit))
+                .data(userService.getAllUsers(role, status, verificationStatus, cursor, limit))
                 .build();
     }
-    // GET /v1/users/tutors?subjectName=&province=&minRate=&maxRate=&minRating=&cursor= — public
+    // GET /v1/users/tutors?subjectName=&province=&minRate=&maxRate=&minRating=&minExperience=&cursor= — public
     @GetMapping("/tutors/search")
     public ApiResponse<CursorResponse<TutorResponse>> getTutors(
             @RequestParam(required = false) String subjectName,
@@ -77,12 +80,13 @@ public class UserController {
             @RequestParam(required = false) Double minRate,
             @RequestParam(required = false) Double maxRate,
             @RequestParam(required = false) Double minRating,
+            @RequestParam(required = false) Integer minExperience,
             @RequestParam(required = false) UUID cursor,
             @RequestParam(defaultValue = "10") int limit) {
         return ApiResponse.<CursorResponse<TutorResponse>>builder()
                 .code(UserResponseCode.GET_USERS.getCode())
                 .message(UserResponseCode.GET_USERS.getMessage())
-                .data(userService.getTutors(subjectName, province, minRate, maxRate, minRating, cursor, limit))
+                .data(userService.getTutors(subjectName, province, minRate, maxRate, minRating, minExperience, cursor,limit))
                 .build();
     }
 
@@ -119,5 +123,20 @@ public class UserController {
                 .data(userService.updateUserStatus(id, request))
                 .build();
     }
-
+    // PUT /v1/users/me/tutor-profile
+    @GetMapping("/me/tutor-profile")
+    public ApiResponse<TutorResponse> getMyTutorProfile() {
+        return ApiResponse.<TutorResponse>builder()
+                .code(UserResponseCode.USER_FOUND.getCode())
+                .message(UserResponseCode.USER_FOUND.getMessage())
+                .data(userService.getMyTutorProfile()).build();
+    }
+    // PUT /v1/users/me/tutor-profile
+    @PutMapping("/me/tutor-profile")
+    public ApiResponse<TutorResponse> updateMyTutorProfile(@Valid @RequestBody UpdateTutorProfileRequest r) {
+        return ApiResponse.<TutorResponse>builder()
+                .code(UserResponseCode.PROFILE_UPDATED.getCode())
+                .message(UserResponseCode.PROFILE_UPDATED.getMessage())
+                .data(userService.updateMyTutorProfile(r)).build();
+    }
 }

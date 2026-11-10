@@ -80,4 +80,11 @@ public class ReviewController {
                 .data(reviewService.getReviewById(reviewId))
                 .build();
     }
+    @GetMapping("/exists")
+    public ApiResponse<Boolean> exists(@RequestParam UUID applicationId) {
+        return ApiResponse.<Boolean>builder()
+                .code(ReviewResponseCode.REVIEWS_RETRIEVED.getCode())
+                .message(ReviewResponseCode.REVIEWS_RETRIEVED.getMessage())
+                .data(reviewService.existsByApplicationId(applicationId)).build();
+    }
 }

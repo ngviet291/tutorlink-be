@@ -10,10 +10,7 @@ import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
 import org.group3.tutorlink.features.payment.dto.request.CreateFeeConfigRequest;
 import org.group3.tutorlink.features.payment.dto.request.TopUpRequest;
-import org.group3.tutorlink.features.payment.dto.response.FeeConfigResponse;
-import org.group3.tutorlink.features.payment.dto.response.RevenueStatisticsResponse;
-import org.group3.tutorlink.features.payment.dto.response.TransactionResponse;
-import org.group3.tutorlink.features.payment.dto.response.WalletBalanceResponse;
+import org.group3.tutorlink.features.payment.dto.response.*;
 import org.group3.tutorlink.features.payment.entity.MatchingFeeConfig;
 import org.group3.tutorlink.features.payment.entity.Transaction;
 import org.group3.tutorlink.features.payment.entity.Wallet;
@@ -436,6 +433,24 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
 
         return feeConfigMapper.toFeeConfigResponse(feeConfigRepository.save(config));
+    }
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('TUTOR')")
+    public FeeQuoteResponse getFeeQuote(UUID applicationId) {
+        UUID tutorId = appUtil.userIdFromAuthentication();
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new AppException(PaymentErrorCode.APPLICATION_NOT_FOUND));
+        if (!tutorId.equals(resolveTutorId(application)))
+            throw new AppException(PaymentErrorCode.NOT_APPLICATION_TUTOR);
+        Post post = application.getPost();
+        BigDecimal base = post.getMaxBudget() != null ? post.getMaxBudget() : post.getMinBudget();
+        return FeeQuoteResponse.builder()
+                .applicationId(applicationId)
+                .baseAmount(base)
+                .feeRate(commissionRate)
+                .feeAmount(calculateCommission(post))
+                .build();
     }
 
     private Wallet getOrCreateWalletForUpdate(UUID tutorId) {

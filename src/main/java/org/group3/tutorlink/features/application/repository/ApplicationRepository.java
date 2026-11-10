@@ -213,5 +213,14 @@ public interface ApplicationRepository
             @Param("start") Instant start,
             @Param("end") Instant end,
             Pageable pageable);
-
+    @Query("""
+    SELECT DISTINCT a FROM Application a
+    JOIN FETCH a.tutor t
+    LEFT JOIN FETCH t.subjects
+    WHERE a.post.id = :postId
+      AND a.applicationStatus = :status
+    """)
+    List<Application> findWithTutorByPostIdAndStatus(
+            @Param("postId") UUID postId,
+            @Param("status") ApplicationStatus status);
 }

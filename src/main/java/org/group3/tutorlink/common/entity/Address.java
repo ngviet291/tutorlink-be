@@ -11,7 +11,8 @@ import lombok.*;
 @Data
 @Embeddable
 public class Address {
-    private String street;
-    private String ward;
-    private String province;
+
+    private String street; // số nhà, tên đường hoặc ấp
+    private String ward; // phường xã
+    private String province; // tỉnh thành phố
 }

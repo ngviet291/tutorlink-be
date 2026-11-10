@@ -33,6 +33,9 @@ public interface PostMapper {
     SubjectSummaryResponse toSubjectSummaryResponse(Subject subject);
     @Mapping(target = "author.id", source = "post.author.id")
     @Mapping(target = "author.email", source = "post.author.email")
+    @Mapping(target = "author.fullName", source = "post.author.fullName")
+    @Mapping(target = "author.avatarUrl", source = "post.author.avatarUrl")
+    @Mapping(target = "author.role", source = "post.author.role.name")
     PostResponse toPostResponse(Post post);
 
     @BeanMapping(

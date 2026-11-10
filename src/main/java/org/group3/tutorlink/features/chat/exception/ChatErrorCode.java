@@ -1,4 +1,4 @@
-package org.group3.tutorlink.features.chat.expection;
+package org.group3.tutorlink.features.chat.exception;
 
 import lombok.Getter;
 import org.group3.tutorlink.common.exception.BaseErrorCode;

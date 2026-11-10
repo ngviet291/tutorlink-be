@@ -8,8 +8,10 @@ import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.features.application.dto.request.CreateApplicationRequest;
 import org.group3.tutorlink.features.application.dto.response.ApplicationResponse;
+import org.group3.tutorlink.features.application.dto.response.RankedApplicationsResponse;
 import org.group3.tutorlink.features.application.enums.ApplicationResponseCode;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
+import org.group3.tutorlink.features.application.service.ApplicationRankingService;
 import org.group3.tutorlink.features.application.service.ApplicationService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import java.util.UUID;
 public class ApplicationController {
 
     private final ApplicationService applicationService;
+    private final ApplicationRankingService applicationRankingService;
 
     // Tutor apply vào FIND_TUTOR, Student apply vào FIND_STUDENT
     @PostMapping
@@ -133,6 +136,18 @@ public class ApplicationController {
                 .code(ApplicationResponseCode.CANCEL_SUCCESS.getCode())
                 .message(ApplicationResponseCode.CANCEL_SUCCESS.getMessage())
                 .data(applicationService.cancelApplication(applicationId))
+                .build();
+    }
+
+    // Student (tác giả bài FIND_TUTOR) xem gia sư ứng tuyển: top 5 phù hợp nhất + phần còn lại
+    @GetMapping("/post/{postId}/ranked")
+    public ApiResponse<RankedApplicationsResponse> getRankedApplications(
+            @PathVariable UUID postId) {
+
+        return ApiResponse.<RankedApplicationsResponse>builder()
+                .code(ApplicationResponseCode.GET_SUCCESS.getCode())
+                .message(ApplicationResponseCode.GET_SUCCESS.getMessage())
+                .data(applicationRankingService.rankApplications(postId))
                 .build();
     }
 }

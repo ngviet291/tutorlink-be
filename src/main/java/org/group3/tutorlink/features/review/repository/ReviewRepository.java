@@ -1,11 +1,13 @@
 package org.group3.tutorlink.features.review.repository;
 
+import org.group3.tutorlink.features.application.dto.projection.ReviewCountRow;
 import org.group3.tutorlink.features.review.entity.Review;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,4 +25,13 @@ public interface ReviewRepository extends JpaRepository<Review, UUID> {
             @Param("cursor") UUID cursor,
             Pageable pageable
     );
+
+
+    @Query("""
+    SELECT r.tutor.id AS tutorId, COUNT(r) AS cnt
+    FROM Review r
+    WHERE r.tutor.id IN :tutorIds
+    GROUP BY r.tutor.id
+    """)
+    List<ReviewCountRow> countByTutorIds(@Param("tutorIds") Collection<UUID> tutorIds);
 }
