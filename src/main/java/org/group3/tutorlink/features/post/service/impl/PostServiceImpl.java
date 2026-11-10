@@ -395,4 +395,12 @@ public class PostServiceImpl implements PostService {
     public List<PostStatisticsByStatus> getStatisticsByStatus() {
         return postRepository.getStatisticsByStatus();
     }
+    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Override
+    public void removePostAdmin(UUID postId, String reason) {
+        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        post.setStatus(PostStatus.REMOVED);
+        post.setRemovalReason(reason);
+    }
 }

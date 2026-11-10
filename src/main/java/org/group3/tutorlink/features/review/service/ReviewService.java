@@ -10,4 +10,5 @@ public interface ReviewService {
     ReviewResponse createReview(CreateReviewRequest request);
     CursorResponse<ReviewResponse> getReviewsByTutor(UUID tutorId, UUID cursor, int limit);
     ReviewResponse getReviewById(UUID id);
+    boolean existsByApplicationId(UUID applicationId);
 }

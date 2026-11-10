@@ -101,4 +101,9 @@ public class ReviewServiceImpl implements ReviewService {
                 .map(reviewMapper::toResponse)
                 .orElseThrow(ReviewNotFoundException::new);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByApplicationId(UUID applicationId) {
+        return reviewRepository.existsByApplicationId(applicationId);
+    }
 }

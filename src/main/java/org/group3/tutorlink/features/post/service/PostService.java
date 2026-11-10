@@ -110,4 +110,5 @@ public interface PostService {
 
     @Transactional(readOnly = true)
     List<PostStatisticsByStatus> getStatisticsByStatus();
+    void removePostAdmin(UUID postId, String reason);
 }

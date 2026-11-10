@@ -15,6 +15,7 @@ import org.group3.tutorlink.features.auth.dto.request.*;
 import org.group3.tutorlink.features.auth.dto.response.AuthenticateResponse;
 import org.group3.tutorlink.features.auth.dto.response.IntrospectResponse;
 import org.group3.tutorlink.features.auth.event.TutorCertificatesSubmittedEvent;
+import org.group3.tutorlink.features.auth.exception.ErrorCodeAuth;
 import org.group3.tutorlink.features.subject.entity.Certificate;
 import org.group3.tutorlink.features.subject.mapper.CertificateMapper;
 import org.group3.tutorlink.features.subject.mapper.SubjectMapper;
@@ -331,5 +332,16 @@ public class AuthenticationService {
         }, () -> {
             throw new UserNotFoundException();
         });
+    }
+    @Transactional
+    public void changePassword(ChangePasswordRequest req) {
+        User user = userRepository.findById(appUtil.userIdFromAuthentication())
+                .orElseThrow(UserNotFoundException::new);
+        if (!passwordEncoder.matches(req.getCurrentPassword(), user.getPassword()))
+            throw new AppException(ErrorCodeAuth.WRONG_CURRENT_PASSWORD);
+        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        changePasswordService.saveTokenInvalidationTimestamp(
+                user.getId().toString(), String.valueOf(Instant.now().toEpochMilli()));
+        refreshTokenService.revokeAllRefreshTokens(user.getId().toString());
     }
 }

@@ -6,11 +6,12 @@ import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
-import org.group3.tutorlink.features.user.dto.request.ApproveTutorRequest;
-import org.group3.tutorlink.features.user.dto.request.UpdateProfileRequest;
-import org.group3.tutorlink.features.user.dto.request.UpdateUserStatusRequest;
+import org.group3.tutorlink.features.subject.entity.Subject;
+import org.group3.tutorlink.features.subject.repository.SubjectRepository;
+import org.group3.tutorlink.features.user.dto.request.*;
 import org.group3.tutorlink.features.user.dto.response.BaseUserResponse;
 import org.group3.tutorlink.features.user.dto.response.TutorResponse;
+import org.group3.tutorlink.features.user.entity.AvailableSlot;
 import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
@@ -30,6 +31,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,6 +45,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final AppUtil appUtil;
     private final TutorRepository tutorRepository;
+    private final SubjectRepository subjectRepository;
 
     @Transactional(readOnly = true)
     public BaseUserResponse getMyProfile() {
@@ -100,12 +104,14 @@ public class UserService {
     public CursorResponse<BaseUserResponse> getAllUsers(
             RoleName role,
             UserStatus status,
+            VerificationStatus verificationStatus,
             UUID cursor,
             int limit
     ) {
         Specification<User> spec = Specification
                 .where(UserSpecification.hasRole(role))
                 .and(UserSpecification.hasStatus(status))
+                .and(UserSpecification.hasVerificationStatus(verificationStatus))
                 .and(UserSpecification.cursor(cursor))
                 .and(UserSpecification.fetchRole());
 
@@ -186,5 +192,42 @@ public class UserService {
                 Tutor::getId,
                 userMapper::toTutorResponse
         );
+    }
+
+    @PreAuthorize("hasAuthority('TUTOR')")
+    @Transactional(readOnly = true)
+    public TutorResponse getMyTutorProfile() {
+        Tutor tutor = tutorRepository.findById(appUtil.userIdFromAuthentication())
+                .orElseThrow(UserNotFoundException::new);
+        return userMapper.toTutorResponse(tutor);
+    }
+
+    @PreAuthorize("hasAuthority('TUTOR')")
+    @Transactional
+    public TutorResponse updateMyTutorProfile(UpdateTutorProfileRequest r) {
+        Tutor t = tutorRepository.findById(appUtil.userIdFromAuthentication())
+                .orElseThrow(UserNotFoundException::new);
+        if (r.getBio() != null) t.setBio(r.getBio());
+        if (r.getExperienceYears() != null) t.setExperienceYears(r.getExperienceYears());
+        if (r.getEducation() != null) t.setEducation(r.getEducation());
+        if (r.getHourlyRate() != null) t.setHourlyRate(r.getHourlyRate());
+        if (r.getTeachingMode() != null) t.setTeachingMode(r.getTeachingMode());
+        if (r.getTeachingLevels() != null) t.setTeachingLevels(new HashSet<>(r.getTeachingLevels()));
+        if (r.getTeachingAreas() != null) t.setTeachingAreas(new ArrayList<>(r.getTeachingAreas()));
+        if (r.getAvailableSlots() != null) {
+            List<AvailableSlot> slots = new ArrayList<>();
+            for (AvailableSlotRequest s : r.getAvailableSlots()) {
+                slots.add(AvailableSlot.builder().dayOfWeek(s.getDayOfWeek())
+                        .startTime(s.getStartTime()).endTime(s.getEndTime()).build());
+            }
+            t.setAvailableSlots(slots);
+        }
+        if (r.getSubjectIds() != null) {
+            List<Subject> subjects = subjectRepository.findAllById(r.getSubjectIds());
+            if (subjects.size() != new HashSet<>(r.getSubjectIds()).size())
+                throw new UserValidationException(UserErrorCode.USER_VALIDATION_FAILED);
+            t.setSubjects(new HashSet<>(subjects));
+        }
+        return userMapper.toTutorResponse(tutorRepository.save(t));
     }
 }

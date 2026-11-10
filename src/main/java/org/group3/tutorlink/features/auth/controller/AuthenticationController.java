@@ -122,6 +122,10 @@ public class AuthenticationController {
                 .data(response)
                 .build();
     }
-
+    @PutMapping("/change-password")
+    public ApiResponse<Void> changePassword(@Valid @RequestBody ChangePasswordRequest req) {
+        authService.changePassword(req);
+        return ApiResponse.<Void>builder().build();
+    }
 
 }

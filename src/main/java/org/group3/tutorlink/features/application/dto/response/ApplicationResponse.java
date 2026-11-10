@@ -14,6 +14,7 @@ package org.group3.tutorlink.features.application.dto.response;
  */
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -42,4 +43,5 @@ public class ApplicationResponse {
     private UUID processedByAdminId;
 
     private UUID transactionId;
+    private BigDecimal proposedFee;
 }
