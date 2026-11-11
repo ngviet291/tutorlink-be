@@ -19,20 +19,20 @@ public interface TutorRepository extends JpaRepository<Tutor, UUID> {
               AND t.userStatus = org.group3.tutorlink.features.user.enums.UserStatus.ACTIVE
 
               AND (
-                  :subjectName IS NULL
+                  CAST(:subjectName AS string) IS NULL
                   OR EXISTS (
                       SELECT 1
                       FROM Tutor tutor
                       JOIN tutor.subjects subject
                       WHERE tutor.id = t.id
                         AND LOWER(subject.name) LIKE
-                            LOWER(CONCAT('%', :subjectName, '%'))
+                            LOWER(CONCAT('%', CAST(:subjectName AS string), '%'))
                   )
               )
 
-              AND (:province IS NULL OR
+              AND (CAST(:province AS string) IS NULL OR
                    LOWER(t.address.province) LIKE
-                   LOWER(CONCAT('%', :province, '%')))
+                   LOWER(CONCAT('%', CAST(:province AS string), '%')))
 
               AND (:minRate IS NULL OR t.hourlyRate >= :minRate)
               AND (:maxRate IS NULL OR t.hourlyRate <= :maxRate)

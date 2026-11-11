@@ -126,6 +126,7 @@ public class PostServiceImpl implements PostService {
             EducationLevel educationLevel,
             BigDecimal maxBudget,
             BigDecimal minBudget,
+            UUID authorId,
             UUID cursor,
             int limit
     ) {
@@ -139,6 +140,7 @@ public class PostServiceImpl implements PostService {
                 .and(PostSpecification.hasEducationLevel(educationLevel))
                 .and(PostSpecification.maxBudgetLessThanOrEqual(maxBudget))
                 .and(PostSpecification.minBudgetGreaterThanOrEqual(minBudget))
+                .and(PostSpecification.hasAuthorId(authorId))
                 .and(PostSpecification.fetchSubject())
                 .and(PostSpecification.cursor(cursor));
 

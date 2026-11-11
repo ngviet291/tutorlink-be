@@ -58,6 +58,7 @@ public interface PostService {
             EducationLevel educationLevel,
             BigDecimal maxBudget,
             BigDecimal minBudget,
+            UUID authorId,
             UUID cursor,
             int limit
     );

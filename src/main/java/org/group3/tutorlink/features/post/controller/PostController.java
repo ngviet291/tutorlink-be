@@ -60,6 +60,7 @@ public class PostController {
             @RequestParam(required = false) PostType type,
             @RequestParam(required = false) String subjectName,
             @RequestParam(required = false) TeachingMode teachingMode,
+            @RequestParam(required = false) UUID authorId,
             @RequestParam(required = false) UUID cursor,
             @RequestParam(required = false) EducationLevel educationLevel,
             @RequestParam(required = false) BigDecimal minBudget,
@@ -78,6 +79,7 @@ public class PostController {
                         educationLevel,
                         maxBudget,
                         minBudget,
+                        authorId,
                         cursor,
                         limit)
                 )
