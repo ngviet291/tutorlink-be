@@ -32,9 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -156,13 +155,14 @@ public class ChatService {
             channels = chatChannelRepository.findNextPage(userId, c.getLastMessageAt(), c.getId(), page);
         }
         return appUtil.buildCursorResponse(channels, limit, ChatChannel::getId,
-                c -> chatMapper.toChannelResponse(c, userId));
+                withSummary(channels, userId));
     }
 
     @Transactional(readOnly = true)
     public ChatChannelResponse getChatChannelById(UUID channelId) {
         UUID userId = appUtil.userIdFromAuthentication();
-        return chatMapper.toChannelResponse(getParticipatingChannel(channelId, userId), userId);
+        ChatChannel channel = getParticipatingChannel(channelId, userId);
+        return withSummary(List.of(channel), userId).apply(channel);
     }
 
     // Mở chat từ profile: chưa có channel thì 404, channel sẽ được tạo khi gửi tin đầu tiên
@@ -171,7 +171,7 @@ public class ChatService {
         UUID userId = appUtil.userIdFromAuthentication();
         ChatChannel channel = chatChannelRepository.findBetween(userId, partnerId)
                 .orElseThrow(ChatChannelNotFound::new);
-        return chatMapper.toChannelResponse(channel, userId);
+        return withSummary(List.of(channel), userId).apply(channel);
     }
 
     @Transactional(readOnly = true)
@@ -218,6 +218,37 @@ public class ChatService {
             throw new AccessDeniedException(ChatErrorCode.NOT_PARTICIPATING);
         }
         return channel;
+    }
+
+    /** Map channel -> response kèm tin cuối và số chưa đọc, lấy theo lô (không N+1). */
+    private Function<ChatChannel, ChatChannelResponse> withSummary(List<ChatChannel> channels, UUID userId) {
+        if (channels.isEmpty()) {
+            return c -> chatMapper.toChannelResponse(c, userId);
+        }
+        List<UUID> ids = channels.stream().map(ChatChannel::getId).toList();
+
+        Map<UUID, Long> unreadByChannel = new HashMap<>();
+        messageRepository.countUnreadByChannels(ids, userId)
+                .forEach(v -> unreadByChannel.put(v.getChannelId(), v.getTotal()));
+
+        Map<UUID, Message> latestByChannel = new HashMap<>();
+        for (Message m : messageRepository.findLatestByChannels(ids)) {
+            latestByChannel.putIfAbsent(m.getChatChannel().getId(), m); // trùng sentAt thì lấy 1 tin
+        }
+
+        return channel -> {
+            ChatChannelResponse res = chatMapper.toChannelResponse(channel, userId);
+            res.setUnreadCount(unreadByChannel.getOrDefault(channel.getId(), 0L));
+
+            Message last = latestByChannel.get(channel.getId());
+            if (last != null) {
+                res.setLastMessageContent(last.getContent());
+                res.setLastMessageSenderId(last.getSender().getId());
+                last.getMediaList().stream().findFirst()
+                        .ifPresent(media -> res.setLastMessageMediaType(media.getType()));
+            }
+            return res;
+        };
     }
 
     private int normalizeSize(int size) {
