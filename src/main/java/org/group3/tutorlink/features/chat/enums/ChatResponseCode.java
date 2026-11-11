@@ -12,6 +12,7 @@ public enum ChatResponseCode implements ResponseCode {
     GET_MESSAGES_SUCCESS("CHAT_004", "Get messages successfully"),
     MARK_READ_SUCCESS("CHAT_005", "Mark messages as read successfully"),
     GET_UNREAD_COUNT_SUCCESS("CHAT_006", "Get unread count successfully"),
+    CREATE_CHANNEL_SUCCESS("CHAT_007", "Create chat channel successfully")
     ;
 
 

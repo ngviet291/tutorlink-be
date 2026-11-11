@@ -5,12 +5,15 @@ import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.exception.AccessDeniedException;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
+import org.group3.tutorlink.features.chat.dto.request.ChatCreateChanelRequest;
 import org.group3.tutorlink.features.chat.dto.request.SendMessageRequest;
 import org.group3.tutorlink.features.chat.dto.response.ChatChannelResponse;
 import org.group3.tutorlink.features.chat.dto.response.MessageResponse;
 import org.group3.tutorlink.features.chat.entity.ChatChannel;
 import org.group3.tutorlink.features.chat.entity.Media;
 import org.group3.tutorlink.features.chat.entity.Message;
+import org.group3.tutorlink.features.chat.event.MessageSent;
+import org.group3.tutorlink.features.chat.event.MessagesRead;
 import org.group3.tutorlink.features.chat.exception.CannotMessageSelfException;
 import org.group3.tutorlink.features.chat.exception.ChatChannelNotFound;
 import org.group3.tutorlink.features.chat.exception.ChatErrorCode;
@@ -21,6 +24,7 @@ import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.repository.UserRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +46,7 @@ public class ChatService {
     private final AppUtil appUtil;
     private final ChatMapper chatMapper;
     private static final int MAX_PAGE_SIZE = 50;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public MessageResponse sendMessage(SendMessageRequest req) {
@@ -87,8 +92,16 @@ public class ChatService {
 
         channel.setLastMessageAt(now);
         chatChannelRepository.save(channel);
-//        TODO(WS): push "new message" event cho đối phương (partner) của channel này
-        return chatMapper.toMessageResponse(message);
+
+        MessageResponse response = chatMapper.toMessageResponse(message);
+        eventPublisher.publishEvent(
+                MessageSent.builder()
+                        .senderId(senderId)
+                        .receiverId(receiver.getId())
+                        .message(response)
+                        .build()
+        );
+        return response;
     }
 
     private void validateUser(User sender, User receiver) {
@@ -103,6 +116,15 @@ public class ChatService {
     private ChatChannel findChannelOrThrow(User sender, User receiver) {
         return chatChannelRepository.findBetween(sender.getId(), receiver.getId())
                 .orElseThrow(ChatChannelNotFound::new);
+    }
+
+
+    public ChatChannelResponse createNewChannel(ChatCreateChanelRequest request) {
+        UUID userId = appUtil.userIdFromAuthentication();
+        User sender = userRepository.getReferenceById(userId);
+        User receiver = userRepository.findById(request.getPartnerId()).orElseThrow(UserNotFoundException::new);
+
+        return chatMapper.toChannelResponse(createChannel(sender, receiver), userId);
     }
 
     public ChatChannel createChannel(User sender, User receiver) {
@@ -167,10 +189,20 @@ public class ChatService {
     @Transactional
     public void markChannelAsRead(UUID channelId) {
         UUID userId = appUtil.userIdFromAuthentication();
-        getParticipatingChannel(channelId, userId);
+        ChatChannel channel = getParticipatingChannel(channelId, userId);
         int updated = messageRepository.markAllAsRead(channelId, userId);
         if (updated > 0) {
-            // TODO(WS): push "messages read" event cho đối phương (partner) của channel này
+            UUID partnerId = channel.getSender().getId().equals(userId)
+                    ? channel.getReceiver().getId()
+                    : channel.getSender().getId();
+            eventPublisher.publishEvent(
+                    MessagesRead.builder()
+                            .channelId(channelId)
+                            .readerId(userId)
+                            .partnerId(partnerId)
+                            .readAt(Instant.now())
+                            .build()
+            );
         }
     }
 
