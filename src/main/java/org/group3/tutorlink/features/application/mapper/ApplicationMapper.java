@@ -8,11 +8,10 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ApplicationMapper {
 
-    // Đã sửa
     @Mapping(target = "postId", source = "post.id")
-    @Mapping(target = "studentId", source = "student.id")
-    @Mapping(target = "tutorId", source = "tutor.id")
     @Mapping(target = "processedByAdminId", source = "processedByAdmin.id")
     @Mapping(target = "transactionId", source = "transaction.id")
     ApplicationResponse toApplicationResponse(Application application);
+
+
 }

@@ -238,6 +238,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         Application saved = applicationRepository.save(application);
         // Đã sửa
+
+        // TODO: Push notification to the selected applicant
         return applicationMapper.toApplicationResponse(saved);
     }
 

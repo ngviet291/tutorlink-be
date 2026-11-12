@@ -121,6 +121,9 @@ public class ChatService {
     public ChatChannelResponse createNewChannel(ChatCreateChanelRequest request) {
         UUID userId = appUtil.userIdFromAuthentication();
         User sender = userRepository.getReferenceById(userId);
+
+        //
+
         User receiver = userRepository.findById(request.getPartnerId()).orElseThrow(UserNotFoundException::new);
 
         return chatMapper.toChannelResponse(createChannel(sender, receiver), userId);

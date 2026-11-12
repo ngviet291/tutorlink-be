@@ -12,6 +12,7 @@ package org.group3.tutorlink.features.application.dto.response;
  * @version:     1.0
  * @date: 29/09/2026 14:56
  */
+
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -30,9 +31,9 @@ public class ApplicationResponse {
 
     private UUID postId;
 
-    private UUID studentId;
+    private UserSummaryResponse student;
 
-    private UUID tutorId;
+    private UserSummaryResponse tutor;
 
     private String applicationStatus;
 
