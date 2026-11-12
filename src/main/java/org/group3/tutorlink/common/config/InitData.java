@@ -44,6 +44,7 @@ import org.group3.tutorlink.features.user.enums.UserStatus;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -75,10 +76,15 @@ import java.util.UUID;
  * Đặt file {@code seed-data.json} vào {@code src/main/resources/data/seed-data.json}.
  * Chỉ chạy khi DB còn trống (bảng roles chưa có dòng nào), nên chạy lại nhiều lần vẫn an toàn.
  * <p>
+ * Chạy với {@code @Order(1)} để các runner phụ thuộc dữ liệu seed (ví dụ TutorReindexRunner,
+ * {@code @Order(2)}) luôn chạy sau khi seed hoàn tất.
+ * <p>
  * Tài khoản demo:
- * ADMIN   : admin@gmail.com                          / Admin@123
- * STUDENT : student@gmail.com, student2..9@gmail.com / Student@123
- * TUTOR   : tutor@gmail.com,   tutor2..11@gmail.com  / Tutor@123
+ * ADMIN   : admin@gmail.com                              / Admin@123
+ * STUDENT : student@gmail.com, student2..9@gmail.com     / Student@123
+ *           match.student1..2@gmail.com (dữ liệu test xếp hạng) / Student@123
+ * TUTOR   : tutor@gmail.com,   tutor2..11@gmail.com      / Tutor@123
+ *           match.tutor1..20@gmail.com (dữ liệu test xếp hạng)  / Tutor@123
  * <p>
  * Lưu ý: createdAt/updatedAt dùng @CreationTimestamp/@UpdateTimestamp nên Hibernate sẽ ghi đè
  * khi persist; vì vậy sau khi lưu xong, class này UPDATE lại 2 cột thời gian theo đúng giá trị
@@ -86,6 +92,7 @@ import java.util.UUID;
  * Không cần dependency datafaker.
  */
 @Slf4j
+@Order(1)
 @Profile("dev")
 @RequiredArgsConstructor
 @Component
