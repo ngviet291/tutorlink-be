@@ -15,25 +15,35 @@ public class MessageSecurityConfig {
     @Bean
     AuthorizationManager<Message<?>> messageAuthorizationManager(
             MessageMatcherDelegatingAuthorizationManager.Builder messages) {
+//        KHÔNG XÓA COMMENT
+//        messages
+//                // CONNECT / DISCONNECT / HEARTBEAT — không cần auth
+//                .simpTypeMatchers(SimpMessageType.CONNECT,
+//                        SimpMessageType.DISCONNECT,
+//                        SimpMessageType.HEARTBEAT).permitAll()
+//
+//                // Subscribe các topic chat — cần authenticated
+//                .simpSubscribeDestMatchers("/topic/conversations/**").authenticated()
+//                .simpSubscribeDestMatchers("/topic/conversation/**").authenticated()
+//                .simpSubscribeDestMatchers("/user/queue/**").authenticated()
+//                .simpSubscribeDestMatchers("/topic/orders/**").authenticated()
+//
+//                // Admin
+//                .simpSubscribeDestMatchers("/topic/admin/**").hasRole("ADMIN")
+//
+//                // Send đến /app/**
+//                .simpDestMatchers("/app/**").authenticated()
+//
+//                .anyMessage().denyAll();
 
         messages
-                // CONNECT / DISCONNECT / HEARTBEAT — không cần auth
                 .simpTypeMatchers(SimpMessageType.CONNECT,
                         SimpMessageType.DISCONNECT,
                         SimpMessageType.HEARTBEAT).permitAll()
-
-                // Subscribe các topic chat — cần authenticated
-                .simpSubscribeDestMatchers("/topic/conversations/**").authenticated()
-                .simpSubscribeDestMatchers("/topic/conversation/**").authenticated()
                 .simpSubscribeDestMatchers("/user/queue/**").authenticated()
                 .simpSubscribeDestMatchers("/topic/orders/**").authenticated()
-
-                // Admin
-                .simpSubscribeDestMatchers("/topic/admin/**").hasRole("ADMIN")
-
-                // Send đến /app/**
+                .simpSubscribeDestMatchers("/topic/admin/**").hasAuthority("ADMIN")
                 .simpDestMatchers("/app/**").authenticated()
-
                 .anyMessage().denyAll();
 
         return messages.build();

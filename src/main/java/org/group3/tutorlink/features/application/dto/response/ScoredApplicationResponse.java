@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.group3.tutorlink.features.application.enums.MatchWarning;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Một lượt ứng tuyển kèm điểm xếp hạng.
@@ -21,6 +22,7 @@ import java.util.List;
 public class ScoredApplicationResponse {
     private ApplicationResponse application;
     private Double score;
-    private MatchBreakdown breakdown;
+    //    private MatchBreakdown breakdown;
+    private Map<String, Double> breakdown;
     private List<MatchWarning> warnings;
 }

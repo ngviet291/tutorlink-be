@@ -5,8 +5,8 @@
     "commissionRate": 0.2,
     "credentials": {
       "ADMIN": "admin@gmail.com / Admin@123",
-      "STUDENT": "student@gmail.com, student2..9@gmail.com / Student@123",
-      "TUTOR": "tutor@gmail.com, tutor2..11@gmail.com / Tutor@123"
+      "STUDENT": "student@gmail.com, student2..9@gmail.com / Student@123; match.student1..2@gmail.com / Student@123",
+      "TUTOR": "tutor@gmail.com, tutor2..11@gmail.com / Tutor@123; match.tutor1..20@gmail.com / Tutor@123"
     },
     "loadOrder": [
       "roles",
@@ -33,15 +33,15 @@
       "roles": 3,
       "subjects": 12,
       "admins": 1,
-      "students": 9,
-      "tutors": 11,
+      "students": 11,
+      "tutors": 31,
       "certificates": 13,
       "matchingFeeConfigs": 2,
-      "posts": 57,
-      "applications": 79,
+      "posts": 70,
+      "applications": 122,
       "wallets": 8,
       "transactions": 53,
-      "reviews": 13,
+      "reviews": 25,
       "reviewComplaints": 1,
       "favorites": 11,
       "chatChannels": 18,
@@ -49,6 +49,26 @@
       "media": 9,
       "notifications": 351,
       "revenueReports": 6
+    },
+    "matchingTest": {
+      "postA": {
+        "id": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+        "owner": "match.student1@gmail.com",
+        "applicants": 13,
+        "note": "Toán lớp 9, OFFLINE, Phường 12, 150k-250k/buổi"
+      },
+      "postB": {
+        "id": "31b4cbb1-a75d-53a7-9a3f-313d9a98fcab",
+        "owner": "match.student2@gmail.com",
+        "applicants": 8,
+        "note": "Bài viết bằng tiếng Anh, IELTS, ONLINE, 200k-350k/giờ"
+      },
+      "postC": {
+        "id": "db56c821-2ee7-5567-8cfd-bc89b664b147",
+        "owner": "match.student2@gmail.com",
+        "applicants": 3,
+        "note": "Piano, chỉ 3 ứng viên nên không chấm điểm"
+      }
     }
   },
   "roles": [
@@ -383,6 +403,48 @@
       "roleId": "019cef38-c4e8-7c4b-90fb-864f740466f9",
       "grade": "Lớp 8",
       "learningGoal": "Nâng điểm các môn tự nhiên, chuẩn bị tốt cho kỳ thi vào lớp 10."
+    },
+    {
+      "id": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "createdAt": "2026-10-01T03:01:00Z",
+      "updatedAt": "2026-10-01T03:01:00Z",
+      "fullName": "Nguyễn Hoàng Phúc",
+      "email": "match.student1@gmail.com",
+      "password": "$2a$10$LMCUfrSB/FUTpF81f.AUpeu9m4o0QV/TIlQRk/dAWo08NgKPq7Bde",
+      "phone": "0901000001",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_student1.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "2011-03-12",
+      "address": {
+        "street": "25 Nguyễn Thị Minh Khai",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c4e8-7c4b-90fb-864f740466f9",
+      "grade": "Lớp 9",
+      "learningGoal": "Đỗ vào lớp 10 công lập, mục tiêu Toán 8.5+."
+    },
+    {
+      "id": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "createdAt": "2026-10-01T03:02:00Z",
+      "updatedAt": "2026-10-01T03:02:00Z",
+      "fullName": "Trần Bảo Châu",
+      "email": "match.student2@gmail.com",
+      "password": "$2a$10$LMCUfrSB/FUTpF81f.AUpeu9m4o0QV/TIlQRk/dAWo08NgKPq7Bde",
+      "phone": "0901000002",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_student2.jpg",
+      "gender": "FEMALE",
+      "dateOfBirth": "2008-09-05",
+      "address": {
+        "street": "88 Nguyễn Hữu Thọ",
+        "ward": "Phường An Phú",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c4e8-7c4b-90fb-864f740466f9",
+      "grade": "Lớp 12",
+      "learningGoal": "Đạt IELTS 6.5 để xét tuyển đại học."
     }
   ],
   "tutors": [
@@ -1041,6 +1103,1255 @@
       "teachingAreas": [],
       "subjectIds": [
         "019cef3d-7038-7158-afd2-4302a0e0fe8c"
+      ]
+    },
+    {
+      "id": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "createdAt": "2026-10-02T04:00:00Z",
+      "updatedAt": "2026-10-02T04:00:00Z",
+      "fullName": "Nguyễn Minh Khoa",
+      "email": "match.tutor1@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000001",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor1.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Giáo viên Toán THCS với 6 năm kinh nghiệm luyện thi vào lớp 10. Mạnh về đại số, hình học phẳng và các dạng bài thường gặp trong đề tuyển sinh. Giảng dễ hiểu, có bài tập về nhà và báo cáo tiến độ hằng tuần.",
+      "experienceYears": 6,
+      "hourlyRate": 140000,
+      "averageRating": 4.75,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Sư phạm Toán - ĐH Sư phạm TP.HCM",
+      "teachingLevels": [
+        "SECONDARY",
+        "HIGH_SCHOOL"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường 12",
+        "Phường Tân Phong"
+      ],
+      "subjectIds": [
+        "019cef3d-54e0-7e12-85ae-da011bb1fa7d"
+      ]
+    },
+    {
+      "id": "e79228bd-5a47-5908-84ed-08eea9e86f08",
+      "createdAt": "2026-10-02T04:01:00Z",
+      "updatedAt": "2026-10-02T04:01:00Z",
+      "fullName": "Trần Thu Hà",
+      "email": "match.tutor2@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000002",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor2.jpg",
+      "gender": "FEMALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Math tutor for middle school students. I teach algebra and geometry, and prepare students for the grade 10 entrance exam with clear step-by-step explanations and weekly practice tests.",
+      "experienceYears": 4,
+      "hourlyRate": 150000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Toán ứng dụng - ĐH Khoa học Tự nhiên",
+      "teachingLevels": [
+        "SECONDARY"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường 12"
+      ],
+      "subjectIds": [
+        "019cef3d-54e0-7e12-85ae-da011bb1fa7d"
+      ]
+    },
+    {
+      "id": "450286a3-d3db-5c01-b1d2-c8340ec065c5",
+      "createdAt": "2026-10-02T04:02:00Z",
+      "updatedAt": "2026-10-02T04:02:00Z",
+      "fullName": "Lê Quốc Bảo",
+      "email": "match.tutor3@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000003",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor3.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Sinh viên Sư phạm Toán năm cuối, nhiệt tình, kèm Toán từ lớp 6 đến lớp 9.",
+      "experienceYears": 2,
+      "hourlyRate": 120000,
+      "averageRating": 5.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Sinh viên Sư phạm Toán - ĐH Sư phạm TP.HCM",
+      "teachingLevels": [
+        "PRIMARY",
+        "SECONDARY"
+      ],
+      "teachingMode": "OFFLINE",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường 12"
+      ],
+      "subjectIds": [
+        "019cef3d-54e0-7e12-85ae-da011bb1fa7d"
+      ]
+    },
+    {
+      "id": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "createdAt": "2026-10-02T04:03:00Z",
+      "updatedAt": "2026-10-02T04:03:00Z",
+      "fullName": "Phạm Văn Thành",
+      "email": "match.tutor4@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000004",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor4.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "9 năm dạy kèm Toán lớp 9, nhiều học sinh đỗ lớp 10 trường chuyên. Hệ thống bài tập theo từng chuyên đề, kiểm tra định kỳ và chữa bài chi tiết.",
+      "experienceYears": 9,
+      "hourlyRate": 160000,
+      "averageRating": 4.33,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Thạc sĩ Giáo dục Toán - ĐH Sư phạm TP.HCM",
+      "teachingLevels": [
+        "SECONDARY",
+        "HIGH_SCHOOL"
+      ],
+      "teachingMode": "OFFLINE",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường 12",
+        "Phường Hiệp Bình Chánh"
+      ],
+      "subjectIds": [
+        "019cef3d-54e0-7e12-85ae-da011bb1fa7d"
+      ]
+    },
+    {
+      "id": "5ae0ada5-debc-597f-ad13-eced092be7ec",
+      "createdAt": "2026-10-02T04:04:00Z",
+      "updatedAt": "2026-10-02T04:04:00Z",
+      "fullName": "Võ Thị Mai",
+      "email": "match.tutor5@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000005",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor5.jpg",
+      "gender": "FEMALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": null,
+      "experienceYears": 3,
+      "hourlyRate": 125000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Sư phạm Toán - ĐH Sài Gòn",
+      "teachingLevels": [
+        "SECONDARY"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường 12"
+      ],
+      "subjectIds": [
+        "019cef3d-54e0-7e12-85ae-da011bb1fa7d"
+      ]
+    },
+    {
+      "id": "f54279e2-afdc-5ed6-855b-7f17239f002c",
+      "createdAt": "2026-10-02T04:05:00Z",
+      "updatedAt": "2026-10-02T04:05:00Z",
+      "fullName": "Đinh Công Danh",
+      "email": "match.tutor6@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000006",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor6.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Dạy Ngữ văn THCS và THPT: đọc hiểu, nghị luận xã hội, kỹ năng viết đoạn văn. Chấm chữa bài chi tiết, rèn cách trình bày bài thi.",
+      "experienceYears": 7,
+      "hourlyRate": 150000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Sư phạm Ngữ văn - ĐH Sư phạm TP.HCM",
+      "teachingLevels": [
+        "SECONDARY",
+        "HIGH_SCHOOL"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường 12"
+      ],
+      "subjectIds": [
+        "019cef3d-6480-7ef0-ba31-b3d052567247"
+      ]
+    },
+    {
+      "id": "d1d90893-efe1-5d3e-887e-2f49a0cc9511",
+      "createdAt": "2026-10-02T04:06:00Z",
+      "updatedAt": "2026-10-02T04:06:00Z",
+      "fullName": "Bùi Anh Tuấn",
+      "email": "match.tutor7@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000007",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor7.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Dạy Vật lý và Toán THCS. Mạnh đại số, hình học, rèn kỹ năng giải toán và ôn thi vào lớp 10 song song với Vật lý lớp 8, 9.",
+      "experienceYears": 5,
+      "hourlyRate": 150000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Vật lý - ĐH Khoa học Tự nhiên",
+      "teachingLevels": [
+        "SECONDARY"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường 12"
+      ],
+      "subjectIds": [
+        "019cef3d-58c8-73f5-9c26-747646e8272f"
+      ]
+    },
+    {
+      "id": "5f882726-7586-5eb0-afc6-fe1a8d449ab0",
+      "createdAt": "2026-10-02T04:07:00Z",
+      "updatedAt": "2026-10-02T04:07:00Z",
+      "fullName": "Hoàng Thị Lan",
+      "email": "match.tutor8@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000008",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor8.jpg",
+      "gender": "FEMALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Dạy Toán cao cấp, giải tích và xác suất thống kê cho sinh viên đại học; ôn thi THPT quốc gia môn Toán.",
+      "experienceYears": 7,
+      "hourlyRate": 180000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Thạc sĩ Toán giải tích - ĐH Bách khoa",
+      "teachingLevels": [
+        "HIGH_SCHOOL",
+        "UNIVERSITY"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường 12"
+      ],
+      "subjectIds": [
+        "019cef3d-54e0-7e12-85ae-da011bb1fa7d"
+      ]
+    },
+    {
+      "id": "317b8152-7605-5b3e-95a1-4ff9cc172617",
+      "createdAt": "2026-10-02T04:08:00Z",
+      "updatedAt": "2026-10-02T04:08:00Z",
+      "fullName": "Ngô Minh Quân",
+      "email": "match.tutor9@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000009",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor9.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Dạy Toán THCS trực tuyến qua Zoom, bảng viết tay, ghi hình buổi học để xem lại. Ôn thi vào lớp 10.",
+      "experienceYears": 4,
+      "hourlyRate": 150000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Toán - Tin - ĐH Khoa học Tự nhiên",
+      "teachingLevels": [
+        "SECONDARY"
+      ],
+      "teachingMode": "ONLINE",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [],
+      "subjectIds": [
+        "019cef3d-54e0-7e12-85ae-da011bb1fa7d"
+      ]
+    },
+    {
+      "id": "9ec56e37-f631-502e-9773-611c199d06f9",
+      "createdAt": "2026-10-02T04:09:00Z",
+      "updatedAt": "2026-10-02T04:09:00Z",
+      "fullName": "Đặng Hải Yến",
+      "email": "match.tutor10@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000010",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor10.jpg",
+      "gender": "FEMALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường Bến Nghé",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Giáo viên Toán THCS, ôn thi vào lớp 10, dạy tại nhà học sinh khu vực Quận 1 và Quận 7.",
+      "experienceYears": 5,
+      "hourlyRate": 160000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Sư phạm Toán - ĐH Sài Gòn",
+      "teachingLevels": [
+        "SECONDARY"
+      ],
+      "teachingMode": "OFFLINE",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường Bến Nghé",
+        "Phường Tân Hưng"
+      ],
+      "subjectIds": [
+        "019cef3d-54e0-7e12-85ae-da011bb1fa7d"
+      ]
+    },
+    {
+      "id": "23b8a15d-009c-5e06-9a97-41782f574950",
+      "createdAt": "2026-10-02T04:10:00Z",
+      "updatedAt": "2026-10-02T04:10:00Z",
+      "fullName": "Lý Thanh Sơn",
+      "email": "match.tutor11@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000011",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor11.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Thạc sĩ Toán ứng dụng, 10 năm luyện thi vào lớp 10 trường chuyên, nâng cao và bồi dưỡng học sinh giỏi.",
+      "experienceYears": 10,
+      "hourlyRate": 300000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Thạc sĩ Toán ứng dụng - ĐH Quốc gia",
+      "teachingLevels": [
+        "SECONDARY",
+        "HIGH_SCHOOL"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường 12"
+      ],
+      "subjectIds": [
+        "019cef3d-54e0-7e12-85ae-da011bb1fa7d"
+      ]
+    },
+    {
+      "id": "27bb4475-0da4-5a82-a42f-b13748f9380c",
+      "createdAt": "2026-10-02T04:11:00Z",
+      "updatedAt": "2026-10-02T04:11:00Z",
+      "fullName": "Trương Bích Ngọc",
+      "email": "match.tutor12@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000012",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor12.jpg",
+      "gender": "FEMALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Dạy Toán lớp 9, củng cố kiến thức nền, luyện đề tuyển sinh 10 theo cấu trúc mới.",
+      "experienceYears": 3,
+      "hourlyRate": 110000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Sư phạm Toán - ĐH Sài Gòn",
+      "teachingLevels": [
+        "SECONDARY"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường 12"
+      ],
+      "subjectIds": [
+        "019cef3d-54e0-7e12-85ae-da011bb1fa7d"
+      ]
+    },
+    {
+      "id": "c7fd15a0-6f9d-5ec1-a513-a605ae8f98e1",
+      "createdAt": "2026-10-02T04:12:00Z",
+      "updatedAt": "2026-10-02T04:12:00Z",
+      "fullName": "Phan Gia Huy",
+      "email": "match.tutor13@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000013",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor13.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Gia sư Toán THCS, hiện chỉ còn 1 buổi trống mỗi tuần vào Chủ nhật.",
+      "experienceYears": 4,
+      "hourlyRate": 150000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Toán - ĐH Khoa học Tự nhiên",
+      "teachingLevels": [
+        "SECONDARY"
+      ],
+      "teachingMode": "OFFLINE",
+      "availableSlots": [
+        {
+          "dayOfWeek": "SUNDAY",
+          "startTime": "2026-01-11T01:00:00Z",
+          "endTime": "2026-01-11T02:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường 12"
+      ],
+      "subjectIds": [
+        "019cef3d-54e0-7e12-85ae-da011bb1fa7d"
+      ]
+    },
+    {
+      "id": "923df39e-3b57-51c3-b913-94141b986a1a",
+      "createdAt": "2026-10-02T04:13:00Z",
+      "updatedAt": "2026-10-02T04:13:00Z",
+      "fullName": "Đỗ Khánh Linh",
+      "email": "match.tutor14@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000014",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor14.jpg",
+      "gender": "FEMALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "IELTS trainer, overall band 8.0. I coach Writing Task 1 and 2 and Speaking with detailed feedback, mock tests every two weeks, and a personalised study plan.",
+      "experienceYears": 6,
+      "hourlyRate": 300000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Ngôn ngữ Anh - ĐH Ngoại thương",
+      "teachingLevels": [
+        "HIGH_SCHOOL",
+        "UNIVERSITY",
+        "OTHER"
+      ],
+      "teachingMode": "ONLINE",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [],
+      "subjectIds": [
+        "019cef3d-7420-7780-98f8-466fcb783388",
+        "019cef3d-7038-7158-afd2-4302a0e0fe8c"
+      ]
+    },
+    {
+      "id": "f509bd32-60e4-53bc-abd6-339121cc1a05",
+      "createdAt": "2026-10-02T04:14:00Z",
+      "updatedAt": "2026-10-02T04:14:00Z",
+      "fullName": "Vũ Đức Minh",
+      "email": "match.tutor15@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000015",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor15.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Luyện thi IELTS 6.5 – 7.5, tập trung Writing và Speaking. Chữa bài chi tiết, lộ trình theo mục tiêu band điểm.",
+      "experienceYears": 5,
+      "hourlyRate": 280000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Sư phạm Anh - ĐH Sư phạm TP.HCM",
+      "teachingLevels": [
+        "HIGH_SCHOOL",
+        "OTHER"
+      ],
+      "teachingMode": "ONLINE",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [],
+      "subjectIds": [
+        "019cef3d-7038-7158-afd2-4302a0e0fe8c"
+      ]
+    },
+    {
+      "id": "9092939e-7654-5b65-a544-006f840684a6",
+      "createdAt": "2026-10-02T04:15:00Z",
+      "updatedAt": "2026-10-02T04:15:00Z",
+      "fullName": "Cao Thị Hương",
+      "email": "match.tutor16@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000016",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor16.jpg",
+      "gender": "FEMALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường An Phú",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Giáo viên IELTS 4 năm, band 7.5. Luyện đề Reading/Listening, chiến lược làm bài và sửa lỗi phát âm.",
+      "experienceYears": 4,
+      "hourlyRate": 250000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Ngôn ngữ Anh - ĐH Văn Lang",
+      "teachingLevels": [
+        "HIGH_SCHOOL",
+        "OTHER"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường An Phú"
+      ],
+      "subjectIds": [
+        "019cef3d-7420-7780-98f8-466fcb783388"
+      ]
+    },
+    {
+      "id": "aaaed0d4-9d9a-5fdf-bb83-21588cc59516",
+      "createdAt": "2026-10-02T04:16:00Z",
+      "updatedAt": "2026-10-02T04:16:00Z",
+      "fullName": "Lương Quang Vinh",
+      "email": "match.tutor17@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000017",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor17.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường An Phú",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Dạy tiếng Anh giao tiếp cho trẻ em bằng trò chơi và bài hát, rèn phát âm chuẩn.",
+      "experienceYears": 3,
+      "hourlyRate": 180000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Sư phạm Anh - ĐH Sài Gòn",
+      "teachingLevels": [
+        "PRIMARY",
+        "SECONDARY"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường An Phú"
+      ],
+      "subjectIds": [
+        "019cef3d-7038-7158-afd2-4302a0e0fe8c"
+      ]
+    },
+    {
+      "id": "288b06d3-7c5d-5859-8c07-868973c328f7",
+      "createdAt": "2026-10-02T04:17:00Z",
+      "updatedAt": "2026-10-02T04:17:00Z",
+      "fullName": "Mai Thanh Tùng",
+      "email": "match.tutor18@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000018",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor18.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Python and data analysis tutor. Teaching programming fundamentals, algorithms and pandas for beginners.",
+      "experienceYears": 4,
+      "hourlyRate": 220000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Kỹ sư Phần mềm - ĐH Bách khoa",
+      "teachingLevels": [
+        "HIGH_SCHOOL",
+        "UNIVERSITY"
+      ],
+      "teachingMode": "ONLINE",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [],
+      "subjectIds": [
+        "019cef3d-7bf0-7519-9e8f-edb503144692"
+      ]
+    },
+    {
+      "id": "401f139d-2d16-51e6-9515-706e68f755c0",
+      "createdAt": "2026-10-02T04:18:00Z",
+      "updatedAt": "2026-10-02T04:18:00Z",
+      "fullName": "Ông Thu Trang",
+      "email": "match.tutor19@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000019",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor19.jpg",
+      "gender": "FEMALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường An Phú",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Dạy Piano cho trẻ em từ 6 tuổi, giáo trình Alfred và ABRSM, lý thuyết âm nhạc cơ bản, luyện thi chứng chỉ.",
+      "experienceYears": 7,
+      "hourlyRate": 200000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Cử nhân Piano - Nhạc viện TP.HCM",
+      "teachingLevels": [
+        "PRIMARY",
+        "SECONDARY",
+        "OTHER"
+      ],
+      "teachingMode": "OFFLINE",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường An Phú"
+      ],
+      "subjectIds": [
+        "019cef3d-7fd8-7881-95f9-bf62461639ef"
+      ]
+    },
+    {
+      "id": "ebf5c601-d877-5404-b3da-54cb4590de17",
+      "createdAt": "2026-10-02T04:19:00Z",
+      "updatedAt": "2026-10-02T04:19:00Z",
+      "fullName": "Hà Quốc Việt",
+      "email": "match.tutor20@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0902000020",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/match_tutor20.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-05-10",
+      "address": {
+        "street": "10 Lê Văn Việt",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Piano online cho người mới bắt đầu: đọc nốt, luyện ngón, bài hát đơn giản.",
+      "experienceYears": 3,
+      "hourlyRate": 160000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Sinh viên Nhạc viện TP.HCM",
+      "teachingLevels": [
+        "PRIMARY",
+        "SECONDARY"
+      ],
+      "teachingMode": "ONLINE",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "TUESDAY",
+          "startTime": "2026-01-06T11:00:00Z",
+          "endTime": "2026-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "THURSDAY",
+          "startTime": "2026-01-08T11:00:00Z",
+          "endTime": "2026-01-08T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T01:00:00Z",
+          "endTime": "2026-01-10T08:00:00Z"
+        }
+      ],
+      "teachingAreas": [],
+      "subjectIds": [
+        "019cef3d-7fd8-7881-95f9-bf62461639ef"
       ]
     }
   ],
@@ -2552,6 +3863,278 @@
       "sessionsPerWeek": 2,
       "durationMinutes": 90,
       "deadline": "2026-11-20T09:00:00Z"
+    },
+    {
+      "id": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "createdAt": "2026-11-01T02:00:00Z",
+      "updatedAt": "2026-11-01T02:00:00Z",
+      "title": "Cần gia sư Toán lớp 9 ôn thi vào lớp 10 tại Phường 12",
+      "content": "Mục tiêu: nắm chắc đại số và hình học, luyện đề tuyển sinh vào lớp 10. Thời gian học: 3 buổi/tuần, mỗi buổi 90 phút, ưu tiên buổi tối. Hình thức: học trực tiếp tại nhà. Yêu cầu: có kinh nghiệm luyện thi vào 10, giảng dễ hiểu, báo cáo tiến độ định kỳ. Vui lòng ứng tuyển kèm lời giới thiệu ngắn và mức phí đề xuất.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "subjectId": "019cef3d-54e0-7e12-85ae-da011bb1fa7d",
+      "educationLevel": "SECONDARY",
+      "teachingMode": "OFFLINE",
+      "address": {
+        "street": "25 Nguyễn Thị Minh Khai",
+        "ward": "Phường 12",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "minBudget": 150000.0,
+      "maxBudget": 250000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 3,
+      "durationMinutes": 90,
+      "deadline": "2026-12-31T16:00:00Z"
+    },
+    {
+      "id": "31b4cbb1-a75d-53a7-9a3f-313d9a98fcab",
+      "createdAt": "2026-11-03T02:00:00Z",
+      "updatedAt": "2026-11-03T02:00:00Z",
+      "title": "Looking for an IELTS tutor, target band 6.5 (Writing and Speaking)",
+      "content": "I am a 12th grade student aiming for IELTS 6.5 overall in six months. I need a tutor who can give detailed feedback on Writing Task 2 and run Speaking practice. Two 90-minute sessions per week in the evening, online. Please apply with a short introduction and your proposed hourly fee.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "subjectId": "019cef3d-7420-7780-98f8-466fcb783388",
+      "educationLevel": "HIGH_SCHOOL",
+      "teachingMode": "ONLINE",
+      "address": {
+        "street": "88 Nguyễn Hữu Thọ",
+        "ward": "Phường An Phú",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "minBudget": 200000.0,
+      "maxBudget": 350000.0,
+      "budgetUnit": "PER_HOUR",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-12-31T16:00:00Z"
+    },
+    {
+      "id": "db56c821-2ee7-5567-8cfd-bc89b664b147",
+      "createdAt": "2026-11-05T02:00:00Z",
+      "updatedAt": "2026-11-05T02:00:00Z",
+      "title": "Tìm gia sư Piano cho bé 8 tuổi tại Phường An Phú",
+      "content": "Bé mới bắt đầu học Piano, cần giáo viên kiên nhẫn, dạy bằng trò chơi và bài hát. Thời gian học: 1 buổi/tuần, mỗi buổi 60 phút, cuối tuần. Hình thức: học trực tiếp. Vui lòng ứng tuyển kèm lời giới thiệu ngắn và mức phí đề xuất.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "subjectId": "019cef3d-7fd8-7881-95f9-bf62461639ef",
+      "educationLevel": "PRIMARY",
+      "teachingMode": "OFFLINE",
+      "address": {
+        "street": "88 Nguyễn Hữu Thọ",
+        "ward": "Phường An Phú",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "minBudget": 150000.0,
+      "maxBudget": 250000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 1,
+      "durationMinutes": 60,
+      "deadline": "2026-12-31T16:00:00Z"
+    },
+    {
+      "id": "10b3b53b-1594-5244-8fa0-f2da42a20321",
+      "createdAt": "2026-05-03T03:00:00Z",
+      "updatedAt": "2026-05-03T03:00:00Z",
+      "title": "Tìm gia sư Toán lớp 8 (đã kết thúc) #1",
+      "content": "Cần gia sư Toán lớp 8 củng cố đại số và hình học. Đã ghép cặp và hoàn thành khóa học.",
+      "type": "FIND_TUTOR",
+      "status": "CLOSED",
+      "authorId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "subjectId": "019cef3d-54e0-7e12-85ae-da011bb1fa7d",
+      "educationLevel": "SECONDARY",
+      "teachingMode": "BOTH",
+      "address": null,
+      "minBudget": 150000.0,
+      "maxBudget": 250000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-06-01T16:00:00Z"
+    },
+    {
+      "id": "05b39d34-6fa0-56d0-965b-221672c1b08a",
+      "createdAt": "2026-05-04T03:00:00Z",
+      "updatedAt": "2026-05-04T03:00:00Z",
+      "title": "Tìm gia sư Toán lớp 8 (đã kết thúc) #2",
+      "content": "Cần gia sư Toán lớp 8 củng cố đại số và hình học. Đã ghép cặp và hoàn thành khóa học.",
+      "type": "FIND_TUTOR",
+      "status": "CLOSED",
+      "authorId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "subjectId": "019cef3d-54e0-7e12-85ae-da011bb1fa7d",
+      "educationLevel": "SECONDARY",
+      "teachingMode": "BOTH",
+      "address": null,
+      "minBudget": 150000.0,
+      "maxBudget": 250000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-06-01T16:00:00Z"
+    },
+    {
+      "id": "4ec242ab-8829-542e-b770-0b5ff80bbc42",
+      "createdAt": "2026-05-05T03:00:00Z",
+      "updatedAt": "2026-05-05T03:00:00Z",
+      "title": "Tìm gia sư Toán lớp 8 (đã kết thúc) #3",
+      "content": "Cần gia sư Toán lớp 8 củng cố đại số và hình học. Đã ghép cặp và hoàn thành khóa học.",
+      "type": "FIND_TUTOR",
+      "status": "CLOSED",
+      "authorId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "subjectId": "019cef3d-54e0-7e12-85ae-da011bb1fa7d",
+      "educationLevel": "SECONDARY",
+      "teachingMode": "BOTH",
+      "address": null,
+      "minBudget": 150000.0,
+      "maxBudget": 250000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-06-01T16:00:00Z"
+    },
+    {
+      "id": "bee46613-6a6a-59a5-ade6-7976c70133e3",
+      "createdAt": "2026-05-06T03:00:00Z",
+      "updatedAt": "2026-05-06T03:00:00Z",
+      "title": "Tìm gia sư Toán lớp 8 (đã kết thúc) #4",
+      "content": "Cần gia sư Toán lớp 8 củng cố đại số và hình học. Đã ghép cặp và hoàn thành khóa học.",
+      "type": "FIND_TUTOR",
+      "status": "CLOSED",
+      "authorId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "subjectId": "019cef3d-54e0-7e12-85ae-da011bb1fa7d",
+      "educationLevel": "SECONDARY",
+      "teachingMode": "BOTH",
+      "address": null,
+      "minBudget": 150000.0,
+      "maxBudget": 250000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-06-01T16:00:00Z"
+    },
+    {
+      "id": "684cd18c-621e-5203-bcb2-469442dfaa4d",
+      "createdAt": "2026-05-07T03:00:00Z",
+      "updatedAt": "2026-05-07T03:00:00Z",
+      "title": "Tìm gia sư Toán lớp 8 (đã kết thúc) #5",
+      "content": "Cần gia sư Toán lớp 8 củng cố đại số và hình học. Đã ghép cặp và hoàn thành khóa học.",
+      "type": "FIND_TUTOR",
+      "status": "CLOSED",
+      "authorId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "subjectId": "019cef3d-54e0-7e12-85ae-da011bb1fa7d",
+      "educationLevel": "SECONDARY",
+      "teachingMode": "BOTH",
+      "address": null,
+      "minBudget": 150000.0,
+      "maxBudget": 250000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-06-01T16:00:00Z"
+    },
+    {
+      "id": "2550884a-49bb-562f-8081-a727d92aa430",
+      "createdAt": "2026-05-08T03:00:00Z",
+      "updatedAt": "2026-05-08T03:00:00Z",
+      "title": "Tìm gia sư Toán lớp 8 (đã kết thúc) #6",
+      "content": "Cần gia sư Toán lớp 8 củng cố đại số và hình học. Đã ghép cặp và hoàn thành khóa học.",
+      "type": "FIND_TUTOR",
+      "status": "CLOSED",
+      "authorId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "subjectId": "019cef3d-54e0-7e12-85ae-da011bb1fa7d",
+      "educationLevel": "SECONDARY",
+      "teachingMode": "BOTH",
+      "address": null,
+      "minBudget": 150000.0,
+      "maxBudget": 250000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-06-01T16:00:00Z"
+    },
+    {
+      "id": "c0ce3112-0be5-5a66-a7be-a2a8be62be1a",
+      "createdAt": "2026-05-09T03:00:00Z",
+      "updatedAt": "2026-05-09T03:00:00Z",
+      "title": "Tìm gia sư Toán lớp 8 (đã kết thúc) #7",
+      "content": "Cần gia sư Toán lớp 8 củng cố đại số và hình học. Đã ghép cặp và hoàn thành khóa học.",
+      "type": "FIND_TUTOR",
+      "status": "CLOSED",
+      "authorId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "subjectId": "019cef3d-54e0-7e12-85ae-da011bb1fa7d",
+      "educationLevel": "SECONDARY",
+      "teachingMode": "BOTH",
+      "address": null,
+      "minBudget": 150000.0,
+      "maxBudget": 250000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-06-01T16:00:00Z"
+    },
+    {
+      "id": "10e4f97c-91d8-50eb-a7cc-a432214c6f53",
+      "createdAt": "2026-05-10T03:00:00Z",
+      "updatedAt": "2026-05-10T03:00:00Z",
+      "title": "Tìm gia sư Toán lớp 8 (đã kết thúc) #8",
+      "content": "Cần gia sư Toán lớp 8 củng cố đại số và hình học. Đã ghép cặp và hoàn thành khóa học.",
+      "type": "FIND_TUTOR",
+      "status": "CLOSED",
+      "authorId": "019d76dd-ca60-7f6a-932d-ce16a0407b16",
+      "subjectId": "019cef3d-54e0-7e12-85ae-da011bb1fa7d",
+      "educationLevel": "SECONDARY",
+      "teachingMode": "BOTH",
+      "address": null,
+      "minBudget": 150000.0,
+      "maxBudget": 250000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-06-01T16:00:00Z"
+    },
+    {
+      "id": "cea04213-07b5-5842-9009-fae531b25d8a",
+      "createdAt": "2026-05-11T03:00:00Z",
+      "updatedAt": "2026-05-11T03:00:00Z",
+      "title": "Tìm gia sư Toán lớp 8 (đã kết thúc) #9",
+      "content": "Cần gia sư Toán lớp 8 củng cố đại số và hình học. Đã ghép cặp và hoàn thành khóa học.",
+      "type": "FIND_TUTOR",
+      "status": "CLOSED",
+      "authorId": "019d7d74-3120-7510-a1f0-11ca3a4a8409",
+      "subjectId": "019cef3d-54e0-7e12-85ae-da011bb1fa7d",
+      "educationLevel": "SECONDARY",
+      "teachingMode": "BOTH",
+      "address": null,
+      "minBudget": 150000.0,
+      "maxBudget": 250000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-06-01T16:00:00Z"
+    },
+    {
+      "id": "f1f5cb71-0b01-533c-97f5-94cb94bc29bb",
+      "createdAt": "2026-05-12T03:00:00Z",
+      "updatedAt": "2026-05-12T03:00:00Z",
+      "title": "Tìm gia sư Toán lớp 8 (đã kết thúc) #10",
+      "content": "Cần gia sư Toán lớp 8 củng cố đại số và hình học. Đã ghép cặp và hoàn thành khóa học.",
+      "type": "FIND_TUTOR",
+      "status": "CLOSED",
+      "authorId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "subjectId": "019cef3d-54e0-7e12-85ae-da011bb1fa7d",
+      "educationLevel": "SECONDARY",
+      "teachingMode": "BOTH",
+      "address": null,
+      "minBudget": 150000.0,
+      "maxBudget": 250000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-06-01T16:00:00Z"
     }
   ],
   "applications": [
@@ -3581,6 +5164,565 @@
       "tutorId": "019d473c-cc20-7e30-9125-b2ad43149aef",
       "processedByAdminId": null,
       "proposedFee": null
+    },
+    {
+      "id": "2c348603-cc55-5bff-8044-0318876f9f38",
+      "createdAt": "2026-05-03T09:00:00Z",
+      "updatedAt": "2026-05-03T09:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có kinh nghiệm luyện thi vào 10.",
+      "appliedAt": "2026-05-03T09:00:00Z",
+      "postId": "10b3b53b-1594-5244-8fa0-f2da42a20321",
+      "studentId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "bc206ddf-da1f-57c6-ba11-d40dc99afd1f",
+      "createdAt": "2026-05-04T09:00:00Z",
+      "updatedAt": "2026-05-04T09:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có kinh nghiệm luyện thi vào 10.",
+      "appliedAt": "2026-05-04T09:00:00Z",
+      "postId": "05b39d34-6fa0-56d0-965b-221672c1b08a",
+      "studentId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "dc2db25c-e4db-5988-ace4-2db4260e52c0",
+      "createdAt": "2026-05-05T09:00:00Z",
+      "updatedAt": "2026-05-05T09:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có kinh nghiệm luyện thi vào 10.",
+      "appliedAt": "2026-05-05T09:00:00Z",
+      "postId": "4ec242ab-8829-542e-b770-0b5ff80bbc42",
+      "studentId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "451c4509-5ee3-535a-9021-a302d03056c8",
+      "createdAt": "2026-05-06T09:00:00Z",
+      "updatedAt": "2026-05-06T09:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có kinh nghiệm luyện thi vào 10.",
+      "appliedAt": "2026-05-06T09:00:00Z",
+      "postId": "bee46613-6a6a-59a5-ade6-7976c70133e3",
+      "studentId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "c33eb51d-6282-5011-b34e-737a64bc51b5",
+      "createdAt": "2026-05-07T09:00:00Z",
+      "updatedAt": "2026-05-07T09:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có kinh nghiệm luyện thi vào 10.",
+      "appliedAt": "2026-05-07T09:00:00Z",
+      "postId": "684cd18c-621e-5203-bcb2-469442dfaa4d",
+      "studentId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "098ae1cb-4bf8-5f5a-a567-27d9bf05296b",
+      "createdAt": "2026-05-08T09:00:00Z",
+      "updatedAt": "2026-05-08T09:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có kinh nghiệm luyện thi vào 10.",
+      "appliedAt": "2026-05-08T09:00:00Z",
+      "postId": "2550884a-49bb-562f-8081-a727d92aa430",
+      "studentId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "f7c36343-351a-5d9c-ab24-65bdfcec16b2",
+      "createdAt": "2026-05-09T09:00:00Z",
+      "updatedAt": "2026-05-09T09:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có kinh nghiệm luyện thi vào 10.",
+      "appliedAt": "2026-05-09T09:00:00Z",
+      "postId": "c0ce3112-0be5-5a66-a7be-a2a8be62be1a",
+      "studentId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "954ae806-eecc-55dc-a1a2-f608bc60ee5e",
+      "createdAt": "2026-05-10T09:00:00Z",
+      "updatedAt": "2026-05-10T09:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có kinh nghiệm luyện thi vào 10.",
+      "appliedAt": "2026-05-10T09:00:00Z",
+      "postId": "10e4f97c-91d8-50eb-a7cc-a432214c6f53",
+      "studentId": "019d76dd-ca60-7f6a-932d-ce16a0407b16",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "4050df79-15af-50dd-b6be-cf0f14fa94dd",
+      "createdAt": "2026-05-11T09:00:00Z",
+      "updatedAt": "2026-05-11T09:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình dạy nhiệt tình.",
+      "appliedAt": "2026-05-11T09:00:00Z",
+      "postId": "cea04213-07b5-5842-9009-fae531b25d8a",
+      "studentId": "019d7d74-3120-7510-a1f0-11ca3a4a8409",
+      "tutorId": "450286a3-d3db-5c01-b1d2-c8340ec065c5",
+      "processedByAdminId": null,
+      "proposedFee": 180000.0
+    },
+    {
+      "id": "6984b3c5-349e-5ca9-a689-7233c14cf67d",
+      "createdAt": "2026-05-03T10:00:00Z",
+      "updatedAt": "2026-05-03T10:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có 9 năm kinh nghiệm.",
+      "appliedAt": "2026-05-03T10:00:00Z",
+      "postId": "10b3b53b-1594-5244-8fa0-f2da42a20321",
+      "studentId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "processedByAdminId": null,
+      "proposedFee": 240000.0
+    },
+    {
+      "id": "d0b8d570-5af3-5fbe-8335-d6f691c5017a",
+      "createdAt": "2026-05-04T10:00:00Z",
+      "updatedAt": "2026-05-04T10:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có 9 năm kinh nghiệm.",
+      "appliedAt": "2026-05-04T10:00:00Z",
+      "postId": "05b39d34-6fa0-56d0-965b-221672c1b08a",
+      "studentId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "processedByAdminId": null,
+      "proposedFee": 240000.0
+    },
+    {
+      "id": "e5f52347-bc87-5893-935e-6649cf5b6949",
+      "createdAt": "2026-05-05T10:00:00Z",
+      "updatedAt": "2026-05-05T10:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có 9 năm kinh nghiệm.",
+      "appliedAt": "2026-05-05T10:00:00Z",
+      "postId": "4ec242ab-8829-542e-b770-0b5ff80bbc42",
+      "studentId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "processedByAdminId": null,
+      "proposedFee": 240000.0
+    },
+    {
+      "id": "be4feebf-ed59-5951-abdb-e356c7d98aa4",
+      "createdAt": "2026-05-06T10:00:00Z",
+      "updatedAt": "2026-05-06T10:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có 9 năm kinh nghiệm.",
+      "appliedAt": "2026-05-06T10:00:00Z",
+      "postId": "bee46613-6a6a-59a5-ade6-7976c70133e3",
+      "studentId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "processedByAdminId": null,
+      "proposedFee": 240000.0
+    },
+    {
+      "id": "90be8ff6-44bd-56fe-b71f-111502d57c1b",
+      "createdAt": "2026-05-07T10:00:00Z",
+      "updatedAt": "2026-05-07T10:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có 9 năm kinh nghiệm.",
+      "appliedAt": "2026-05-07T10:00:00Z",
+      "postId": "684cd18c-621e-5203-bcb2-469442dfaa4d",
+      "studentId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "processedByAdminId": null,
+      "proposedFee": 240000.0
+    },
+    {
+      "id": "813e1f02-79ca-59b6-9724-fd0698dcac55",
+      "createdAt": "2026-05-08T10:00:00Z",
+      "updatedAt": "2026-05-08T10:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có 9 năm kinh nghiệm.",
+      "appliedAt": "2026-05-08T10:00:00Z",
+      "postId": "2550884a-49bb-562f-8081-a727d92aa430",
+      "studentId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "processedByAdminId": null,
+      "proposedFee": 240000.0
+    },
+    {
+      "id": "1fc1763e-e6a0-5d20-9968-2e4098a7e07b",
+      "createdAt": "2026-05-09T10:00:00Z",
+      "updatedAt": "2026-05-09T10:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có 9 năm kinh nghiệm.",
+      "appliedAt": "2026-05-09T10:00:00Z",
+      "postId": "c0ce3112-0be5-5a66-a7be-a2a8be62be1a",
+      "studentId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "processedByAdminId": null,
+      "proposedFee": 240000.0
+    },
+    {
+      "id": "c8dc71e8-0176-5a9d-9e75-7deca11831d8",
+      "createdAt": "2026-05-10T10:00:00Z",
+      "updatedAt": "2026-05-10T10:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có 9 năm kinh nghiệm.",
+      "appliedAt": "2026-05-10T10:00:00Z",
+      "postId": "10e4f97c-91d8-50eb-a7cc-a432214c6f53",
+      "studentId": "019d76dd-ca60-7f6a-932d-ce16a0407b16",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "processedByAdminId": null,
+      "proposedFee": 240000.0
+    },
+    {
+      "id": "4464475f-efdd-57b7-a991-5df51f187b4f",
+      "createdAt": "2026-05-11T10:00:00Z",
+      "updatedAt": "2026-05-11T10:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có 9 năm kinh nghiệm.",
+      "appliedAt": "2026-05-11T10:00:00Z",
+      "postId": "cea04213-07b5-5842-9009-fae531b25d8a",
+      "studentId": "019d7d74-3120-7510-a1f0-11ca3a4a8409",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "processedByAdminId": null,
+      "proposedFee": 240000.0
+    },
+    {
+      "id": "e1146595-0749-59fb-978e-78a2d51977ed",
+      "createdAt": "2026-05-12T10:00:00Z",
+      "updatedAt": "2026-05-12T10:00:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có 9 năm kinh nghiệm.",
+      "appliedAt": "2026-05-12T10:00:00Z",
+      "postId": "f1f5cb71-0b01-533c-97f5-94cb94bc29bb",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "processedByAdminId": null,
+      "proposedFee": 240000.0
+    },
+    {
+      "id": "89ae2eb9-14e2-5e4c-99fc-4b6d6a82a1a0",
+      "createdAt": "2026-11-02T08:00:00Z",
+      "updatedAt": "2026-11-02T08:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-02T08:00:00Z",
+      "postId": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "89345350-7220-5962-b8da-f834e88c403a",
+      "createdAt": "2026-11-02T09:00:00Z",
+      "updatedAt": "2026-11-02T09:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-02T09:00:00Z",
+      "postId": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "e79228bd-5a47-5908-84ed-08eea9e86f08",
+      "processedByAdminId": null,
+      "proposedFee": 230000.0
+    },
+    {
+      "id": "c2a2674f-1dea-545d-8214-ad9295a1fa27",
+      "createdAt": "2026-11-02T10:00:00Z",
+      "updatedAt": "2026-11-02T10:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-02T10:00:00Z",
+      "postId": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "450286a3-d3db-5c01-b1d2-c8340ec065c5",
+      "processedByAdminId": null,
+      "proposedFee": 180000.0
+    },
+    {
+      "id": "484e02f3-7cd0-505c-b3c2-fa07ff16ee34",
+      "createdAt": "2026-11-03T11:00:00Z",
+      "updatedAt": "2026-11-03T11:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-03T11:00:00Z",
+      "postId": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "processedByAdminId": null,
+      "proposedFee": 240000.0
+    },
+    {
+      "id": "2b4bebd9-1887-5e61-b090-8bcf31fba470",
+      "createdAt": "2026-11-03T12:00:00Z",
+      "updatedAt": "2026-11-03T12:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-03T12:00:00Z",
+      "postId": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "5ae0ada5-debc-597f-ad13-eced092be7ec",
+      "processedByAdminId": null,
+      "proposedFee": null
+    },
+    {
+      "id": "484eb85b-0504-549f-8e1e-594a67d30744",
+      "createdAt": "2026-11-03T13:00:00Z",
+      "updatedAt": "2026-11-03T13:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-03T13:00:00Z",
+      "postId": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "f54279e2-afdc-5ed6-855b-7f17239f002c",
+      "processedByAdminId": null,
+      "proposedFee": 180000.0
+    },
+    {
+      "id": "416bfd29-4af6-5112-8287-5a6e496235ce",
+      "createdAt": "2026-11-04T14:00:00Z",
+      "updatedAt": "2026-11-04T14:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-04T14:00:00Z",
+      "postId": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "d1d90893-efe1-5d3e-887e-2f49a0cc9511",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "12c915eb-dbd4-5918-9821-c02600a815de",
+      "createdAt": "2026-11-04T15:00:00Z",
+      "updatedAt": "2026-11-04T15:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-04T15:00:00Z",
+      "postId": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "5f882726-7586-5eb0-afc6-fe1a8d449ab0",
+      "processedByAdminId": null,
+      "proposedFee": 250000.0
+    },
+    {
+      "id": "f9465d14-c903-5263-acd2-6797cc2dec93",
+      "createdAt": "2026-11-04T16:00:00Z",
+      "updatedAt": "2026-11-04T16:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-04T16:00:00Z",
+      "postId": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "317b8152-7605-5b3e-95a1-4ff9cc172617",
+      "processedByAdminId": null,
+      "proposedFee": 190000.0
+    },
+    {
+      "id": "031f1079-e4bd-5ce6-947a-509d003da0b8",
+      "createdAt": "2026-11-05T17:00:00Z",
+      "updatedAt": "2026-11-05T17:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-05T17:00:00Z",
+      "postId": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "9ec56e37-f631-502e-9773-611c199d06f9",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "95741071-124c-5a8d-aa06-909a2a9a39f6",
+      "createdAt": "2026-11-05T18:00:00Z",
+      "updatedAt": "2026-11-05T18:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-05T18:00:00Z",
+      "postId": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "23b8a15d-009c-5e06-9a97-41782f574950",
+      "processedByAdminId": null,
+      "proposedFee": 400000.0
+    },
+    {
+      "id": "0a9cde7e-95fb-548a-b903-285ff5894d09",
+      "createdAt": "2026-11-05T19:00:00Z",
+      "updatedAt": "2026-11-05T19:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-05T19:00:00Z",
+      "postId": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "27bb4475-0da4-5a82-a42f-b13748f9380c",
+      "processedByAdminId": null,
+      "proposedFee": null
+    },
+    {
+      "id": "fd07c74c-d77f-5380-a721-190c8512a586",
+      "createdAt": "2026-11-06T20:00:00Z",
+      "updatedAt": "2026-11-06T20:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-06T20:00:00Z",
+      "postId": "a9439e8c-3401-504a-88f0-c83d29cb60df",
+      "studentId": "e4ffc9fd-dde9-535c-a194-102dd4867f67",
+      "tutorId": "c7fd15a0-6f9d-5ec1-a513-a605ae8f98e1",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "6cd1d21c-3e95-57ae-abec-953a6409e2a0",
+      "createdAt": "2026-11-04T09:00:00Z",
+      "updatedAt": "2026-11-04T09:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-04T09:00:00Z",
+      "postId": "31b4cbb1-a75d-53a7-9a3f-313d9a98fcab",
+      "studentId": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "tutorId": "923df39e-3b57-51c3-b913-94141b986a1a",
+      "processedByAdminId": null,
+      "proposedFee": 300000.0
+    },
+    {
+      "id": "99a21a74-ed0b-501c-aec0-c44be8aa2324",
+      "createdAt": "2026-11-04T10:00:00Z",
+      "updatedAt": "2026-11-04T10:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-04T10:00:00Z",
+      "postId": "31b4cbb1-a75d-53a7-9a3f-313d9a98fcab",
+      "studentId": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "tutorId": "f509bd32-60e4-53bc-abd6-339121cc1a05",
+      "processedByAdminId": null,
+      "proposedFee": 280000.0
+    },
+    {
+      "id": "0b43a593-de62-589a-aabf-6ae6c551e7d6",
+      "createdAt": "2026-11-04T11:00:00Z",
+      "updatedAt": "2026-11-04T11:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-04T11:00:00Z",
+      "postId": "31b4cbb1-a75d-53a7-9a3f-313d9a98fcab",
+      "studentId": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "tutorId": "9092939e-7654-5b65-a544-006f840684a6",
+      "processedByAdminId": null,
+      "proposedFee": 250000.0
+    },
+    {
+      "id": "54809a31-ba40-568b-9185-de3cdf7369e1",
+      "createdAt": "2026-11-04T12:00:00Z",
+      "updatedAt": "2026-11-04T12:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-04T12:00:00Z",
+      "postId": "31b4cbb1-a75d-53a7-9a3f-313d9a98fcab",
+      "studentId": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "tutorId": "aaaed0d4-9d9a-5fdf-bb83-21588cc59516",
+      "processedByAdminId": null,
+      "proposedFee": 180000.0
+    },
+    {
+      "id": "975b5d89-1b3b-55f2-af6c-362b5b32d66b",
+      "createdAt": "2026-11-05T13:00:00Z",
+      "updatedAt": "2026-11-05T13:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-05T13:00:00Z",
+      "postId": "31b4cbb1-a75d-53a7-9a3f-313d9a98fcab",
+      "studentId": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "tutorId": "288b06d3-7c5d-5859-8c07-868973c328f7",
+      "processedByAdminId": null,
+      "proposedFee": 220000.0
+    },
+    {
+      "id": "5e254faf-aee5-5d51-b957-47bc381bc9cd",
+      "createdAt": "2026-11-05T14:00:00Z",
+      "updatedAt": "2026-11-05T14:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-05T14:00:00Z",
+      "postId": "31b4cbb1-a75d-53a7-9a3f-313d9a98fcab",
+      "studentId": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "tutorId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "processedByAdminId": null,
+      "proposedFee": 270000.0
+    },
+    {
+      "id": "025fd9f9-bdd0-56fb-bd39-6b2c030c6e7b",
+      "createdAt": "2026-11-05T15:00:00Z",
+      "updatedAt": "2026-11-05T15:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-05T15:00:00Z",
+      "postId": "31b4cbb1-a75d-53a7-9a3f-313d9a98fcab",
+      "studentId": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "tutorId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "b4d63817-8138-5ab4-aa8e-6bb31cf6cec1",
+      "createdAt": "2026-11-05T16:00:00Z",
+      "updatedAt": "2026-11-05T16:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-05T16:00:00Z",
+      "postId": "31b4cbb1-a75d-53a7-9a3f-313d9a98fcab",
+      "studentId": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "tutorId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "processedByAdminId": null,
+      "proposedFee": 190000.0
+    },
+    {
+      "id": "09a693e2-f8e6-57ce-9b71-7d5328599ba4",
+      "createdAt": "2026-11-06T09:00:00Z",
+      "updatedAt": "2026-11-06T09:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-06T09:00:00Z",
+      "postId": "db56c821-2ee7-5567-8cfd-bc89b664b147",
+      "studentId": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "tutorId": "401f139d-2d16-51e6-9515-706e68f755c0",
+      "processedByAdminId": null,
+      "proposedFee": 200000.0
+    },
+    {
+      "id": "b274246f-fb76-5d1d-b265-b0f13126db82",
+      "createdAt": "2026-11-06T10:00:00Z",
+      "updatedAt": "2026-11-06T10:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-06T10:00:00Z",
+      "postId": "db56c821-2ee7-5567-8cfd-bc89b664b147",
+      "studentId": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "tutorId": "ebf5c601-d877-5404-b3da-54cb4590de17",
+      "processedByAdminId": null,
+      "proposedFee": 160000.0
+    },
+    {
+      "id": "240cbaee-8b5c-523e-bc96-2c74cf7468e3",
+      "createdAt": "2026-11-06T11:00:00Z",
+      "updatedAt": "2026-11-06T11:00:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Chào bạn, mình phù hợp với yêu cầu của bài đăng và sẵn sàng dạy thử 1 buổi.",
+      "appliedAt": "2026-11-06T11:00:00Z",
+      "postId": "db56c821-2ee7-5567-8cfd-bc89b664b147",
+      "studentId": "281d70c4-5191-5427-b83d-9c00cc7d1f76",
+      "tutorId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "processedByAdminId": null,
+      "proposedFee": 180000.0
     }
   ],
   "wallets": [
@@ -4515,6 +6657,126 @@
       "studentId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
       "tutorId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
       "applicationId": "01a04806-cb80-752b-a0da-4acb04cd5270"
+    },
+    {
+      "id": "08a8948f-4d17-55bf-8bff-1662ca12b793",
+      "createdAt": "2026-07-01T05:00:00Z",
+      "updatedAt": "2026-07-01T05:00:00Z",
+      "rating": 5,
+      "comment": "Giảng dễ hiểu, điểm Toán của em tăng rõ rệt.",
+      "studentId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "applicationId": "2c348603-cc55-5bff-8044-0318876f9f38"
+    },
+    {
+      "id": "01301a77-1b3c-5120-a499-b28211b2f3db",
+      "createdAt": "2026-07-01T05:00:00Z",
+      "updatedAt": "2026-07-01T05:00:00Z",
+      "rating": 5,
+      "comment": "Giảng dễ hiểu, điểm Toán của em tăng rõ rệt.",
+      "studentId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "applicationId": "bc206ddf-da1f-57c6-ba11-d40dc99afd1f"
+    },
+    {
+      "id": "b661058a-d62c-5910-acc9-23d32ad51dca",
+      "createdAt": "2026-07-01T05:00:00Z",
+      "updatedAt": "2026-07-01T05:00:00Z",
+      "rating": 5,
+      "comment": "Giảng dễ hiểu, điểm Toán của em tăng rõ rệt.",
+      "studentId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "applicationId": "dc2db25c-e4db-5988-ace4-2db4260e52c0"
+    },
+    {
+      "id": "26334999-1ddb-5a77-b208-2c8eaa441106",
+      "createdAt": "2026-07-01T05:00:00Z",
+      "updatedAt": "2026-07-01T05:00:00Z",
+      "rating": 4,
+      "comment": "Giảng dễ hiểu, điểm Toán của em tăng rõ rệt.",
+      "studentId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "applicationId": "451c4509-5ee3-535a-9021-a302d03056c8"
+    },
+    {
+      "id": "1eac3aea-bb07-5744-b091-dd63ee9d13bb",
+      "createdAt": "2026-07-01T05:00:00Z",
+      "updatedAt": "2026-07-01T05:00:00Z",
+      "rating": 5,
+      "comment": "Giảng dễ hiểu, điểm Toán của em tăng rõ rệt.",
+      "studentId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "applicationId": "c33eb51d-6282-5011-b34e-737a64bc51b5"
+    },
+    {
+      "id": "3d3abfd1-d833-5d42-8e7b-a44983742c9c",
+      "createdAt": "2026-07-01T05:00:00Z",
+      "updatedAt": "2026-07-01T05:00:00Z",
+      "rating": 5,
+      "comment": "Giảng dễ hiểu, điểm Toán của em tăng rõ rệt.",
+      "studentId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "applicationId": "098ae1cb-4bf8-5f5a-a567-27d9bf05296b"
+    },
+    {
+      "id": "f980d975-1c0e-5334-89c0-c4109f344769",
+      "createdAt": "2026-07-01T05:00:00Z",
+      "updatedAt": "2026-07-01T05:00:00Z",
+      "rating": 4,
+      "comment": "Giảng dễ hiểu, điểm Toán của em tăng rõ rệt.",
+      "studentId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "applicationId": "f7c36343-351a-5d9c-ab24-65bdfcec16b2"
+    },
+    {
+      "id": "4dfb847c-fdd5-5021-9249-f028098b1c99",
+      "createdAt": "2026-07-01T05:00:00Z",
+      "updatedAt": "2026-07-01T05:00:00Z",
+      "rating": 5,
+      "comment": "Giảng dễ hiểu, điểm Toán của em tăng rõ rệt.",
+      "studentId": "019d76dd-ca60-7f6a-932d-ce16a0407b16",
+      "tutorId": "82edd771-5fd2-519e-ad7c-6d58901c2494",
+      "applicationId": "954ae806-eecc-55dc-a1a2-f608bc60ee5e"
+    },
+    {
+      "id": "13ca3569-e751-544b-9551-fdccbcdae692",
+      "createdAt": "2026-07-01T05:00:00Z",
+      "updatedAt": "2026-07-01T05:00:00Z",
+      "rating": 5,
+      "comment": "Thầy nhiệt tình, em rất hài lòng.",
+      "studentId": "019d7d74-3120-7510-a1f0-11ca3a4a8409",
+      "tutorId": "450286a3-d3db-5c01-b1d2-c8340ec065c5",
+      "applicationId": "4050df79-15af-50dd-b6be-cf0f14fa94dd"
+    },
+    {
+      "id": "97592974-2f88-582c-b9b3-68fd12b7dd30",
+      "createdAt": "2026-07-01T05:00:00Z",
+      "updatedAt": "2026-07-01T05:00:00Z",
+      "rating": 4,
+      "comment": "Bài tập có hệ thống, thầy dạy kỹ.",
+      "studentId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "applicationId": "6984b3c5-349e-5ca9-a689-7233c14cf67d"
+    },
+    {
+      "id": "44cd1778-af26-5d6e-84a0-3d4a9899483c",
+      "createdAt": "2026-07-01T05:00:00Z",
+      "updatedAt": "2026-07-01T05:00:00Z",
+      "rating": 4,
+      "comment": "Bài tập có hệ thống, thầy dạy kỹ.",
+      "studentId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "applicationId": "d0b8d570-5af3-5fbe-8335-d6f691c5017a"
+    },
+    {
+      "id": "fc0ff2b5-825e-5c1a-b1c8-f63ff73c689e",
+      "createdAt": "2026-07-01T05:00:00Z",
+      "updatedAt": "2026-07-01T05:00:00Z",
+      "rating": 5,
+      "comment": "Bài tập có hệ thống, thầy dạy kỹ.",
+      "studentId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
+      "applicationId": "e5f52347-bc87-5893-935e-6649cf5b6949"
     }
   ],
   "reviewComplaints": [

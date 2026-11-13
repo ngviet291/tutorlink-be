@@ -1,5 +1,6 @@
 package org.group3.tutorlink.features.post.controller;
 
+import com.cloudinary.Api;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
@@ -206,6 +207,15 @@ public class PostController {
                 .code(PostResponseCode.GET_STATISTICS_BY_STATUS.getCode())
                 .message(PostResponseCode.GET_STATISTICS_BY_STATUS.getMessage())
                 .data(postService.getStatisticsByStatus())
+                .build();
+    }
+
+    @GetMapping("/{postId}/admin")
+    public ApiResponse<PostResponse> getPostAdmin(@PathVariable UUID postId) {
+        return ApiResponse.<PostResponse>builder()
+                .code(PostResponseCode.GET_POST_ADMIN.getCode())
+                .message(PostResponseCode.GET_POST_ADMIN.getMessage())
+                .data(postService.getPostByIdAdmin(postId))
                 .build();
     }
 }

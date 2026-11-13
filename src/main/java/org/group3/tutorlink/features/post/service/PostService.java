@@ -76,15 +76,15 @@ public interface PostService {
             int limit
     );
 
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    PostResponse getPostByIdAdmin(UUID postId);
+
     @Transactional
     PostResponse updatePost(UUID postId, UpdatePostRequest request);
 
     @Transactional
     void closePost(UUID postId);
-
-    @Transactional
-    @PreAuthorize("hasAuthority('ADMIN')")
-    void removePostAdmin(UUID postId);
 
     @Transactional
     void removePost(UUID postId);

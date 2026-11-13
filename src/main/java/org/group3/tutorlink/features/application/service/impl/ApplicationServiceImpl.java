@@ -9,6 +9,7 @@ import org.group3.tutorlink.features.application.dto.request.CreateApplicationRe
 import org.group3.tutorlink.features.application.dto.response.ApplicationResponse;
 import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
+import org.group3.tutorlink.features.application.event.TutorProfileChangedEvent;
 import org.group3.tutorlink.features.application.exception.ApplicationNotFoundException;
 import org.group3.tutorlink.features.application.exception.ApplicationInvalidStatusException;
 import org.group3.tutorlink.features.application.exception.ApplicationNotAllowedException;
@@ -27,6 +28,7 @@ import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.repository.UserRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +52,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final AppUtil appUtil;
     private final ApplicationMapper applicationMapper;
     private final SystemLogPublisher systemLogPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
@@ -88,6 +91,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                 throw new AppException(ErrorCodeApplication.APPLICATION_ALREADY_EXISTS);
             }
 
+            eventPublisher.publishEvent(TutorProfileChangedEvent.builder().tutorId(tutor.getId()).build());
             application.setTutor(tutor);
             application.setStudent(student);
 
@@ -234,6 +238,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         Application saved = applicationRepository.save(application);
         // Đã sửa
+
+        // TODO: Push notification to the selected applicant
         return applicationMapper.toApplicationResponse(saved);
     }
 

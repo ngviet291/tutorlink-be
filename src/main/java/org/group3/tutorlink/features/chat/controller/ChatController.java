@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
+import org.group3.tutorlink.features.chat.dto.request.ChatCreateChanelRequest;
 import org.group3.tutorlink.features.chat.dto.request.SendMessageRequest;
 import org.group3.tutorlink.features.chat.dto.response.ChatChannelResponse;
 import org.group3.tutorlink.features.chat.dto.response.MessageResponse;
@@ -85,6 +86,15 @@ public class ChatController {
                 .code(ChatResponseCode.GET_UNREAD_COUNT_SUCCESS.getCode())
                 .message(ChatResponseCode.GET_UNREAD_COUNT_SUCCESS.getMessage())
                 .data(chatService.getUnreadCount())
+                .build();
+    }
+
+    @PostMapping("/channels")
+    public ApiResponse<ChatChannelResponse> createChannel(@RequestBody ChatCreateChanelRequest request) {
+        return ApiResponse.<ChatChannelResponse>builder()
+                .code(ChatResponseCode.CREATE_CHANNEL_SUCCESS.getCode())
+                .message(ChatResponseCode.CREATE_CHANNEL_SUCCESS.getMessage())
+                .data(chatService.createNewChannel(request))
                 .build();
     }
 }

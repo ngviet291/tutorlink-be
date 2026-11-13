@@ -12,6 +12,7 @@ package org.group3.tutorlink.features.application.repository;
  * @version:     1.0
  * @date: 29/09/2026 14:57
  */
+import org.group3.tutorlink.features.application.dto.projection.TutorAcceptedRow;
 import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.post.enums.PostStatus;
@@ -22,6 +23,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -223,4 +225,15 @@ public interface ApplicationRepository
     List<Application> findWithTutorByPostIdAndStatus(
             @Param("postId") UUID postId,
             @Param("status") ApplicationStatus status);
+
+
+    @Query("""
+        select a.tutor.id as tutorId, count(a) as cnt
+        from Application a
+        where a.tutor.id in :tutorIds
+          and a.applicationStatus = :status
+        group by a.tutor.id
+        """)
+    List<TutorAcceptedRow> countByTutorIdsAndStatus(@Param("tutorIds") Collection<UUID> tutorIds,
+                                                    @Param("status") ApplicationStatus status);
 }

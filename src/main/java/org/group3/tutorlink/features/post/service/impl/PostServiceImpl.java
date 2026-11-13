@@ -36,7 +36,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -213,6 +212,17 @@ public class PostServiceImpl implements PostService {
     }
 
     /**
+     * Chi tiết một bài đăng bất kỳ (mọi trạng thái) dành cho ADMIN.
+     */
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Override
+    public PostResponse getPostByIdAdmin(UUID postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(PostNotFoundException::new);
+        return postMapper.toPostResponse(post);
+    }
+    /**
      * Cập nhật bài đăng của người dùng hiện tại.
      */
     @Transactional
@@ -254,19 +264,7 @@ public class PostServiceImpl implements PostService {
         post.setStatus(PostStatus.CLOSED);
     }
 
-    @Transactional
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @Override
-    public void removePostAdmin(UUID postId) {
-        Post post = postRepository
-                .findByIdWithSubjectAndWithAuthor(
-                        postId,
-                        appUtil.userIdFromAuthentication()
-                )
-                .orElseThrow(PostNotFoundException::new);
 
-        post.setStatus(PostStatus.REMOVED);
-    }
 
     @Transactional
     @Override
@@ -320,6 +318,7 @@ public class PostServiceImpl implements PostService {
         Specification<Post> spec = Specification
                 .where(PostSpecification.keyword(keyword))
                 .and(PostSpecification.hasStatus(postStatus))
+                .and(PostSpecification.hasStatusNotRemoved(postStatus))
                 .and(PostSpecification.hasType(type))
                 .and(PostSpecification.hasSubject(subjectName))
                 .and(PostSpecification.hasTeachingMode(teachingMode))
@@ -397,6 +396,7 @@ public class PostServiceImpl implements PostService {
     public List<PostStatisticsByStatus> getStatisticsByStatus() {
         return postRepository.getStatisticsByStatus();
     }
+
     @Transactional
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
