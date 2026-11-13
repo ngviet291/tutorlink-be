@@ -53,6 +53,10 @@ public interface ApplicationService {
             UUID applicationId
     );
 
+    ApplicationResponse confirmApplicationOnPaymentSuccess(
+            UUID applicationId
+    );
+
     ApplicationResponse finishApplication(
             UUID applicationId
     );

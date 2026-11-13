@@ -230,7 +230,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             }
         }
 
-        post.setStatus(PostStatus.CLOSED);
+        post.setStatus(PostStatus.PENDING);
 
         Application saved = applicationRepository.save(application);
         // Đã sửa
@@ -289,9 +289,29 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         application.setApplicationStatus(ApplicationStatus.CONFIRMED);
+        post.setStatus(PostStatus.CLOSED);
 
         Application saved = applicationRepository.save(application);
         // Đã sửa
+        return applicationMapper.toApplicationResponse(saved);
+    }
+
+    @Override
+    public ApplicationResponse confirmApplicationOnPaymentSuccess(UUID applicationId) {
+        Application application = getApplicationOrThrow(applicationId);
+
+        if (application.getApplicationStatus() != ApplicationStatus.ACCEPTED) {
+            throw new AppException(ErrorCodeApplication.INVALID_APPLICATION_STATUS);
+        }
+
+        application.setApplicationStatus(ApplicationStatus.CONFIRMED);
+
+        Post post = application.getPost();
+        if (post != null) {
+            post.setStatus(PostStatus.CLOSED);
+        }
+
+        Application saved = applicationRepository.save(application);
         return applicationMapper.toApplicationResponse(saved);
     }
 
