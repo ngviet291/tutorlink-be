@@ -6,7 +6,7 @@ public interface PaymentGateway {
 
     PaymentMethod method();
 
-    // Mã đơn hàng gửi sang cổng (MoMo: orderId, ZaloPay: app_trans_id)
+    // Mã đơn hàng gửi sang cổng thanh toán (MoMo: orderId)
     String newProviderOrderId();
 
     GatewayPaymentResult createPayment(GatewayPaymentRequest request);

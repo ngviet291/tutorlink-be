@@ -32,7 +32,7 @@ public interface PaymentService {
 
     FeeConfigResponse createFeeConfig(CreateFeeConfigRequest request);
 
-    // IPN/callback từ MoMo, ZaloPay (server-to-server, không có JWT, xác thực bằng chữ ký)
+    // IPN/callback từ MoMo (server-to-server, không có JWT, xác thực bằng chữ ký)
     void handleGatewayCallback(PaymentMethod method, String rawBody);
 
     // Hỏi lại cổng về trạng thái giao dịch nạp tiền đang PENDING (Tutor sở hữu giao dịch)

@@ -44,13 +44,13 @@ public class TransactionResponse {
     @Schema(description = "Application id, only present for COMMISSION transactions!")
     private UUID applicationId;
 
-    @Schema(description = "Order id on the payment gateway (MoMo orderId / ZaloPay app_trans_id), only for gateway top-ups!")
+    @Schema(description = "Order id on the payment gateway (MoMo orderId), only for gateway top-ups!")
     private String providerOrderId;
 
     @Schema(description = "Gateway transaction id, available once the payment is completed!")
     private String providerTransId;
 
-    @Schema(description = "URL to redirect the user to the MoMo/ZaloPay payment page (returned when creating a top-up)!")
+    @Schema(description = "URL to redirect the user to the MoMo payment page (returned when creating a top-up)!")
     private String paymentLink;
 
     @Schema(description = "Content to render a QR code that can be scanned with the MoMo app (MoMo only)!")

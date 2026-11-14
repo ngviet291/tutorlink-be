@@ -80,7 +80,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final TransactionMapper transactionMapper;
     private final RevenueStatisticsMapper revenueStatisticsMapper;
     private final FeeConfigMapper feeConfigMapper;
-    // Spring tự inject tất cả cổng thanh toán (MomoGateway, ZaloPayGateway, ...)
+    // Spring tự inject tất cả payment gateways (MomoGateway, ...)
     private final List<PaymentGateway> paymentGateways;
     private final AppUtil appUtil;
 
@@ -101,14 +101,15 @@ public class PaymentServiceImpl implements PaymentService {
     @PreAuthorize("hasAuthority('TUTOR')")
     public TransactionResponse topUp(TopUpRequest request) {
         UUID tutorId = appUtil.userIdFromAuthentication();
-        PaymentMethod method = request.getPaymentMethod();
+        // Only MoMo payment gateway is supported
+        PaymentMethod method = PaymentMethod.MOMO;
         PaymentGateway gateway = findGateway(method);
         BigDecimal amount = request.getAmount().setScale(0, RoundingMode.HALF_UP);
 
         Wallet wallet = walletRepository.findByTutorId(tutorId)
                 .orElseGet(() -> createWallet(tutorId));
 
-        // Tạo đơn bên MoMo/ZaloPay trước; lỗi cổng -> ném exception, không lưu giao dịch rác
+        // Tạo đơn bên MoMo trước; lỗi cổng -> ném exception, không lưu giao dịch rác
         String providerOrderId = gateway.newProviderOrderId();
         GatewayPaymentResult payment = gateway.createPayment(new GatewayPaymentRequest(
                 providerOrderId, amount, "Nap tien vao vi TutorLink", tutorId));
@@ -141,8 +142,8 @@ public class PaymentServiceImpl implements PaymentService {
         Transaction transaction = transactionRepository.findForUpdateByProviderOrderId(result.providerOrderId())
                 .orElse(null);
         if (transaction == null) {
-            log.warn("{} callback for unknown order {}", method, result.providerOrderId());
-            return;
+            // Ask the provider to retry if the create transaction has not committed yet.
+            throw new AppException(PaymentErrorCode.TRANSACTION_NOT_FOUND);
         }
         settleTopUp(transaction, method, result);
     }
@@ -174,7 +175,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     // Chốt kết quả giao dịch nạp tiền. Idempotent: chỉ xử lý khi giao dịch còn PENDING.
     private void settleTopUp(Transaction transaction, PaymentMethod method, GatewayCallbackResult result) {
-        if (transaction.getType() != TransactionType.TOP_UP || transaction.getPaymentMethod() != method) {
+        if (!java.util.Objects.equals(transaction.getProviderOrderId(), result.providerOrderId())
+                || transaction.getType() != TransactionType.TOP_UP || transaction.getPaymentMethod() != method) {
             log.warn("Ignore {} result for transaction {}: type/method mismatch", method, transaction.getId());
             return;
         }
@@ -183,7 +185,8 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         if (result.state() == GatewayPaymentState.SUCCESS) {
-            if (result.amount() != null && transaction.getAmount().compareTo(result.amount()) != 0) {
+            if (result.amount() == null || transaction.getAmount().compareTo(result.amount()) != 0
+                    || result.providerTransId() == null || result.providerTransId().isBlank()) {
                 // Chữ ký hợp lệ nhưng số tiền lệch với đơn đã tạo -> không cộng ví, cần đối soát thủ công
                 log.error("{} amount mismatch for transaction {}: expected {}, gateway {}",
                         method, transaction.getId(), transaction.getAmount(), result.amount());

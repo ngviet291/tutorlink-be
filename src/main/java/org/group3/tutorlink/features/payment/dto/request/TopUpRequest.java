@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.group3.tutorlink.features.payment.enums.PaymentMethod;
 
 import java.math.BigDecimal;
 
@@ -17,17 +16,13 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Request to top up the wallet of the current tutor!")
+@Schema(description = "Request to top up wallet via MoMo e-wallet")
 public class TopUpRequest {
 
     @NotNull(message = "Amount is required!")
-    @DecimalMin(value = "1000", message = "Amount must be at least 1,000 VND!")
+    @DecimalMin(value = "10000", message = "Amount must be at least 10,000 VND!")
     @DecimalMax(value = "50000000", message = "Amount must not exceed 50,000,000 VND!")
     @Digits(integer = 17, fraction = 0, message = "Amount must be a whole number of VND!")
-    @Schema(description = "Amount to top up (VND)!", example = "500000")
+    @Schema(description = "Amount to top up (VND). Min: 10,000 VND, Max: 50,000,000 VND", example = "500000")
     private BigDecimal amount;
-
-    @NotNull(message = "Payment method is required!")
-    @Schema(description = "Payment gateway used to top up: MOMO or ZALOPAY!", example = "MOMO")
-    private PaymentMethod paymentMethod;
 }
