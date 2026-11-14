@@ -41,8 +41,19 @@ public class ApplicationResponse {
 
     private Instant appliedAt;
 
+    // Thời điểm chủ bài chọn đơn này (ACCEPTED); null nếu chưa select hoặc đã revert
+    private Instant selectedAt;
+
+    // Hạn cuối của bước đang chờ, để FE đếm ngược:
+    // - ACCEPTED + đã trả phí (transaction SUCCESS) -> transactionDate + confirm-window (W2, chờ applicant confirm)
+    // - ACCEPTED + chưa trả -> selectedAt + payment-window (W1, chờ tutor thanh toán)
+    // - Trạng thái khác -> null
+    private Instant expiresAt;
+
     private UUID processedByAdminId;
 
     private UUID transactionId;
+
+    private String transactionStatus;
     private BigDecimal proposedFee;
 }

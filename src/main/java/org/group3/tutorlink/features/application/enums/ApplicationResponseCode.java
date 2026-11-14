@@ -12,7 +12,8 @@ public enum ApplicationResponseCode {
     CONFIRM_SUCCESS("APP_203", "Application confirmed successfully"),
     CANCEL_SUCCESS("APP_204", "Application cancelled successfully"),
     REJECT_SUCCESS("APP_205", "Application rejected successfully"),
-    FINISH_SUCCESS("APP_206", "Application finished successfully");
+    FINISH_SUCCESS("APP_206", "Application finished successfully"),
+    UNSELECT_SUCCESS("APP_207", "Application unselected successfully");
 
     private final String code;
     private final String message;

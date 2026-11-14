@@ -77,6 +77,12 @@ public enum ErrorCodeApplication implements BaseErrorCode {
             "APPLICATION_011",
             "Another application has already been selected",
             HttpStatus.CONFLICT
+    ),
+
+    PAYMENT_REQUIRED(
+            "APPLICATION_013",
+            "Payment is required before confirmation",
+            HttpStatus.BAD_REQUEST
     );
 
     private final String code;

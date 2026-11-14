@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.logging.SystemLogPublisher;
 import org.group3.tutorlink.common.utils.AppUtil;
+import org.group3.tutorlink.features.application.repository.ApplicationRepository;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.notification.enums.NotificationType;
 import org.group3.tutorlink.features.notification.service.NotificationCreator;
@@ -61,6 +62,8 @@ public class PostServiceImpl implements PostService {
     private final TutorRepository tutorRepository;
     private final SystemLogPublisher systemLogPublisher;
     private final NotificationCreator notificationCreator;
+    // [NEW] dùng cho visibility check post PENDING/CLOSED trong getPostById
+    private final ApplicationRepository applicationRepository;
 
     @Transactional
     @Override
@@ -107,13 +110,48 @@ public class PostServiceImpl implements PostService {
     /**
      * Chi tiết bài đăng công khai.
      */
+    // [OLD - giữ lại tham khảo] Chỉ serve PUBLISHED — PENDING/CLOSED/DRAFT đều 404
+    // với mọi user → applicant không xem được bài đã match, FE drop đơn.
+    // @Transactional(readOnly = true)
+    // @Override
+    // public PostResponse getPostById(UUID postId) {
+    //     Post post = postRepository.findByIdAndStatusNot(postId)
+    //             .orElseThrow(PostNotFoundException::new);
+    //     return postMapper.toPostResponse(post);
+    // }
+
+    /**
+     * [NEW] Chi tiết bài đăng công khai — phân quyền theo status:
+     * PUBLISHED: public cho mọi người (kể cả anonymous).
+     * PENDING/CLOSED: chỉ author hoặc applicant (có đơn trên bài) xem được —
+     * họ cần thấy bài để thanh toán phí / xác nhận / kết nối lớp.
+     * DRAFT/REMOVED: 404 với non-author (author dùng /me).
+     */
     @Transactional(readOnly = true)
     @Override
     public PostResponse getPostById(UUID postId) {
-        Post post = postRepository.findByIdAndStatusNot(postId)
+        Post post = postRepository.findByIdForVisibilityCheck(postId)
                 .orElseThrow(PostNotFoundException::new);
 
-        return postMapper.toPostResponse(post);
+        if (post.getStatus() == PostStatus.PUBLISHED) {
+            return postMapper.toPostResponse(post);
+        }
+
+        UUID userId = appUtil.userIdFromAuthenticationOrNull();
+        if (userId != null && isPostParticipant(post, userId)) {
+            return postMapper.toPostResponse(post);
+        }
+
+        throw new PostNotFoundException();
+    }
+
+    // [NEW] Author hoặc bất kỳ ai có application trên bài (student/tutor,
+    // mọi status đơn) đều được xem post non-public.
+    private boolean isPostParticipant(Post post, UUID userId) {
+        if (post.getAuthor().getId().equals(userId)) {
+            return true;
+        }
+        return applicationRepository.existsParticipantByPostIdAndUserId(post.getId(), userId);
     }
 
     /**
