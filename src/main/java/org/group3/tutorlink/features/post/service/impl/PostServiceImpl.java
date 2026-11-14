@@ -7,6 +7,8 @@ import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.logging.SystemLogPublisher;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
+import org.group3.tutorlink.features.notification.enums.NotificationType;
+import org.group3.tutorlink.features.notification.service.NotificationCreator;
 import org.group3.tutorlink.features.post.dto.request.CreatePostRequest;
 import org.group3.tutorlink.features.post.dto.request.UpdatePostRequest;
 import org.group3.tutorlink.features.post.dto.response.PostApplicationResponse;
@@ -49,7 +51,8 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-
+    private static final String ADMIN_REMOVE_POST = "Bài đăng bị xóa bởi ADMIN";
+    private static final String ADMIN_REMOVE_POST_REASON = "Lý do: ";
     private final PostRepository postRepository;
     private final SubjectRepository subjectRepository;
     private final PostMapper postMapper;
@@ -57,6 +60,7 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final TutorRepository tutorRepository;
     private final SystemLogPublisher systemLogPublisher;
+    private final NotificationCreator notificationCreator;
 
     @Transactional
     @Override
@@ -222,6 +226,7 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(PostNotFoundException::new);
         return postMapper.toPostResponse(post);
     }
+
     /**
      * Cập nhật bài đăng của người dùng hiện tại.
      */
@@ -265,7 +270,6 @@ public class PostServiceImpl implements PostService {
     }
 
 
-
     @Transactional
     @Override
     public void removePost(UUID postId) {
@@ -277,6 +281,7 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(PostNotFoundException::new);
 
         post.setStatus(PostStatus.REMOVED);
+
     }
 
     /**
@@ -404,5 +409,11 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
         post.setStatus(PostStatus.REMOVED);
         post.setRemovalReason(reason);
+        notificationCreator.createNotification(
+                post.getAuthor().getId(),
+                NotificationType.SYSTEM,
+                ADMIN_REMOVE_POST,
+                String.format("%s %s", ADMIN_REMOVE_POST_REASON, reason)
+        );
     }
 }
