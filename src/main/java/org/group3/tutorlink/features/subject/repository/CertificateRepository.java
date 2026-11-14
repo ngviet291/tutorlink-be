@@ -9,11 +9,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface CertificateRepository extends JpaRepository<Certificate, UUID> {
-
-
-
+    List<Certificate> findAllByTutor_IdOrderByCreatedAtDesc(UUID tutorId);
+    long countByTutor_Id(UUID tutorId);
+    Optional<Certificate> findByIdAndTutor_Id(UUID id, UUID tutorId);
 }

@@ -6,6 +6,7 @@ import org.group3.tutorlink.features.ai.dto.CertificateSnapshot;
 import org.group3.tutorlink.features.ai.dto.TutorReviewSnapshot;
 import org.group3.tutorlink.features.ai.service.CertificateReviewAiService;
 import org.group3.tutorlink.features.auth.dto.CertificateCheck;
+import org.group3.tutorlink.features.subject.entity.Certificate;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
@@ -59,11 +60,9 @@ public class TutorCertificateReviewService {
                 check = aiService.check(snapshot.getFullName(), cert.getFileUrl());
                 log.info("Certificate AI check result for tutor {}: cert={} valid={} confidence={} reason={}", tutorId, cert.getId(), check.isValid(), check.getConfidence(), check.getReason());
             } catch (Exception e) {
-                // Lỗi kỹ thuật không được coi là chứng chỉ không hợp lệ: giữ PENDING
-                log.error("Certificate AI check failed, keep PENDING. tutor={}", tutorId, e);
+                log.error("Certificate AI check failed, keep as is. tutor={}", tutorId, e);
                 return;
             }
-
             if (isAccepted(check)) {
                 accepted.put(cert.getId(), check);
             } else {
@@ -71,8 +70,6 @@ public class TutorCertificateReviewService {
                 reasons.add(check.getReason());
             }
         }
-
-        // 3) Ghi kết quả, 4) dọn ảnh không hợp lệ trên Cloudinary
         applyResult(tutorId, accepted, invalidIds, reasons);
         deleteRejectedFiles(snapshot, invalidIds);
     }
@@ -80,13 +77,13 @@ public class TutorCertificateReviewService {
     private boolean isAccepted(CertificateCheck check) {
         return check.isValid() && check.getConfidence() >= minConfidence;
     }
-
     private TutorReviewSnapshot loadSnapshot(UUID tutorId) {
         return tx.execute(status -> tutorRepository.findById(tutorId)
-                .filter(t -> t.getVerificationStatus() == VerificationStatus.PENDING) // idempotent
+                .filter(t -> isReviewable(t.getVerificationStatus()))
                 .map(t -> new TutorReviewSnapshot(
                         t.getFullName(),
                         t.getCertificates().stream()
+                                .filter(c -> !c.isVerified())
                                 .map(c -> new CertificateSnapshot(c.getId(), c.getFileUrl(), c.getCloudinaryPublicId()))
                                 .toList()))
                 .orElse(null));
@@ -96,7 +93,8 @@ public class TutorCertificateReviewService {
                              Set<UUID> invalidIds, List<String> reasons) {
         tx.executeWithoutResult(status -> {
             Tutor tutor = tutorRepository.findById(tutorId).orElseThrow();
-            if (tutor.getVerificationStatus() != VerificationStatus.PENDING) {
+            VerificationStatus current = tutor.getVerificationStatus();
+            if (!isReviewable(current)) {
                 return;
             }
 
@@ -113,10 +111,16 @@ public class TutorCertificateReviewService {
                 c.setVerified(true);
             });
 
-            boolean approved = !tutor.getCertificates().isEmpty();
-            tutor.setVerificationStatus(approved ? VerificationStatus.APPROVED : VerificationStatus.REJECTED);
-            tutor.setVerificationNote(approved ? null : joinReasons(reasons));
+            if (current == VerificationStatus.PENDING) {
+                boolean approved = tutor.getCertificates().stream().anyMatch(Certificate::isVerified);
+                tutor.setVerificationStatus(approved ? VerificationStatus.APPROVED : VerificationStatus.REJECTED);
+                tutor.setVerificationNote(approved ? null : joinReasons(reasons));
+            }
         });
+    }
+
+    private boolean isReviewable(VerificationStatus status) {
+        return status == VerificationStatus.PENDING || status == VerificationStatus.APPROVED;
     }
 
     private void deleteRejectedFiles(TutorReviewSnapshot snapshot, Set<UUID> invalidIds) {
