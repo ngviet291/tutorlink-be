@@ -22,7 +22,7 @@ public class VectorStoreTutorIndexer implements TutorVectorIndexer {
     private final TutorProfileTextBuilder textBuilder;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public void index(UUID tutorId) {
         tutorRepository.findById(tutorId)
                 .map(this::toDocument)
@@ -32,6 +32,7 @@ public class VectorStoreTutorIndexer implements TutorVectorIndexer {
     }
 
     @Override
+    @Transactional
     public void remove(UUID tutorId) {
         vectorStore.delete(List.of(tutorId.toString()));
     }
