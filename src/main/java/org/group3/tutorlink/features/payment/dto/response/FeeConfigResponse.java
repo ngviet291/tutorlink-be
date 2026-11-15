@@ -13,27 +13,27 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Matching fee configuration information")
+@Schema(description = "Thông tin cấu hình phí nhận lớp.")
 public class FeeConfigResponse {
 
-    @Schema(description = "Fee configuration ID", example = "123e4567-e89b-12d3-a456-426614174000")
+    @Schema(description = "Mã cấu hình phí.", example = "123e4567-e89b-12d3-a456-426614174000")
     private UUID id;
 
-    @Schema(description = "Fee percentage (0.0 - 1.0)", example = "0.20")
+    @Schema(description = "Tỉ lệ phí, từ 0 đến 1.", example = "0.20")
     private double feePercentage;
 
-    @Schema(description = "Fixed fee amount (VND)", example = "0.00")
+    @Schema(description = "Phí cố định, đơn vị VND.", example = "0.00")
     private double fixedFee;
 
-    @Schema(description = "Effective start date", example = "2024-01-01")
+    @Schema(description = "Ngày bắt đầu hiệu lực.", example = "2024-01-01")
     private LocalDate effectiveFrom;
 
-    @Schema(description = "Effective end date (null if currently active)", example = "2024-12-31")
+    @Schema(description = "Ngày kết thúc hiệu lực; null nếu chưa xác định ngày kết thúc.", example = "2024-12-31")
     private LocalDate effectiveTo;
 
-    @Schema(description = "Admin who created this configuration")
+    @Schema(description = "Quản trị viên tạo cấu hình.")
     private UUID createdByAdminId;
 
-    @Schema(description = "Creation timestamp")
+    @Schema(description = "Thời điểm tạo.")
     private java.time.Instant createdAt;
 }

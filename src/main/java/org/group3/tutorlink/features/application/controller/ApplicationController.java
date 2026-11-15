@@ -95,6 +95,17 @@ public class ApplicationController {
                 .build();
     }
 
+    @PostMapping("/{applicationId}/unselect")
+    public ApiResponse<ApplicationResponse> unselectApplication(
+            @PathVariable UUID applicationId) {
+
+        return ApiResponse.<ApplicationResponse>builder()
+                .code(ApplicationResponseCode.UNSELECT_SUCCESS.getCode())
+                .message(ApplicationResponseCode.UNSELECT_SUCCESS.getMessage())
+                .data(applicationService.unselectApplication(applicationId))
+                .build();
+    }
+
     @PostMapping("/{applicationId}/confirm")
     public ApiResponse<ApplicationResponse> confirmApplication(
             @PathVariable UUID applicationId) {

@@ -44,7 +44,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +59,10 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
+
+    private static final int COMMISSION_AMOUNT_SCALE = 2;
+    private static final int FEE_CONFIG_LOOKAHEAD_YEARS = 100;
+    private static final String TOP_UP_DESCRIPTION = "Nap tien vao vi TutorLink";
 
     @Value("${payment.pagination.default-limit:10}")
     private int defaultLimit;
@@ -80,9 +83,9 @@ public class PaymentServiceImpl implements PaymentService {
     private final TransactionMapper transactionMapper;
     private final RevenueStatisticsMapper revenueStatisticsMapper;
     private final FeeConfigMapper feeConfigMapper;
-    // Spring tự inject tất cả payment gateways (MomoGateway, ...)
     private final List<PaymentGateway> paymentGateways;
     private final AppUtil appUtil;
+    private final org.group3.tutorlink.features.chat.service.ChatService chatService;
 
     @Override
     @Transactional
@@ -101,7 +104,7 @@ public class PaymentServiceImpl implements PaymentService {
     @PreAuthorize("hasAuthority('TUTOR')")
     public TransactionResponse topUp(TopUpRequest request) {
         UUID tutorId = appUtil.userIdFromAuthentication();
-        // Only MoMo payment gateway is supported
+        // Hiện chỉ hỗ trợ nạp ví qua cổng MoMo.
         PaymentMethod method = PaymentMethod.MOMO;
         PaymentGateway gateway = findGateway(method);
         BigDecimal amount = request.getAmount().setScale(0, RoundingMode.HALF_UP);
@@ -112,7 +115,7 @@ public class PaymentServiceImpl implements PaymentService {
         // Tạo đơn bên MoMo trước; lỗi cổng -> ném exception, không lưu giao dịch rác
         String providerOrderId = gateway.newProviderOrderId();
         GatewayPaymentResult payment = gateway.createPayment(new GatewayPaymentRequest(
-                providerOrderId, amount, "Nap tien vao vi TutorLink", tutorId));
+                providerOrderId, amount, TOP_UP_DESCRIPTION, tutorId));
 
         // Giao dịch ở trạng thái chờ; chỉ cộng tiền khi cổng thanh toán xác nhận qua IPN/callback
         Transaction transaction = Transaction.builder()
@@ -127,9 +130,9 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
 
         TransactionResponse response = transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
-        response.setPaymentLink(payment.payUrl());
-        response.setQrCodeUrl(payment.qrCodeUrl());
-        response.setDeeplink(payment.deeplink());
+        response.setPaymentLink(payment.getPayUrl());
+        response.setQrCodeUrl(payment.getQrCodeUrl());
+        response.setDeeplink(payment.getDeeplink());
         return response;
     }
 
@@ -139,10 +142,10 @@ public class PaymentServiceImpl implements PaymentService {
         // Sai chữ ký -> AppException(INVALID_GATEWAY_SIGNATURE), không đụng tới ví
         GatewayCallbackResult result = findGateway(method).verifyCallback(rawBody);
 
-        Transaction transaction = transactionRepository.findForUpdateByProviderOrderId(result.providerOrderId())
+        Transaction transaction = transactionRepository.findForUpdateByProviderOrderId(result.getProviderOrderId())
                 .orElse(null);
         if (transaction == null) {
-            // Ask the provider to retry if the create transaction has not committed yet.
+            // Yêu cầu cổng gửi lại thông báo nếu giao dịch tạo đơn chưa được ghi nhận.
             throw new AppException(PaymentErrorCode.TRANSACTION_NOT_FOUND);
         }
         settleTopUp(transaction, method, result);
@@ -173,23 +176,23 @@ public class PaymentServiceImpl implements PaymentService {
         return transactionMapper.toTransactionResponse(transaction);
     }
 
-    // Chốt kết quả giao dịch nạp tiền. Idempotent: chỉ xử lý khi giao dịch còn PENDING.
+    // Chốt kết quả giao dịch nạp tiền. Chỉ xử lý khi giao dịch còn PENDING để không cộng ví lặp.
     private void settleTopUp(Transaction transaction, PaymentMethod method, GatewayCallbackResult result) {
-        if (!java.util.Objects.equals(transaction.getProviderOrderId(), result.providerOrderId())
+        if (!java.util.Objects.equals(transaction.getProviderOrderId(), result.getProviderOrderId())
                 || transaction.getType() != TransactionType.TOP_UP || transaction.getPaymentMethod() != method) {
             log.warn("Ignore {} result for transaction {}: type/method mismatch", method, transaction.getId());
             return;
         }
-        if (transaction.getStatus() != TransactionStatus.PENDING || result.state() == GatewayPaymentState.PENDING) {
+        if (transaction.getStatus() != TransactionStatus.PENDING || result.getState() == GatewayPaymentState.PENDING) {
             return;
         }
 
-        if (result.state() == GatewayPaymentState.SUCCESS) {
-            if (result.amount() == null || transaction.getAmount().compareTo(result.amount()) != 0
-                    || result.providerTransId() == null || result.providerTransId().isBlank()) {
+        if (result.getState() == GatewayPaymentState.SUCCESS) {
+            if (result.getAmount() == null || transaction.getAmount().compareTo(result.getAmount()) != 0
+                    || result.getProviderTransId() == null || result.getProviderTransId().isBlank()) {
                 // Chữ ký hợp lệ nhưng số tiền lệch với đơn đã tạo -> không cộng ví, cần đối soát thủ công
                 log.error("{} amount mismatch for transaction {}: expected {}, gateway {}",
-                        method, transaction.getId(), transaction.getAmount(), result.amount());
+                        method, transaction.getId(), transaction.getAmount(), result.getAmount());
                 transaction.setStatus(TransactionStatus.FAILED);
             } else {
                 Wallet wallet = getOrCreateWalletForUpdate(transaction.getTutor().getId());
@@ -201,8 +204,8 @@ public class PaymentServiceImpl implements PaymentService {
             transaction.setStatus(TransactionStatus.FAILED);
         }
 
-        if (result.providerTransId() != null && !result.providerTransId().isBlank()) {
-            transaction.setProviderTransId(result.providerTransId());
+        if (result.getProviderTransId() != null && !result.getProviderTransId().isBlank()) {
+            transaction.setProviderTransId(result.getProviderTransId());
         }
         transaction.setTransactionDate(Instant.now());
         transactionRepository.save(transaction);
@@ -242,8 +245,10 @@ public class PaymentServiceImpl implements PaymentService {
 
         Transaction transaction = transactionRepository.findByApplicationId(applicationId).orElse(null);
 
-        // Chỉ cho thanh toán lại khi lần trước bị FAILED (không đủ số dư)
-        if (transaction != null && transaction.getStatus() != TransactionStatus.FAILED) {
+        // Chỉ cho thanh toán lại khi lần trước bị FAILED (không đủ số dư) hoặc REFUNDED (đã hoàn tiền)
+        if (transaction != null 
+                && transaction.getStatus() != TransactionStatus.FAILED
+                && transaction.getStatus() != TransactionStatus.REFUNDED) {
             throw new AppException(PaymentErrorCode.APPLICATION_ALREADY_PAID);
         }
 
@@ -269,8 +274,11 @@ public class PaymentServiceImpl implements PaymentService {
         walletRepository.save(wallet);
 
         transaction.setStatus(TransactionStatus.SUCCESS);
+        Transaction saved = transactionRepository.save(transaction);
 
-        return transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
+        createChatChannelForApplication(application);
+
+        return transactionMapper.toTransactionResponse(saved);
     }
 
     @Override
@@ -296,8 +304,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasAuthority('ADMIN')")
-    public CursorResponse<TransactionResponse> getAllTransactions(TransactionStatus status, UUID cursor, int limit) {
-        TransactionStatus transactionStatus = status;
+    public CursorResponse<TransactionResponse> getAllTransactions(TransactionStatus transactionStatus, UUID cursor, int limit) {
         int size = normalizeLimit(limit);
         Pageable pageable = buildPageable(size);
 
@@ -353,28 +360,17 @@ public class PaymentServiceImpl implements PaymentService {
         Instant start = from.atStartOfDay(ZoneOffset.UTC).toInstant();
         Instant end = to.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
 
-        // Gộp số liệu bằng SQL (aggregate ở DB), dùng mapper để build response
+        // Gộp số liệu bằng SQL (tổng hợp tại cơ sở dữ liệu), dùng bộ chuyển đổi để tạo dữ liệu trả về
         RevenueStatisticsRow row = transactionRepository.summarizeRevenue(start, end);
         return revenueStatisticsMapper.toResponse(row, from, to);
     }
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('ADMIN') or @paymentAccess.isOwner(#p0)")
     public TransactionResponse getTransactionDetail(UUID transactionId) {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        UUID userId = appUtil.userIdFromAuthentication();
-        
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new AppException(PaymentErrorCode.TRANSACTION_NOT_FOUND));
-
-        // Admin hoặc chủ giao dịch mới xem được
-        boolean isOwner = userId.equals(transaction.getTutor().getId());
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ADMIN"));
-
-        if (!isOwner && !isAdmin) {
-            throw new AppException(PaymentErrorCode.NOT_TRANSACTION_OWNER);
-        }
 
         return transactionMapper.toTransactionResponse(transaction);
     }
@@ -404,16 +400,16 @@ public class PaymentServiceImpl implements PaymentService {
     public FeeConfigResponse createFeeConfig(CreateFeeConfigRequest request) {
         UUID adminId = appUtil.userIdFromAuthentication();
         Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new AppException(PaymentErrorCode.TUTOR_NOT_FOUND)); // Reuse error code
+                .orElseThrow(() -> new AppException(PaymentErrorCode.TUTOR_NOT_FOUND)); // Tái sử dụng mã lỗi hiện có.
 
         LocalDate effectiveFrom = request.getEffectiveFrom() != null
                 ? request.getEffectiveFrom()
                 : LocalDate.now();
 
-        // Kiểm tra chồng lấn với cấu hình hiện có (effectiveTo = null nghĩa là active vô thời hạn)
+        // Kiểm tra chồng lấn với cấu hình hiện có (effectiveTo = null nghĩa là có hiệu lực vô thời hạn)
         List<MatchingFeeConfig> overlapping = feeConfigRepository.findOverlappingConfigs(
                 effectiveFrom,
-                effectiveFrom.plusYears(100) // Giả định cấu hình mới active vô thời hạn
+                effectiveFrom.plusYears(FEE_CONFIG_LOOKAHEAD_YEARS) // Giả định cấu hình mới có hiệu lực vô thời hạn
         );
 
         if (!overlapping.isEmpty()) {
@@ -431,7 +427,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .feePercentage(request.getFeePercentage())
                 .fixedFee(request.getFixedFee() != null ? request.getFixedFee() : 0.0)
                 .effectiveFrom(effectiveFrom)
-                .effectiveTo(null) // Active vô thời hạn cho đến khi có config mới
+                .effectiveTo(null) // Có hiệu lực vô thời hạn cho đến khi có cấu hình mới
                 .createdByAdmin(admin)
                 .build();
 
@@ -444,8 +440,9 @@ public class PaymentServiceImpl implements PaymentService {
         UUID tutorId = appUtil.userIdFromAuthentication();
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new AppException(PaymentErrorCode.APPLICATION_NOT_FOUND));
-        if (!tutorId.equals(resolveTutorId(application)))
+        if (!tutorId.equals(resolveTutorId(application))) {
             throw new AppException(PaymentErrorCode.NOT_APPLICATION_TUTOR);
+        }
         Post post = application.getPost();
         BigDecimal base = post.getMaxBudget() != null ? post.getMaxBudget() : post.getMinBudget();
         return FeeQuoteResponse.builder()
@@ -490,7 +487,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new AppException(PaymentErrorCode.POST_BUDGET_MISSING);
         }
 
-        return base.multiply(commissionRate).setScale(2, RoundingMode.HALF_UP);
+        return base.multiply(commissionRate).setScale(COMMISSION_AMOUNT_SCALE, RoundingMode.HALF_UP);
     }
 
     private int normalizeLimit(int limit) {
@@ -499,5 +496,27 @@ public class PaymentServiceImpl implements PaymentService {
 
     private Pageable buildPageable(int size) {
         return PageRequest.of(0, size + 1, Sort.by(Sort.Order.desc("id")));
+    }
+
+    private void createChatChannelForApplication(Application application) {
+        try {
+            org.group3.tutorlink.features.user.entity.Student student = application.getStudent();
+            org.group3.tutorlink.features.user.entity.Tutor tutor;
+
+            if (application.getTutor() != null) {
+                tutor = application.getTutor();
+            } else {
+                tutor = (org.group3.tutorlink.features.user.entity.Tutor) application.getPost().getAuthor();
+            }
+
+            if (student != null && tutor != null) {
+                chatService.createChannel(tutor, student);
+                log.info("Created chat channel for application {}: tutor={}, student={}",
+                        application.getId(), tutor.getId(), student.getId());
+            }
+        } catch (Exception e) {
+            log.warn("Failed to create chat channel for application {}: {}",
+                    application.getId(), e.getMessage());
+        }
     }
 }

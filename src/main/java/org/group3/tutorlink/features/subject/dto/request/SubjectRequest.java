@@ -7,38 +7,39 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.group3.tutorlink.features.subject.constant.SubjectConstraints;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Request used to create or update a subject!")
+@Schema(description = "Dữ liệu tạo hoặc cập nhật môn học.")
 public class SubjectRequest {
 
     @NotBlank(message = "Subject name must not be blank!")
-    @Size(max = 255, message = "Subject name must not exceed 255 characters!")
+    @Size(max = SubjectConstraints.TEXT_MAX_LENGTH, message = "Subject name must not exceed 255 characters!")
     @Schema(
-            description = "Name of the subject!",
+            description = "Tên môn học.",
             example = "Toán học",
-            maxLength = 255,
+            maxLength = SubjectConstraints.TEXT_MAX_LENGTH,
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     private String name;
 
-    @Size(max = 255, message = "Description must not exceed 255 characters!")
+    @Size(max = SubjectConstraints.TEXT_MAX_LENGTH, message = "Description must not exceed 255 characters!")
     @Schema(
-            description = "Short description of the subject!",
+            description = "Mô tả ngắn về môn học.",
             example = "Toán học phổ thông",
-            maxLength = 255
+            maxLength = SubjectConstraints.TEXT_MAX_LENGTH
     )
     private String description;
 
     @NotBlank(message = "Category must not be blank!")
-    @Size(max = 255, message = "Category must not exceed 255 characters!")
+    @Size(max = SubjectConstraints.TEXT_MAX_LENGTH, message = "Category must not exceed 255 characters!")
     @Schema(
-            description = "Category of the subject!",
+            description = "Nhóm môn học.",
             example = "Khoa học tự nhiên",
-            maxLength = 255,
+            maxLength = SubjectConstraints.TEXT_MAX_LENGTH,
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     private String category;

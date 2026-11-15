@@ -18,6 +18,7 @@ import org.group3.tutorlink.features.application.mapper.ApplicationMapper;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
 import org.group3.tutorlink.features.application.service.ApplicationService;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
+import org.group3.tutorlink.features.payment.enums.TransactionStatus;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
@@ -54,6 +55,13 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final SystemLogPublisher systemLogPublisher;
     private final ApplicationEventPublisher eventPublisher;
 
+    private static final List<ApplicationStatus> LIVE_STATUSES = List.of(
+            ApplicationStatus.PENDING,
+            ApplicationStatus.ACCEPTED,
+            ApplicationStatus.CONFIRMED,
+            ApplicationStatus.FINISHED
+    );
+
     @Override
     @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
     public ApplicationResponse createApplication(CreateApplicationRequest request) {
@@ -87,7 +95,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                 throw new AppException(ErrorCodeApplication.POST_NOT_AVAILABLE);
             }
 
-            if (applicationRepository.existsByPostIdAndTutorId(post.getId(), tutor.getId())) {
+            if (applicationRepository.existsByPostIdAndTutorId(post.getId(), tutor.getId(), LIVE_STATUSES)) {
                 throw new AppException(ErrorCodeApplication.APPLICATION_ALREADY_EXISTS);
             }
 
@@ -104,7 +112,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                 throw new AppException(ErrorCodeApplication.POST_NOT_AVAILABLE);
             }
 
-            if (applicationRepository.existsByPostIdAndStudentId(post.getId(), student.getId())) {
+            if (applicationRepository.existsByPostIdAndStudentId(post.getId(), student.getId(), LIVE_STATUSES)) {
                 throw new AppException(ErrorCodeApplication.APPLICATION_ALREADY_EXISTS);
             }
 
@@ -118,7 +126,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         Application saved = applicationRepository.save(application);
         systemLogPublisher.success(userId, SystemAction.APPLICATION_CREATED,
                 Application.class.getSimpleName(), saved.getId(),
-                Map.of("postId", post.getId().toString(), "proposedFee", saved.getProposedFee().toString(), "applicant", applicant));
+                Map.of("postId", post.getId().toString(), "proposedFee", String.valueOf(saved.getProposedFee()), "applicant", applicant));
         // Đã sửa
         return applicationMapper.toApplicationResponse(saved);
     }
@@ -136,9 +144,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             application = applicationRepository
                     .findByIdForViewer(
                             applicationId,
-                            userId,
-                            ApplicationStatus.PENDING,
-                            PostStatus.PUBLISHED
+                            userId
                     )
                     .orElseThrow(() -> new AppException(
                             ErrorCodeApplication.APPLICATION_NOT_ALLOWED
@@ -220,6 +226,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         validateSelectorRole(post, currentUser);
 
         application.setApplicationStatus(ApplicationStatus.ACCEPTED);
+        application.setSelectedAt(Instant.now());
 
         Page<Application> pendingApplications = applicationRepository
                 .findByPostIdAndApplicationStatus(
@@ -269,7 +276,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     public ApplicationResponse confirmApplication(UUID applicationId) {
 
         UUID userId = appUtil.userIdFromAuthentication();
-        User currentUser = getUserOrThrow(userId);
+        getUserOrThrow(userId);
         Application application = getApplicationOrThrow(applicationId);
         Post post = application.getPost();
 
@@ -277,17 +284,18 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new AppException(ErrorCodeApplication.INVALID_APPLICATION_STATUS);
         }
 
-        // The post owner confirms the selected applicant.
+        if (application.getTransaction() == null
+                || application.getTransaction().getStatus() != TransactionStatus.SUCCESS) {
+            throw new AppException(ErrorCodeApplication.PAYMENT_REQUIRED);
+        }
+
+        // Applicant (người apply) xác nhận sau khi trả phí
         if (post.getType() == PostType.FIND_TUTOR) {
-            if (!(currentUser instanceof Student student)
-                    || post.getAuthor() == null
-                    || !post.getAuthor().getId().equals(student.getId())) {
+            if (application.getTutor() == null || !application.getTutor().getId().equals(userId)) {
                 throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
             }
         } else if (post.getType() == PostType.FIND_STUDENT) {
-            if (!(currentUser instanceof Tutor tutor)
-                    || post.getAuthor() == null
-                    || !post.getAuthor().getId().equals(tutor.getId())) {
+            if (application.getStudent() == null || !application.getStudent().getId().equals(userId)) {
                 throw new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED);
             }
         } else {
@@ -298,24 +306,38 @@ public class ApplicationServiceImpl implements ApplicationService {
         post.setStatus(PostStatus.CLOSED);
 
         Application saved = applicationRepository.save(application);
-        // Đã sửa
         return applicationMapper.toApplicationResponse(saved);
     }
 
     @Override
-    public ApplicationResponse confirmApplicationOnPaymentSuccess(UUID applicationId) {
-        Application application = getApplicationOrThrow(applicationId);
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
+    public ApplicationResponse unselectApplication(UUID applicationId) {
+
+        UUID userId = appUtil.userIdFromAuthentication();
+        getUserOrThrow(userId);
+        Application application = applicationRepository
+                .findByIdForViewer(applicationId, userId)
+                .orElseThrow(() -> new AppException(ErrorCodeApplication.APPLICATION_NOT_ALLOWED));
+        Post post = application.getPost();
+
+        if (post == null || post.getAuthor() == null
+                || !post.getAuthor().getId().equals(userId)) {
+            throw new ApplicationNotAllowedException();
+        }
 
         if (application.getApplicationStatus() != ApplicationStatus.ACCEPTED) {
+            throw new ApplicationInvalidStatusException();
+        }
+
+        if (application.getTransaction() != null
+                && application.getTransaction().getStatus() == TransactionStatus.SUCCESS) {
             throw new AppException(ErrorCodeApplication.INVALID_APPLICATION_STATUS);
         }
 
-        application.setApplicationStatus(ApplicationStatus.CONFIRMED);
-
-        Post post = application.getPost();
-        if (post != null) {
-            post.setStatus(PostStatus.CLOSED);
-        }
+        application.setApplicationStatus(ApplicationStatus.PENDING);
+        application.setSelectedAt(null);
+        post.setStatus(PostStatus.PUBLISHED);
+        restoreRejectedApplications(post);
 
         Application saved = applicationRepository.save(application);
         return applicationMapper.toApplicationResponse(saved);
@@ -360,10 +382,11 @@ public class ApplicationServiceImpl implements ApplicationService {
         UUID userId = appUtil.userIdFromAuthentication();
         getUserOrThrow(userId);
         Application application = applicationRepository
-                .findByIdAndApplicantId(applicationId, userId)
+                .findByIdForViewer(applicationId, userId)
                 .orElseThrow(() -> new AppException(
                         ErrorCodeApplication.APPLICATION_NOT_ALLOWED
                 ));
+        Post post = application.getPost();
 
         ApplicationStatus currentStatus = application.getApplicationStatus();
 
@@ -372,11 +395,43 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new AppException(ErrorCodeApplication.INVALID_APPLICATION_STATUS);
         }
 
+        // Chỉ applicant (người apply) được cancel
+        if (post.getType() == PostType.FIND_TUTOR) {
+            if (application.getTutor() == null || !application.getTutor().getId().equals(userId)) {
+                throw new ApplicationNotAllowedException();
+            }
+        } else if (post.getType() == PostType.FIND_STUDENT) {
+            if (application.getStudent() == null || !application.getStudent().getId().equals(userId)) {
+                throw new ApplicationNotAllowedException();
+            }
+        } else {
+            throw new AppException(ErrorCodeApplication.POST_NOT_AVAILABLE);
+        }
+
         application.setApplicationStatus(ApplicationStatus.CANCELLED);
 
+        if (currentStatus == ApplicationStatus.ACCEPTED) {
+            application.setSelectedAt(null);
+            if (post != null) {
+                post.setStatus(PostStatus.PUBLISHED);
+                restoreRejectedApplications(post);
+            }
+        }
+
         Application saved = applicationRepository.save(application);
-        // Đã sửa
         return applicationMapper.toApplicationResponse(saved);
+    }
+
+    private void restoreRejectedApplications(Post post) {
+        Page<Application> rejectedApplications = applicationRepository
+                .findByPostIdAndApplicationStatus(
+                        post.getId(),
+                        ApplicationStatus.REJECTED,
+                        Pageable.unpaged()
+                );
+        for (Application rejected : rejectedApplications.getContent()) {
+            rejected.setApplicationStatus(ApplicationStatus.PENDING);
+        }
     }
 
     private User getUserOrThrow(UUID userId) {

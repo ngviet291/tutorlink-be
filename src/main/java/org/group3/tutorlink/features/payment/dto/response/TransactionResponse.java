@@ -17,45 +17,45 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Transaction information!")
+@Schema(description = "Thông tin giao dịch.")
 public class TransactionResponse {
 
-    @Schema(description = "Transaction id!")
+    @Schema(description = "Mã giao dịch.")
     private UUID id;
 
-    @Schema(description = "Transaction type!", example = "COMMISSION")
+    @Schema(description = "Loại giao dịch.", example = "COMMISSION")
     private TransactionType type;
 
-    @Schema(description = "Transaction amount (VND)!", example = "30000.00")
+    @Schema(description = "Số tiền giao dịch, đơn vị VND.", example = "30000.00")
     private BigDecimal amount;
 
-    @Schema(description = "Transaction status!", example = "SUCCESS")
+    @Schema(description = "Trạng thái giao dịch.", example = "SUCCESS")
     private TransactionStatus status;
 
-    @Schema(description = "Payment method!", example = "WALLET")
+    @Schema(description = "Phương thức thanh toán.", example = "WALLET")
     private PaymentMethod paymentMethod;
 
-    @Schema(description = "Transaction time!")
+    @Schema(description = "Thời điểm giao dịch.")
     private Instant transactionDate;
 
-    @Schema(description = "Tutor (wallet owner) id!")
+    @Schema(description = "Mã gia sư sở hữu ví.")
     private UUID tutorId;
 
-    @Schema(description = "Application id, only present for COMMISSION transactions!")
+    @Schema(description = "Mã đơn ứng tuyển, chỉ có ở giao dịch phí nhận lớp.")
     private UUID applicationId;
 
-    @Schema(description = "Order id on the payment gateway (MoMo orderId), only for gateway top-ups!")
+    @Schema(description = "Mã đơn của cổng thanh toán, chỉ dùng khi nạp ví qua cổng.")
     private String providerOrderId;
 
-    @Schema(description = "Gateway transaction id, available once the payment is completed!")
+    @Schema(description = "Mã giao dịch của cổng, có sau khi thanh toán hoàn tất.")
     private String providerTransId;
 
-    @Schema(description = "URL to redirect the user to the MoMo payment page (returned when creating a top-up)!")
+    @Schema(description = "Liên kết tới trang thanh toán MoMo, trả về khi tạo yêu cầu nạp ví.")
     private String paymentLink;
 
-    @Schema(description = "Content to render a QR code that can be scanned with the MoMo app (MoMo only)!")
+    @Schema(description = "Nội dung dùng để tạo mã QR quét bằng ứng dụng MoMo.")
     private String qrCodeUrl;
 
-    @Schema(description = "Deep link that opens the MoMo app directly (MoMo only)!")
+    @Schema(description = "Liên kết mở trực tiếp ứng dụng MoMo.")
     private String deeplink;
 }

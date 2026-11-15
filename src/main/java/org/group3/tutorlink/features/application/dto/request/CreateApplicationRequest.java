@@ -44,11 +44,9 @@ public class CreateApplicationRequest {
     )
     private String message;
 
-    @NotNull(message = "Proposed fee is required")
     @Schema(
-            description = "Proposed fee for the tutoring sessions",
-            example = "500000.00",
-            requiredMode = Schema.RequiredMode.REQUIRED
+            description = "Proposed fee for the tutoring sessions (tutor applicants only)",
+            example = "500000.00"
     )
     private BigDecimal proposedFee;
 

@@ -26,7 +26,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     List<Transaction> findByTutorIdAndIdLessThan(UUID tutorId, UUID cursor, Pageable pageable);
 
-    //Admin
+    // Truy vấn dành cho quản trị viên
     List<Transaction> findAllBy(Pageable pageable);
 
     List<Transaction> findByIdLessThan(UUID cursor, Pageable pageable);
@@ -39,7 +39,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Transaction> findForUpdateByProviderOrderId(String providerOrderId);
 
-    // Thống kê doanh thu: gộp toàn bộ số liệu bằng 1 câu truy vấn (aggregate ở DB), luôn trả đúng 1 dòng
+    // Thống kê doanh thu: gộp toàn bộ số liệu bằng 1 câu truy vấn (tổng hợp tại cơ sở dữ liệu), luôn trả đúng 1 dòng
     @Query("""
             SELECT
                 SUM(CASE WHEN t.type = org.group3.tutorlink.features.payment.enums.TransactionType.COMMISSION

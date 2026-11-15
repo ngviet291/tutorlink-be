@@ -13,20 +13,20 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Request to create a new fee configuration")
+@Schema(description = "Yêu cầu tạo cấu hình phí.")
 public class CreateFeeConfigRequest {
 
-    @Schema(description = "Fee percentage (0.0 - 1.0)", example = "0.20", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Tỉ lệ phí, từ 0 đến 1.", example = "0.20", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "Fee percentage is required")
     @DecimalMin(value = "0.0", message = "Fee percentage must be at least 0")
     @DecimalMax(value = "1.0", message = "Fee percentage must not exceed 1.0")
     private Double feePercentage;
 
-    @Schema(description = "Fixed fee amount (VND)", example = "0.00")
+    @Schema(description = "Phí cố định, đơn vị VND.", example = "0.00")
     @DecimalMin(value = "0.0", message = "Fixed fee must be at least 0")
     private Double fixedFee;
 
-    @Schema(description = "Effective start date (defaults to today if not provided)", example = "2024-01-01")
+    @Schema(description = "Ngày bắt đầu hiệu lực; mặc định là ngày hiện tại nếu không cung cấp.", example = "2024-01-01")
     @FutureOrPresent(message = "Effective date must be today or in the future")
     private LocalDate effectiveFrom;
 }

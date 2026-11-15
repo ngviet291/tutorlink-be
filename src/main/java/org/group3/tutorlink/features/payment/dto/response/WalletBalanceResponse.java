@@ -13,12 +13,12 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Wallet balance of the current tutor!")
+@Schema(description = "Số dư ví của gia sư đang đăng nhập.")
 public class WalletBalanceResponse {
 
-    @Schema(description = "Wallet id!")
+    @Schema(description = "Mã ví.")
     private UUID walletId;
 
-    @Schema(description = "Current balance (VND)!", example = "500000.00")
+    @Schema(description = "Số dư hiện tại, đơn vị VND.", example = "500000.00")
     private BigDecimal balance;
 }

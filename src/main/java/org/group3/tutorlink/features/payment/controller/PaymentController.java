@@ -1,10 +1,10 @@
 package org.group3.tutorlink.features.payment.controller;
 
 import jakarta.validation.Valid;
+import org.group3.tutorlink.features.payment.constant.PaymentConstraints;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
-import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.features.payment.dto.request.CreateFeeConfigRequest;
 import org.group3.tutorlink.features.payment.dto.request.TopUpRequest;
@@ -12,7 +12,6 @@ import org.group3.tutorlink.features.payment.dto.response.*;
 import org.group3.tutorlink.features.payment.enums.PaymentMethod;
 import org.group3.tutorlink.features.payment.enums.PaymentResponseCode;
 import org.group3.tutorlink.features.payment.enums.TransactionStatus;
-import org.group3.tutorlink.features.payment.exception.PaymentErrorCode;
 import org.group3.tutorlink.features.payment.service.PaymentService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -67,7 +65,7 @@ public class PaymentController {
     @GetMapping("/history")
     public ApiResponse<CursorResponse<TransactionResponse>> getMyTransactions(
             @RequestParam(required = false) UUID cursor,
-            @RequestParam(defaultValue = "10") int limit) {
+            @RequestParam(defaultValue = PaymentConstraints.DEFAULT_PAGE_SIZE_PARAMETER) int limit) {
 
         return ApiResponse.<CursorResponse<TransactionResponse>>builder()
                 .code(PaymentResponseCode.GET_PAYMENT_HISTORY.getCode())
@@ -76,12 +74,12 @@ public class PaymentController {
                 .build();
     }
 
-    // 5. Danh sách giao dịch - Admin (có thể lọc theo status và tutorId)
+    // 5. Danh sách giao dịch - quản trị viên (lọc theo trạng thái)
     @GetMapping
     public ApiResponse<CursorResponse<TransactionResponse>> getAllTransactions(
             @RequestParam(required = false) TransactionStatus status,
             @RequestParam(required = false) UUID cursor,
-            @RequestParam(defaultValue = "10") int limit) {
+            @RequestParam(defaultValue = PaymentConstraints.DEFAULT_PAGE_SIZE_PARAMETER) int limit) {
 
         return ApiResponse.<CursorResponse<TransactionResponse>>builder()
                 .code(PaymentResponseCode.GET_PAYMENTS.getCode())
@@ -145,7 +143,7 @@ public class PaymentController {
     @GetMapping("/fee-configs")
     public ApiResponse<CursorResponse<FeeConfigResponse>> getFeeConfigs(
             @RequestParam(required = false) UUID cursor,
-            @RequestParam(defaultValue = "10") int limit) {
+            @RequestParam(defaultValue = PaymentConstraints.DEFAULT_PAGE_SIZE_PARAMETER) int limit) {
 
         return ApiResponse.<CursorResponse<FeeConfigResponse>>builder()
                 .code(PaymentResponseCode.GET_FEE_CONFIGS.getCode())
@@ -164,12 +162,13 @@ public class PaymentController {
                 .data(paymentService.createFeeConfig(request))
                 .build();
     }
-    // 13. Lấy báo giá phí cho một application - Admin hoặc Tutor của application đó
+    // 13. Lấy báo giá phí cho đơn ứng tuyển của gia sư đang đăng nhập
     @GetMapping("/applications/{id}/fee-quote")
     public ApiResponse<FeeQuoteResponse> getFeeQuote(@PathVariable UUID id) {
         return ApiResponse.<FeeQuoteResponse>builder()
                 .code(PaymentResponseCode.GET_PAYMENTS.getCode())
                 .message(PaymentResponseCode.GET_PAYMENTS.getMessage())
-                .data(paymentService.getFeeQuote(id)).build();
+                .data(paymentService.getFeeQuote(id))
+                .build();
     }
 }

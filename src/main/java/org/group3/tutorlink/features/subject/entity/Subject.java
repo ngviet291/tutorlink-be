@@ -28,7 +28,7 @@ public class Subject extends BaseEntity {
 
     private String category;
 
-    // Subject 1 -- 1..* Tutor
+    // Một môn học có thể gắn với nhiều gia sư.
     @ManyToMany(mappedBy = "subjects")
 
     private Set<Tutor> tutors ;

@@ -1,6 +1,7 @@
 package org.group3.tutorlink.features.subject.controller;
 
 import jakarta.validation.Valid;
+import org.group3.tutorlink.features.subject.constant.SubjectConstraints;
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
@@ -11,7 +12,6 @@ import org.group3.tutorlink.features.subject.service.SubjectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,7 +25,7 @@ public class SubjectController {
     @GetMapping
     public ApiResponse<CursorResponse<SubjectResponse>> getAllSubjects(
             @RequestParam(required = false) UUID cursor,
-            @RequestParam(defaultValue = "10") int limit) {
+            @RequestParam(defaultValue = SubjectConstraints.DEFAULT_PAGE_SIZE_PARAMETER) int limit) {
 
         return ApiResponse.<CursorResponse<SubjectResponse>>builder()
                 .code(SubjectResponseCode.GET_SUBJECTS.getCode())
@@ -55,7 +55,7 @@ public class SubjectController {
                 .build();
     }
 
-    // 4. Update môn học - chỉ có Admin làm
+    // 4. Cập nhật môn học - chỉ có Admin làm
     @PutMapping("/{id}")
     public ApiResponse<SubjectResponse> updateSubject(
             @PathVariable UUID id,

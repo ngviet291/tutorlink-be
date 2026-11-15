@@ -15,6 +15,7 @@ package org.group3.tutorlink.features.application.repository;
 import org.group3.tutorlink.features.application.dto.projection.TutorAcceptedRow;
 import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
+import org.group3.tutorlink.features.payment.enums.TransactionStatus;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,10 +37,12 @@ public interface ApplicationRepository
             FROM Application a
             WHERE a.post.id = :postId
               AND a.tutor.id = :tutorId
+              AND a.applicationStatus IN :liveStatuses
             """)
     boolean existsByPostIdAndTutorId(
             @Param("postId") UUID postId,
-            @Param("tutorId") UUID tutorId
+            @Param("tutorId") UUID tutorId,
+            @Param("liveStatuses") Collection<ApplicationStatus> liveStatuses
     );
 
     @Query("""
@@ -47,10 +50,26 @@ public interface ApplicationRepository
             FROM Application a
             WHERE a.post.id = :postId
               AND a.student.id = :studentId
+              AND a.applicationStatus IN :liveStatuses
             """)
     boolean existsByPostIdAndStudentId(
             @Param("postId") UUID postId,
-            @Param("studentId") UUID studentId
+            @Param("studentId") UUID studentId,
+            @Param("liveStatuses") Collection<ApplicationStatus> liveStatuses
+    );
+
+    // User có đơn (bất kỳ status) trên post với vai trò student hoặc tutor —
+    // gồm cả author bài (author luôn nằm trong application row) lẫn applicant.
+    // Dùng cho visibility check post PENDING/CLOSED trong PostServiceImpl.getPostById.
+    @Query("""
+            SELECT CASE WHEN COUNT(a) > 0 THEN TRUE ELSE FALSE END
+            FROM Application a
+            WHERE a.post.id = :postId
+              AND (a.student.id = :userId OR a.tutor.id = :userId)
+            """)
+    boolean existsParticipantByPostIdAndUserId(
+            @Param("postId") UUID postId,
+            @Param("userId") UUID userId
     );
 
     @Query("""
@@ -110,8 +129,6 @@ public interface ApplicationRepository
             LEFT JOIN FETCH a.student
             LEFT JOIN FETCH a.tutor
             WHERE a.id = :applicationId
-              AND a.applicationStatus = :applicationStatus
-              AND p.status = :postStatus
               AND (
                     a.student.id = :userId
                     OR a.tutor.id = :userId
@@ -120,9 +137,7 @@ public interface ApplicationRepository
             """)
     Optional<Application> findByIdForViewer(
             @Param("applicationId") UUID applicationId,
-            @Param("userId") UUID userId,
-            @Param("applicationStatus") ApplicationStatus applicationStatus,
-            @Param("postStatus") PostStatus postStatus
+            @Param("userId") UUID userId
     );
 
     @Query("""
@@ -236,4 +251,36 @@ public interface ApplicationRepository
         """)
     List<TutorAcceptedRow> countByTutorIdsAndStatus(@Param("tutorIds") Collection<UUID> tutorIds,
                                                     @Param("status") ApplicationStatus status);
+
+    // W1: đơn ACCEPTED đã quá 24h kể từ lúc select mà chưa có transaction SUCCESS
+    @Query("""
+            SELECT a FROM Application a
+            JOIN FETCH a.post p
+            LEFT JOIN FETCH a.transaction t
+            WHERE a.applicationStatus = :status
+              AND p.status = :postStatus
+              AND a.selectedAt < :cutoff
+              AND (t IS NULL OR t.status <> :successStatus)
+            """)
+    List<Application> findExpiredSelections(
+            @Param("status") ApplicationStatus status,
+            @Param("postStatus") PostStatus postStatus,
+            @Param("cutoff") Instant cutoff,
+            @Param("successStatus") TransactionStatus successStatus
+    );
+
+    // W2: đơn ACCEPTED đã thanh toán thành công quá 24h mà applicant chưa confirm
+    @Query("""
+            SELECT a FROM Application a
+            JOIN FETCH a.post p
+            JOIN FETCH a.transaction t
+            WHERE a.applicationStatus = :status
+              AND t.status = :successStatus
+              AND t.transactionDate < :cutoff
+            """)
+    List<Application> findExpiredConfirmations(
+            @Param("status") ApplicationStatus status,
+            @Param("successStatus") TransactionStatus successStatus,
+            @Param("cutoff") Instant cutoff
+    );
 }
