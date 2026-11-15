@@ -170,8 +170,6 @@ Chuông thông báo đang đếm chưa đọc từ 10 mục đầu của danh s�
 - [ ] Điền bảng quy tắc đọc bài ở mục 5
 - [ ] Cho biết `top`/`others` khi `ranked = false`
 - [ ] (Tùy chọn) `GET /v1/notifications/unread-count`
-- [ ] Ghi đè `TutorCertificateReviewService` để gửi thông báo kết quả duyệt chứng chỉ (mục 11)
-- [ ] Kiểm tra `NotificationCreatedListener` đẩy được event của thông báo chứng chỉ (mục 11.4)
 
 ## 9. Thông tin FE cần BE gửi lại
 

@@ -7,6 +7,7 @@ import org.group3.tutorlink.common.enums.ResponseCode;
 public enum NotificationResponseCode implements ResponseCode {
     GET_NOTIFICATIONS("NOTI_200", "Notifications retrieved successfully"),
     NOTIFICATION_MARKED_READ("NOTI_201", "Notification marked as read"),
+    UNREAD_COUNT("NOTI_203", "Unread notifications count retrieved successfully"),
     ALL_NOTIFICATIONS_MARKED_READ("NOTI_202", "All notifications marked as read");
 
     private final String code;

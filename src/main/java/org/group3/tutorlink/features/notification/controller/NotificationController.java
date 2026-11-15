@@ -49,4 +49,15 @@ public class NotificationController {
                 .data(notificationService.markAllAsRead())
                 .build();
     }
+
+    @GetMapping("/unread-count")
+    public ApiResponse<Integer> getUnreadCount() {
+        return ApiResponse.<Integer>builder()
+                .code(NotificationResponseCode.UNREAD_COUNT.getCode())
+                .message(NotificationResponseCode.UNREAD_COUNT.getMessage())
+                .data(notificationService.getUnreadCount())
+                .build();
+    }
+
+
 }
