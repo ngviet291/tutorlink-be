@@ -54,6 +54,8 @@ public interface PostService {
             String keyword,
             PostType type,
             String subjectName,
+            String province,
+            String ward,
             TeachingMode teachingMode,
             EducationLevel educationLevel,
             BigDecimal maxBudget,

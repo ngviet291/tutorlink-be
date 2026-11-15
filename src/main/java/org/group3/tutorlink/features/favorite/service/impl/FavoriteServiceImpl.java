@@ -5,6 +5,7 @@ import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.favorite.dto.response.FavoriteResponse;
 import org.group3.tutorlink.features.favorite.entity.Favorite;
+import org.group3.tutorlink.features.favorite.mapper.FavoriteMapper;
 import org.group3.tutorlink.features.favorite.repository.FavoriteRepository;
 import org.group3.tutorlink.features.favorite.service.FavoriteService;
 import org.group3.tutorlink.features.user.entity.Tutor;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class FavoriteServiceImpl implements FavoriteService {
+    private final FavoriteMapper favoriteMapper;
     private final FavoriteRepository favoriteRepository;
     private final UserRepository userRepository;
     private final TutorRepository tutorRepository;
@@ -36,7 +38,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         if (!favoriteRepository.existsByUserIdAndTutorId(userId, tutorId)) {
             favoriteRepository.save(Favorite.builder().id(appUtil.generateUUID()).user(user).tutor(tutor).build());
         }
-        return FavoriteResponse.builder().tutorId(tutorId).build();
+        return favoriteMapper.toFavoriteResponse(tutor);
     }
 
     @Override
@@ -53,6 +55,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     public List<FavoriteResponse> findMine() {
         UUID userId = appUtil.userIdFromAuthentication();
         return favoriteRepository.findByUserId(userId).stream()
-                .map(f -> FavoriteResponse.builder().tutorId(f.getTutor().getId()).build()).toList();
+                .map(f -> favoriteMapper.toFavoriteResponse(f.getTutor()))
+                .toList();
     }
 }

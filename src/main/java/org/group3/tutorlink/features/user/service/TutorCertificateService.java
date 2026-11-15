@@ -88,7 +88,25 @@ public class TutorCertificateService {
                 images, AuthenticationService.TUTOR_CERTIFICATES + tutor.getId(), MediaType.IMAGE);
         deleteUploadedFilesIfRolledBack(uploaded);
 
-        List<Certificate> saved = certificateRepository.saveAll(certificateMapper.toCertificates(uploaded, tutor));
+        List<Certificate> certificates = certificateMapper.toCertificates(uploaded, tutor);
+
+        for (int i = 0; i < certificates.size(); i++) {
+            MultipartFile image = images.get(i);
+
+            String filename = image.getOriginalFilename();
+            String certificateName = extractCertificateName(filename);
+
+            certificates.get(i).setName(certificateName);
+
+            log.info(
+                    "Certificate prepared before save: filename={}, name={}, fileUrl={}",
+                    filename,
+                    certificates.get(i).getName(),
+                    certificates.get(i).getFileUrl()
+            );
+        }
+
+        List<Certificate> saved = certificateRepository.saveAll(certificates);
         resubmitIfRejected(tutor);
         eventPublisher.publishEvent(TutorCertificatesSubmittedEvent.builder().tutorId(tutor.getId()).build());
 
@@ -144,5 +162,23 @@ public class TutorCertificateService {
                 .fileUrl(certificate.getFileUrl())
                 .verified(certificate.isVerified())
                 .build();
+    }
+    private String extractCertificateName(String filename) {
+        if (filename == null || filename.isBlank()) {
+            return "Chứng chỉ";
+        }
+        String name = filename.trim();
+        int slashIndex = Math.max(
+                name.lastIndexOf('/'),
+                name.lastIndexOf('\\')
+        );
+        if (slashIndex >= 0) {
+            name = name.substring(slashIndex + 1);
+        }
+        int dotIndex = name.lastIndexOf('.');
+        if (dotIndex > 0) {
+            name = name.substring(0, dotIndex);
+        }
+        return name.isBlank() ? "Chứng chỉ" : name;
     }
 }
