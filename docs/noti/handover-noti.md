@@ -180,13 +180,13 @@ Chuông thông báo đang đếm chưa đọc từ 10 mục đầu của danh s�
 
 Đẩy notification Inject
 
-```javascript
+```java
 private final NotificationCreator notificationCreator;
 ```
 
 Gọi cuối chức năng cần thông báo trước return
 
-```javascript
+```java
 
 public enum NotificationType {
     SYSTEM,

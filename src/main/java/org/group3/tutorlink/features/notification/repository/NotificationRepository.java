@@ -1,9 +1,9 @@
 package org.group3.tutorlink.features.notification.repository;
 
 import org.group3.tutorlink.features.notification.entity.Notification;
+import org.group3.tutorlink.features.user.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,4 +31,6 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
           AND n.isRead = false
     """)
     int updateIsRead(@Param("recipientId") UUID recipientId);
+
+    long countByIsReadFalseAndRecipient(UUID recipientId);
 }
