@@ -37,6 +37,9 @@ public class Application extends BaseEntity {
     @Column(nullable = false, updatable = false)
     private Instant appliedAt;
 
+    // Thời điểm chủ bài chọn đơn này (ACCEPTED), dùng để tính cửa sổ chờ thanh toán 24h
+    private Instant selectedAt;
+
     // Application n -- 1 Post
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)

@@ -25,13 +25,25 @@ public interface PostRepository extends JpaRepository<Post, UUID>, JpaSpecificat
             """)
     Optional<Post> findByIdWithSubjectAndWithAuthor(UUID id, UUID authorId);
 
+    // [OLD - giữ lại tham khảo] Public detail chỉ serve PUBLISHED,
+    // mọi status khác (PENDING/CLOSED/DRAFT) đều 404 → applicant không xem
+    // được bài đã match nên FE drop đơn khỏi "Đơn đã ứng tuyển".
+    // @Query("""
+    //               SELECT p FROM Post p
+    //               JOIN FETCH p.subject
+    //               JOIN FETCH p.author
+    //               WHERE p.id = :id AND p.status = 'PUBLISHED'
+    //         """)
+    // Optional<Post> findByIdAndStatusNot(UUID id);
+
+    // [NEW] Mọi status trừ REMOVED — service tự quyết định ai được xem theo status
     @Query("""
                   SELECT p FROM Post p
                   JOIN FETCH p.subject
                   JOIN FETCH p.author
-                  WHERE p.id = :id AND p.status = 'PUBLISHED'
+                  WHERE p.id = :id AND p.status <> 'REMOVED'
             """)
-    Optional<Post> findByIdAndStatusNot(UUID id);
+    Optional<Post> findByIdForVisibilityCheck(UUID id);
 
     @Query("""
                 SELECT new org.group3.tutorlink.features.post.dto.response.PostApplicationResponse(
