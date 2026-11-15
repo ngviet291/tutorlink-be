@@ -13,8 +13,6 @@ import org.group3.tutorlink.features.notification.repository.NotificationReposit
 import org.group3.tutorlink.features.notification.service.NotificationService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,5 +67,10 @@ public class NotificationServiceImpl implements NotificationService {
     public int markAllAsRead() {
         UUID currentUserId = appUtil.userIdFromAuthentication();
         return notificationRepository.updateIsRead(currentUserId);
+    }
+
+    @Override
+    public int getUnreadCount() {
+        return (int) notificationRepository.countByIsReadFalseAndRecipient(appUtil.userIdFromAuthentication());
     }
 }

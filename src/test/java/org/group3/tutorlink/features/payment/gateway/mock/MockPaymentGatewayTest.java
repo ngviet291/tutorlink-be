@@ -17,15 +17,15 @@ class MockPaymentGatewayTest {
         String orderId = gateway.newProviderOrderId();
         var result = gateway.createPayment(new GatewayPaymentRequest(
                 orderId, new BigDecimal("100000"), "Demo", UUID.randomUUID()));
-        assertNull(result.payUrl());
-        assertEquals(GatewayPaymentState.PENDING, gateway.queryOrder(orderId).state());
-        assertEquals(GatewayPaymentState.PENDING, gateway.queryOrder(orderId).state());
+        assertNull(result.getPayUrl());
+        assertEquals(GatewayPaymentState.PENDING, gateway.queryOrder(orderId).getState());
+        assertEquals(GatewayPaymentState.PENDING, gateway.queryOrder(orderId).getState());
         gateway.confirmDemo(orderId);
         var paid = gateway.queryOrder(orderId);
         gateway.confirmDemo(orderId);
-        assertEquals(GatewayPaymentState.SUCCESS, paid.state());
+        assertEquals(GatewayPaymentState.SUCCESS, paid.getState());
         assertEquals(paid, gateway.queryOrder(orderId));
-        assertEquals(new BigDecimal("100000"), paid.amount());
+        assertEquals(new BigDecimal("100000"), paid.getAmount());
     }
 
     @Test
@@ -36,7 +36,7 @@ class MockPaymentGatewayTest {
                 orderId, new BigDecimal("100000"), "Demo", UUID.randomUUID()));
         assertThrows(AppException.class,
                 () -> gateway.verifyCallback("{\"orderId\":\"" + orderId + "\"}"));
-        assertEquals(GatewayPaymentState.PENDING, gateway.queryOrder(orderId).state());
+        assertEquals(GatewayPaymentState.PENDING, gateway.queryOrder(orderId).getState());
     }
 
     @Test

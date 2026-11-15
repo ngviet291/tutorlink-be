@@ -24,7 +24,7 @@ public class Wallet extends BaseEntity {
     @Builder.Default
     private BigDecimal balance = BigDecimal.ZERO;
 
-    // Wallet 1 -- 1 Tutor
+    // Mỗi ví thuộc về một gia sư.
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tutor_id", nullable = false, unique = true)
     private Tutor tutor;

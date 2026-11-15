@@ -48,12 +48,12 @@ public class Transaction extends BaseEntity {
     // Mã giao dịch do cổng thanh toán trả về khi thanh toán xong (MoMo transId)
     private String providerTransId;
 
-    // Transaction n -- 1 Tutor (chủ ví)
+    // Nhiều giao dịch thuộc về một gia sư là chủ ví.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tutor_id", nullable = false)
     private Tutor tutor;
 
-    // Transaction 0..1 -- 1 Application (chỉ có khi type = COMMISSION)
+    // Giao dịch phí nhận lớp gắn với một đơn ứng tuyển.
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "application_id", unique = true)
     private Application application;

@@ -1,6 +1,7 @@
 package org.group3.tutorlink.features.subject.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.group3.tutorlink.features.subject.constant.SubjectConstraints;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.subject.dto.request.SubjectRequest;
@@ -25,9 +26,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SubjectServiceImpl implements SubjectService {
 
-    private static final int DEFAULT_LIMIT = 10;
-    private static final int MAX_LIMIT = 50;
-
     private final SubjectRepository subjectRepository;
     private final SubjectMapper subjectMapper;
     private final AppUtil appUtil;
@@ -35,7 +33,9 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     @Transactional(readOnly = true)
     public CursorResponse<SubjectResponse> getAllSubjects(UUID cursor, int limit) {
-        int size = limit <= 0 ? DEFAULT_LIMIT : Math.min(limit, MAX_LIMIT);
+        int size = limit <= 0
+                ? SubjectConstraints.DEFAULT_PAGE_SIZE
+                : Math.min(limit, SubjectConstraints.MAX_PAGE_SIZE);
 
         Pageable pageable = PageRequest.of(
                 0,

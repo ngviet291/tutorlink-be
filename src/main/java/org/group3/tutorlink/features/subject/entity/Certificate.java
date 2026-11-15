@@ -34,7 +34,7 @@ public class Certificate extends BaseEntity {
 
     private boolean verified;
 
-    // Certificate n -- 1 Tutor
+    // Nhiều chứng chỉ có thể thuộc về cùng một gia sư.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tutor_id", nullable = false)
     private Tutor tutor;

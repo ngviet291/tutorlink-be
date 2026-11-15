@@ -11,6 +11,8 @@ import org.group3.tutorlink.features.payment.gateway.PaymentGateway;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import lombok.Value;
+
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
@@ -39,8 +41,8 @@ public class MockPaymentGateway implements PaymentGateway {
 
     @Override
     public GatewayPaymentResult createPayment(GatewayPaymentRequest request) {
-        orders.put(request.providerOrderId(), new MockOrder(
-                "MOCK_TRANS_" + UUID.randomUUID(), request.amount(), GatewayPaymentState.PENDING));
+        orders.put(request.getProviderOrderId(), new MockOrder(
+                "MOCK_TRANS_" + UUID.randomUUID(), request.getAmount(), GatewayPaymentState.PENDING));
         // FE xác nhận tại chỗ, không tạo liên kết hoặc QR giả.
         return new GatewayPaymentResult(null, null, null);
     }
@@ -57,7 +59,7 @@ public class MockPaymentGateway implements PaymentGateway {
             if (order == null) {
                 throw new AppException(PaymentErrorCode.TRANSACTION_NOT_FOUND);
             }
-            return new MockOrder(order.transId(), order.amount(), GatewayPaymentState.SUCCESS);
+            return new MockOrder(order.getTransId(), order.getAmount(), GatewayPaymentState.SUCCESS);
         });
     }
 
@@ -68,8 +70,13 @@ public class MockPaymentGateway implements PaymentGateway {
             // Đơn không còn trong bộ nhớ (ví dụ sau restart) không được cộng tiền.
             return new GatewayCallbackResult(providerOrderId, null, null, GatewayPaymentState.FAILED);
         }
-        return new GatewayCallbackResult(providerOrderId, order.transId(), order.amount(), order.state());
+        return new GatewayCallbackResult(providerOrderId, order.getTransId(), order.getAmount(), order.getState());
     }
 
-    private record MockOrder(String transId, BigDecimal amount, GatewayPaymentState state) {}
+    @Value
+    private static class MockOrder {
+        String transId;
+        BigDecimal amount;
+        GatewayPaymentState state;
+    }
 }

@@ -163,6 +163,8 @@ public class PostServiceImpl implements PostService {
             String keyword,
             PostType type,
             String subjectName,
+            String province,
+            String ward,
             TeachingMode teachingMode,
             EducationLevel educationLevel,
             BigDecimal maxBudget,
@@ -177,6 +179,8 @@ public class PostServiceImpl implements PostService {
                 .and(PostSpecification.hasStatus(PostStatus.PUBLISHED))
                 .and(PostSpecification.hasType(type))
                 .and(PostSpecification.hasSubject(subjectName))
+                .and(PostSpecification.provinceContains(province))
+                .and(PostSpecification.wardContains(ward))
                 .and(PostSpecification.hasTeachingMode(teachingMode))
                 .and(PostSpecification.hasEducationLevel(educationLevel))
                 .and(PostSpecification.maxBudgetLessThanOrEqual(maxBudget))
@@ -290,7 +294,6 @@ public class PostServiceImpl implements PostService {
         post.setSubject(subject);
 
         Post updatedPost = postRepository.save(post);
-
         return postMapper.toPostResponse(updatedPost);
     }
 
@@ -400,7 +403,6 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(PostNotFoundException::new);
 
         post.setStatus(PostStatus.PUBLISHED);
-
         return postMapper.toPostResponse(post);
     }
 

@@ -11,6 +11,7 @@ Ngày: 14/11/2026. Phạm vi: các thay đổi phía BE mà FE đang chờ, theo
 | 3 | API admin: lọc `status` và xem chi tiết mọi bài | Trung bình | Chi tiết đã có code; lọc `status` chưa có |
 | 4 | Xác nhận quy tắc đọc bài theo trạng thái | Trung bình | Cần BE xác nhận |
 | 5 | Endpoint `unread-count` cho thông báo | Thấp | Đề xuất |
+| 6 | Thông báo kết quả duyệt chứng chỉ gia sư (thành công / thất bại) | Trung bình | Đã viết code, cần BE nối (mục 11) |
 
 ## 2. Realtime thông báo (ưu tiên cao)
 
@@ -180,14 +181,13 @@ Chuông thông báo đang đếm chưa đọc từ 10 mục đầu của danh s�
 
 Đẩy notification Inject
 
-```javascript
+```java
 private final NotificationCreator notificationCreator;
 ```
 
 Gọi cuối chức năng cần thông báo trước return
 
-```javascript
-
+```java
 public enum NotificationType {
     SYSTEM,
     APPLICATION,
@@ -202,11 +202,68 @@ public enum NotificationType {
 
 Ví dụ một nơi gọi hiện có là `removePostAdmin` (gỡ bài vi phạm), giữ nguyên:
 
-```
+```java
 notificationCreator.createNotification(
         post.getAuthor().getId(),          // người nhận, cũng là principalName của user destination
-        NotificationType.APPLICATION,
-        ADMIN_REMOVE_POST, // Title 
+        NotificationType.SYSTEM,
+        ADMIN_REMOVE_POST,                 // Title
         String.format("%s %s", ADMIN_REMOVE_POST_REASON, reason) // Content
 );
 ```
+
+Lưu ý: `createNotification` có `@Transactional(propagation = Propagation.MANDATORY)`, nên chỉ gọi được khi đang trong một transaction (method `@Transactional` hoặc `TransactionTemplate`). Gọi ngoài transaction sẽ ném `IllegalTransactionStateException`.
+
+## 11. Thông báo kết quả duyệt chứng chỉ gia sư (ưu tiên trung bình)
+
+### 11.1 Vấn đề
+
+Gia sư tải chứng chỉ qua `POST /v1/users/me/certificates` (hoặc lúc đăng ký). AI duyệt bất đồng bộ trong `TutorCertificateReviewService` sau khi commit. Trước đây gia sư chỉ thấy nhãn "Đang duyệt" rồi chứng chỉ tự biến mất (nếu bị loại) hoặc chuyển "Đã xác thực", không có thông báo nào, và hồ sơ bị từ chối cũng không ai báo.
+
+### 11.2 Hành vi mới
+
+Sau mỗi lần duyệt, `TutorCertificateReviewService` gọi `NotificationCreator.createNotification` (cùng cách với `PostServiceImpl#removePostAdmin`), người nhận là chính gia sư, loại `SYSTEM`.
+
+| Tình huống | Tiêu đề | Nội dung |
+| --- | --- | --- |
+| Hồ sơ `PENDING` và có ít nhất 1 chứng chỉ hợp lệ (hồ sơ chuyển `APPROVED`) | Hồ sơ gia sư đã được duyệt | Chứng chỉ của bạn đã được xác thực, bạn có thể bắt đầu đăng ký nhận lớp. |
+| Hồ sơ `PENDING` và không chứng chỉ nào hợp lệ (hồ sơ chuyển `REJECTED`) | Hồ sơ gia sư bị từ chối | `"<tên chứng chỉ>": <lý do>` của từng chứng chỉ, nối bằng `; ` |
+| Hồ sơ đã `APPROVED`, tải thêm và có chứng chỉ hợp lệ | Chứng chỉ đã được xác thực | N chứng chỉ của bạn đã được xác thực. |
+| Có chứng chỉ không hợp lệ (bị xóa khỏi danh sách) nhưng hồ sơ không bị từ chối | Chứng chỉ không hợp lệ | `"<tên chứng chỉ>": <lý do>` |
+| AI gặp lỗi kỹ thuật (hết quota, mạng...) | Chưa kiểm tra được chứng chỉ | Chứng chỉ vẫn chờ duyệt, sẽ kiểm tra lại ở lần tải lên tiếp theo |
+
+Một lần duyệt có thể sinh 2 thông báo (ví dụ hồ sơ được duyệt nhưng có 1 ảnh bị loại).
+
+### 11.3 Cách gọi
+
+```java
+// TutorCertificateReviewService
+private final NotificationCreator notificationCreator;
+
+// applyResult chạy trong tx.executeWithoutResult(...) nên thỏa Propagation.MANDATORY
+notificationCreator.createNotification(
+        tutorId,                       // người nhận
+        NotificationType.SYSTEM,
+        TITLE_PROFILE_APPROVED,        // Title
+        CONTENT_PROFILE_APPROVED       // Content
+);
+```
+
+- Thông báo được tạo trong cùng transaction với việc ghi kết quả duyệt: cùng thành công hoặc cùng hủy, không bao giờ có thông báo "đã duyệt" mà DB chưa đổi.
+- Tên chứng chỉ lấy trước khi xóa các chứng chỉ không hợp lệ. Tên ban đầu lấy từ tên file lúc tải lên (`TutorCertificateService`), AI đọc được tên thật thì ghi đè, không đọc được thì giữ tên file.
+- Nội dung thông báo cắt ở 500 ký tự (`MAX_CONTENT_LENGTH`) để không vượt độ dài cột. BE kiểm tra lại giới hạn thực tế của cột `content`.
+- Mọi chuỗi tiêu đề và nội dung là hằng số ở đầu class, giống `ADMIN_REMOVE_POST` trong `PostServiceImpl`.
+
+### 11.4 Realtime
+
+`NotificationCreator` đã publish `NotificationCreated`. Khi mục 2 xong (listener đẩy `NOTIFICATION_NEW`), thông báo chứng chỉ tự hiện toast và tăng số trên chuông, không cần code thêm. Cần BE xác nhận listener không giới hạn theo `notificationType`.
+
+Phía FE không cần đổi: danh sách chứng chỉ trên trang hồ sơ tự làm mới mỗi 5 giây khi còn chứng chỉ "Đang duyệt", và dừng khi tất cả đã có kết quả.
+
+### 11.5 Tiêu chí nghiệm thu
+
+1. Gia sư mới đăng ký, tải ảnh chứng chỉ hợp lệ: nhận thông báo "Hồ sơ gia sư đã được duyệt", `verificationStatus` thành `APPROVED`.
+2. Tải ảnh không phải chứng chỉ: nhận thông báo "Hồ sơ gia sư bị từ chối" kèm tên file và lý do, `verificationNote` trùng nội dung, ảnh biến mất khỏi danh sách.
+3. Gia sư `APPROVED` tải thêm 1 ảnh hợp lệ: nhận "Chứng chỉ đã được xác thực", hồ sơ vẫn `APPROVED`.
+4. Gia sư `APPROVED` tải thêm 1 ảnh không hợp lệ: nhận "Chứng chỉ không hợp lệ", hồ sơ vẫn `APPROVED`, không bị hạ trạng thái.
+5. Tắt khóa API của AI (hoặc hết quota) rồi tải ảnh: nhận "Chưa kiểm tra được chứng chỉ", chứng chỉ vẫn "Đang duyệt".
+6. Mỗi trường hợp trên thấy đúng một thông báo (hoặc hai nếu vừa có ảnh hợp lệ vừa có ảnh không hợp lệ) trong `GET /v1/notifications`.

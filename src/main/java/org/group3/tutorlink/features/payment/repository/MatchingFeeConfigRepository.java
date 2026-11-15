@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +19,7 @@ public interface MatchingFeeConfigRepository extends JpaRepository<MatchingFeeCo
 
     List<MatchingFeeConfig> findByIdLessThanOrderByEffectiveFromDesc(UUID cursor, Pageable pageable);
 
-    // Tìm cấu hình đang active
+    // Tìm cấu hình đang có hiệu lực
     @Query("""
             SELECT fc FROM MatchingFeeConfig fc
             WHERE fc.effectiveFrom <= :date
@@ -35,6 +36,6 @@ public interface MatchingFeeConfigRepository extends JpaRepository<MatchingFeeCo
             AND (fc.effectiveTo IS NULL OR fc.effectiveTo > :startDate)
             """)
     List<MatchingFeeConfig> findOverlappingConfigs(
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate);
+            @Param("startDate") Instant startDate,
+            @Param("endDate") Instant endDate);
 }

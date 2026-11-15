@@ -3,6 +3,7 @@ package org.group3.tutorlink.features.payment.gateway;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import lombok.Value;
 import org.group3.tutorlink.common.exception.AppException;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -26,6 +27,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class GatewayHttp {
 
+    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(5);
+    private static final Duration READ_TIMEOUT = Duration.ofSeconds(30);
+    private static final int MAX_CAUSE_DEPTH = 16;
+    private static final String USER_AGENT = "TutorLink/1.0";
+
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private static final RestClient CLIENT = buildClient();
@@ -35,8 +41,8 @@ public final class GatewayHttp {
 
     private static RestClient buildClient() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(Duration.ofSeconds(5));
-        factory.setReadTimeout(Duration.ofSeconds(30));
+        factory.setConnectTimeout(CONNECT_TIMEOUT);
+        factory.setReadTimeout(READ_TIMEOUT);
         return RestClient.builder().requestFactory(factory).build();
     }
 
@@ -45,7 +51,7 @@ public final class GatewayHttp {
             String response = CLIENT.post()
                     .uri(url)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header("User-Agent", "TutorLink/1.0")
+                    .header("User-Agent", USER_AGENT)
                     .body(MAPPER.writeValueAsString(body))
                     .retrieve()
                     .body(String.class);
@@ -79,7 +85,7 @@ public final class GatewayHttp {
         MOMO_REJECTED, MISSING_PAYMENT_LINK
     }
 
-    // Only controlled codes and numeric metadata reach the API/logs.
+    // Chỉ đưa mã lỗi kiểm soát được và thông tin dạng số ra API hoặc nhật ký.
     public static AppException diagnostic(Failure failure, Integer httpStatus, Integer resultCode) {
         String message = "[PAYMENT_" + failure.name() + "]"
                 + (httpStatus == null ? "" : " HTTP=" + httpStatus)
@@ -88,9 +94,14 @@ public final class GatewayHttp {
         return new AppException(new Diagnostic(message));
     }
 
-    private record Diagnostic(String getMessage) implements BaseErrorCode {
+    @Value
+    private static class Diagnostic implements BaseErrorCode {
+        String message;
+
         @Override
-        public HttpStatus getHttpStatus() { return HttpStatus.BAD_GATEWAY; }
+        public HttpStatus getHttpStatus() {
+            return HttpStatus.BAD_GATEWAY;
+        }
     }
 
     static AppException requestFailure(Exception ex) {
@@ -103,19 +114,31 @@ public final class GatewayHttp {
                     code = value.intValue();
                 }
             } catch (com.fasterxml.jackson.core.JsonProcessingException ignored) {
-                // Never expose a provider body/message, including HTML error pages.
+                // Không đưa nội dung phản hồi của cổng ra ngoài, kể cả trang lỗi HTML.
             }
             return diagnostic(Failure.HTTP_REJECTED, response.getStatusCode().value(), code);
         }
         Throwable cause = ex;
-        for (int depth = 0; cause != null && depth < 16; depth++, cause = cause.getCause()) {
+        for (int depth = 0; cause != null && depth < MAX_CAUSE_DEPTH; depth++, cause = cause.getCause()) {
             Failure kind = null;
-            if (cause instanceof java.net.SocketTimeoutException) kind = Failure.TIMEOUT;
-            else if (cause instanceof java.net.UnknownHostException) kind = Failure.DNS;
-            else if (cause instanceof javax.net.ssl.SSLException) kind = Failure.TLS;
-            else if (cause instanceof java.net.ConnectException) kind = Failure.CONNECTION;
-            else if (cause instanceof com.fasterxml.jackson.core.JsonProcessingException) kind = Failure.REQUEST_ENCODING;
-            if (kind != null) return diagnostic(kind, null, null);
+            if (cause instanceof java.net.SocketTimeoutException) {
+                kind = Failure.TIMEOUT;
+            }
+            else if (cause instanceof java.net.UnknownHostException) {
+                kind = Failure.DNS;
+            }
+            else if (cause instanceof javax.net.ssl.SSLException) {
+                kind = Failure.TLS;
+            }
+            else if (cause instanceof java.net.ConnectException) {
+                kind = Failure.CONNECTION;
+            }
+            else if (cause instanceof com.fasterxml.jackson.core.JsonProcessingException) {
+                kind = Failure.REQUEST_ENCODING;
+            }
+            if (kind != null) {
+                return diagnostic(kind, null, null);
+            }
         }
         return diagnostic(Failure.TRANSPORT, null, null);
     }

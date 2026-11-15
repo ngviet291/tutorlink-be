@@ -6,6 +6,8 @@ import org.group3.tutorlink.features.ai.dto.CertificateSnapshot;
 import org.group3.tutorlink.features.ai.dto.TutorReviewSnapshot;
 import org.group3.tutorlink.features.ai.service.CertificateReviewAiService;
 import org.group3.tutorlink.features.auth.dto.CertificateCheck;
+import org.group3.tutorlink.features.notification.enums.NotificationType;
+import org.group3.tutorlink.features.notification.service.NotificationCreator;
 import org.group3.tutorlink.features.subject.entity.Certificate;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
@@ -22,24 +24,35 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class TutorCertificateReviewService {
-
+    private static final String TITLE_PROFILE_APPROVED = "Hồ sơ gia sư đã được duyệt";
+    private static final String CONTENT_PROFILE_APPROVED = "Chứng chỉ của bạn đã được xác thực, bạn có thể bắt đầu đăng ký nhận lớp.";
+    private static final String TITLE_PROFILE_REJECTED = "Hồ sơ gia sư bị từ chối";
+    private static final String TITLE_CERT_VERIFIED = "Chứng chỉ đã được xác thực";
+    private static final String FORMAT_CERT_VERIFIED = "%d chứng chỉ của bạn đã được xác thực.";
+    private static final String TITLE_CERT_INVALID = "Chứng chỉ không hợp lệ";
+    private static final String FORMAT_CERT_INVALID = "%d chứng chỉ không hợp lệ: %s";
+    private static final String TITLE_REVIEW_FAILED = "Chưa kiểm tra được chứng chỉ";
+    private static final String CONTENT_REVIEW_FAILED = "Hệ thống chưa thể kiểm tra chứng chỉ lúc này. Chứng chỉ vẫn chờ duyệt và sẽ được kiểm tra lại ở lần tải lên tiếp theo.";
+    private static final int MAX_CONTENT_LENGTH = 500;
     private final TutorRepository tutorRepository;
     private final MediaStorageService mediaStorageService;
     private final CertificateReviewAiService aiService;
     private final TransactionTemplate tx;
     private final double minConfidence;
+    private final NotificationCreator notificationCreator;
 
     public TutorCertificateReviewService(
             TutorRepository tutorRepository,
             MediaStorageService mediaStorageService,
             CertificateReviewAiService aiService,
             TransactionTemplate tx,
-            @Value("${app.verification.min-confidence}") double minConfidence) {
+            @Value("${app.verification.min-confidence}") double minConfidence, NotificationCreator notificationCreator) {
         this.tutorRepository = tutorRepository;
         this.mediaStorageService = mediaStorageService;
         this.aiService = aiService;
         this.tx = tx;
         this.minConfidence = minConfidence;
+        this.notificationCreator = notificationCreator;
     }
 
     public void review(UUID tutorId) {
@@ -61,6 +74,7 @@ public class TutorCertificateReviewService {
                 log.info("Certificate AI check result for tutor {}: cert={} valid={} confidence={} reason={}", tutorId, cert.getId(), check.isValid(), check.getConfidence(), check.getReason());
             } catch (Exception e) {
                 log.error("Certificate AI check failed, keep as is. tutor={}", tutorId, e);
+                notifyReviewFailed(tutorId);
                 return;
             }
             if (isAccepted(check)) {
@@ -104,18 +118,20 @@ public class TutorCertificateReviewService {
                 if (check == null) {
                     return;
                 }
-                c.setName(blankToNull(check.getName()));
-                c.setIssuedBy(blankToNull(check.getIssuedBy()));
+                c.setName(firstNonBlank(check.getName(), c.getName()));
+                c.setIssuedBy(firstNonBlank(check.getIssuedBy(), c.getIssuedBy()));
                 c.setIssuedDate(parseDate(check.getIssuedDate()));
                 c.setExpiryDate(parseDate(check.getExpiryDate()));
                 c.setVerified(true);
             });
 
-            if (current == VerificationStatus.PENDING) {
-                boolean approved = tutor.getCertificates().stream().anyMatch(Certificate::isVerified);
-                tutor.setVerificationStatus(approved ? VerificationStatus.APPROVED : VerificationStatus.REJECTED);
-                tutor.setVerificationNote(approved ? null : joinReasons(reasons));
+            boolean wasPending = current == VerificationStatus.PENDING;
+            boolean hasVerified = tutor.getCertificates().stream().anyMatch(Certificate::isVerified);
+            if (wasPending) {
+                tutor.setVerificationStatus(hasVerified ? VerificationStatus.APPROVED : VerificationStatus.REJECTED);
+                tutor.setVerificationNote(hasVerified ? null : joinReasons(reasons));
             }
+            notifyResult(tutorId, wasPending, hasVerified, accepted.size(), invalidIds.size(), reasons);
         });
     }
 
@@ -146,5 +162,32 @@ public class TutorCertificateReviewService {
         } catch (DateTimeParseException e) {
             return null; // AI trả sai định dạng thì bỏ trống thay vì làm hỏng cả lượt duyệt
         }
+    }
+    private void notifyResult(UUID tutorId, boolean wasPending, boolean hasVerified,
+                              int acceptedCount, int invalidCount, List<String> reasons) {
+        if (acceptedCount > 0) {
+            if (wasPending && hasVerified) {
+                notify(tutorId, TITLE_PROFILE_APPROVED, CONTENT_PROFILE_APPROVED);
+            } else {
+                notify(tutorId, TITLE_CERT_VERIFIED, String.format(FORMAT_CERT_VERIFIED, acceptedCount));
+            }
+        }
+        if (invalidCount > 0) {
+            String title = (wasPending && !hasVerified) ? TITLE_PROFILE_REJECTED : TITLE_CERT_INVALID;
+            notify(tutorId, title, String.format(FORMAT_CERT_INVALID, invalidCount, joinReasons(reasons)));
+        }
+    }
+
+    private void notifyReviewFailed(UUID tutorId) {
+        tx.executeWithoutResult(status -> notify(tutorId, TITLE_REVIEW_FAILED, CONTENT_REVIEW_FAILED));
+    }
+
+    private void notify(UUID tutorId, String title, String content) {
+        String safe = content.length() > MAX_CONTENT_LENGTH ? content.substring(0, MAX_CONTENT_LENGTH) : content;
+        notificationCreator.createNotification(tutorId, NotificationType.SYSTEM, title, safe);
+    }
+
+    private static String firstNonBlank(String preferred, String fallback) {
+        return (preferred != null && !preferred.isBlank()) ? preferred.trim() : fallback;
     }
 }

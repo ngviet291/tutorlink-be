@@ -5,6 +5,8 @@ import lombok.*;
 import org.group3.tutorlink.common.entity.BaseEntity;
 import org.group3.tutorlink.features.user.entity.Admin;
 
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -23,11 +25,9 @@ public class MatchingFeeConfig extends BaseEntity {
 
     private double feePercentage;
 
-    private double fixedFee;
+    private Instant effectiveFrom;
 
-    private LocalDate effectiveFrom;
-
-    private LocalDate effectiveTo;
+    private Instant effectiveTo;
     @ManyToOne
     @JoinColumn(name = "admin_id")
     private Admin createdByAdmin;

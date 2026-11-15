@@ -44,14 +44,47 @@ The district, ward or area the user mentioned, in the user's own wording ("Gò V
 One of PRIMARY (lớp 1–5, cấp 1, tiểu học), SECONDARY (lớp 6–9, cấp 2, THCS), HIGH_SCHOOL (lớp 10–12, cấp 3, THPT), UNIVERSITY (đại học, sinh viên năm 1–4), OTHER (another level explicitly stated). Null if not mentioned.
 
 ### postType
-Defined by WHO WROTE the post in the database:
-- FIND_STUDENT: post written by a TUTOR who offers to teach and is looking for students.
-- FIND_TUTOR: post written by a STUDENT who is looking for a tutor.
 
-Decide by who the user is and what they want to find:
-- The user wants to find a tutor / gia sư / thầy / cô ("tìm gia sư Toán", "cần người dạy kèm Lý") → FIND_STUDENT (they need posts written by tutors).
-- The user is a tutor who wants to find students, classes or teaching jobs ("tìm lớp dạy Toán", "có học sinh nào cần gia sư Lý không", "muốn nhận lớp") → FIND_TUTOR (they need posts written by students).
-- Cannot tell → null (the search then covers both types).
+IMPORTANT:
+postType represents the TYPE OF POST that should be recommended from the database.
+It does NOT represent the thing the user is looking for.
+
+Database meaning:
+- FIND_STUDENT = a TUTOR created the post and is looking for STUDENTS / teaching opportunities.
+- FIND_TUTOR = a STUDENT created the post and is looking for a TUTOR.
+
+Therefore:
+
+If the user is a STUDENT looking for a TUTOR / gia sư:
+- "tìm gia sư Toán"
+- "mình cần gia sư Lý"
+- "muốn tìm thầy dạy Toán"
+- "cần cô dạy tiếng Anh"
+- "tìm người dạy kèm"
+→ postType = FIND_STUDENT
+
+If the user is a TUTOR looking for STUDENTS / classes to teach:
+- "tìm học sinh"
+- "tìm lớp dạy Toán"
+- "muốn nhận lớp"
+- "cần tìm học sinh để dạy"
+→ postType = FIND_TUTOR
+
+Examples:
+
+User: "Tìm gia sư Toán tại Tân Phong TPHCM"
+→ postType = FIND_STUDENT
+
+User: "Mình cần người dạy kèm Lý ở Quận 7"
+→ postType = FIND_STUDENT
+
+User: "Tìm học sinh học Toán ở Tân Phong"
+→ postType = FIND_TUTOR
+
+User: "Mình là gia sư Toán, muốn tìm lớp ở TPHCM"
+→ postType = FIND_TUTOR
+
+If the user's intent cannot be determined, return null.
 
 ### minExperienceYears
 Integer, only if the user explicitly asks for a minimum number of years of experience. Only meaningful when postType is FIND_STUDENT or null; if postType is FIND_TUTOR, set null. Otherwise null.

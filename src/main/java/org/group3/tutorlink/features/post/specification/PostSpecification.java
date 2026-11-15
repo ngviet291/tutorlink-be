@@ -232,7 +232,10 @@ public class PostSpecification {
         return (root, query, cb) -> !StringUtils.hasText(province) ? null
                 : cb.like(cb.lower(root.get("address").<String>get("province")), like(province));
     }
-
+    public static Specification<Post> wardContains(String ward) {
+        return (root, query, cb) -> !StringUtils.hasText(ward) ? null
+                : cb.like(cb.lower(root.get("address").<String>get("ward")), like(ward));
+    }
     public static Specification<Post> authorTutorMatches(Integer minExperienceYears,
                                                          Double minRate,
                                                          Double maxRate,

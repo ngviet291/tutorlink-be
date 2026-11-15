@@ -1,10 +1,10 @@
-
 package org.group3.tutorlink.features.chatbot.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.entity.Address;
 import org.group3.tutorlink.common.service.AddressService;
+import org.group3.tutorlink.common.service.LocationNormalizationService;
 import org.group3.tutorlink.features.chatbot.ai.PostSearchFilters;
 import org.group3.tutorlink.features.chatbot.config.ChatbotProperties;
 import org.group3.tutorlink.features.chatbot.dto.request.UserLocation;
@@ -36,67 +36,56 @@ import java.util.stream.Stream;
 public class PostSearcher {
 
     private final PostRepository postRepository;
-    private final PostProximityRanker proximityRanker;
     private final ChatbotProperties properties;
-    private final AddressService provinceNormalizationService;
+    private final AddressService addressService;
+    private final LocationNormalizationService locationNormalizer;
 
+    /**
+     * Thứ tự ưu tiên:
+     * 1. Có bài đúng phường/xã người dùng yêu cầu -> chỉ trả các bài đó.
+     * 2. Không có -> trả bài ở các phường/xã khác trong cùng tỉnh (relaxed = true).
+     * 3. Không biết tỉnh -> không đoán bừa, trả rỗng.
+     *
+     * Người dùng không nói phường/xã thì lấy bài trong tỉnh, bài cùng phường/xã với vị trí của họ lên đầu.
+     */
     @Transactional(readOnly = true)
     public PostSearchResult search(PostSearchFilters filters, UserLocation userLocation, int limit) {
         PostType type = filters.getPostType() != null
                 ? filters.getPostType()
                 : properties.getDefaultPostType();
-
-        // Bộ lọc chỉ theo môn học, dùng khi fallback
-        PostSearchFilters subjectOnly = PostSearchFilters.builder()
-                .subjectName(filters.getSubjectName())
-                .build();
-        List<Post> strictPosts = find(filters, type);
-
-        log.info(
-                "[CHATBOT DEBUG] Strict search: subject={}, province={}, type={}, education={}, resultCount={}",
-                filters.getSubjectName(),
-                filters.getProvince(),
-                type,
-                filters.getEducationLevel(),
-                strictPosts.size()
-        );
-
+        String area = filters.getArea();
+        String province = resolveProvince(filters, userLocation);
+        List<Post> candidates = find(filters, type, province);
+        List<Post> posts;
         boolean relaxed = false;
-        List<Post> posts = strictPosts;
+        if (StringUtils.hasText(area)) {
+            List<Post> inWard = candidates.stream()
+                    .filter(post -> isInWard(post, area))
+                    .toList();
 
-        if (strictPosts.isEmpty() && hasExtraFilters(filters)) {
-            posts = find(subjectOnly, type);
-            relaxed = !posts.isEmpty();
-
-            log.info("[CHATBOT DEBUG] Fallback cùng loại bài: resultCount={}", posts.size());
+            if (!inWard.isEmpty()) {
+                posts = inWard;
+            } else if (province != null) {
+                posts = candidates;
+                relaxed = !candidates.isEmpty();
+            } else {
+                posts = List.of();
+            }
+        } else {
+            posts = sameWardFirst(candidates, wardOf(userLocation));
         }
 
-        if (posts.isEmpty()) {
-            posts = find(subjectOnly, null);
-            relaxed = !posts.isEmpty();
+        log.info("Chatbot search: subject={}, province={}, area={}, type={} -> {} bài trong tỉnh, {} bài trả về, relaxed={}",
+                filters.getSubjectName(), province, area, type, candidates.size(), posts.size(), relaxed);
 
-            log.info("[CHATBOT DEBUG] Fallback cùng môn học: resultCount={}", posts.size());
-        }
-
-        log.info(
-                "[CHATBOT DEBUG] FINAL: strictCount={}, finalCount={}, relaxed={}",
-                strictPosts.size(),
-                posts.size(),
-                relaxed
-        );
-
-        List<PostSummaryResponse> summaries = proximityRanker
-                .sortNearestFirst(posts, filters.getArea(), userLocation)
-                .stream()
+        List<PostSummaryResponse> summaries = posts.stream()
                 .limit(limit)
                 .map(this::toSummary)
                 .toList();
-
         return new PostSearchResult(summaries, relaxed);
     }
 
-    // Lấy tóm tắt các bài theo ID bằng một query.
-    // Bài đã đóng, hết hạn hoặc bị gỡ sẽ không có trong kết quả.
+    /** Lấy tóm tắt các bài theo id bằng 1 query. Bài đã đóng, hết hạn hoặc bị gỡ sẽ không có trong kết quả. */
     @Transactional(readOnly = true)
     public Map<UUID, PostSummaryResponse> findByIds(Collection<UUID> postIds) {
         if (postIds.isEmpty()) {
@@ -119,27 +108,22 @@ public class PostSearcher {
         return (root, query, cb) -> root.get("id").in(postIds);
     }
 
-    private boolean hasExtraFilters(PostSearchFilters f) {
-        return StringUtils.hasText(f.getProvince())
-                || f.getEducationLevel() != null
-                || f.getMinExperienceYears() != null
-                || f.getMinRate() != null
-                || f.getMaxRate() != null
-                || f.getMinRating() != null;
+    // Người dùng nói phường/xã mà không nói tỉnh thì hiểu là tỉnh họ đang ở.
+    private String resolveProvince(PostSearchFilters filters, UserLocation userLocation) {
+        String province = filters.getProvince();
+
+        boolean canUseUserProvince = !StringUtils.hasText(province)
+                && StringUtils.hasText(filters.getArea())
+                && userLocation != null
+                && userLocation.isKnown();
+        if (canUseUserProvince) {
+            province = userLocation.getProvince();
+        }
+
+        return StringUtils.hasText(province) ? addressService.normalize(province) : null;
     }
 
-    private List<Post> find(PostSearchFilters f, PostType type) {
-
-        // Chuẩn hóa tên tỉnh/thành phố trước khi tạo điều kiện SQL.
-        String normalizedProvince =
-                provinceNormalizationService.normalize(f.getProvince());
-
-        log.info(
-                "[CHATBOT DEBUG] Province gốc={}, province chuẩn hóa={}",
-                f.getProvince(),
-                normalizedProvince
-        );
-
+    private List<Post> find(PostSearchFilters f, PostType type, String province) {
         Specification<Post> spec = Specification.allOf(
                 PostSpecification.fetchSubject(),
                 PostSpecification.fetchAuthor(),
@@ -147,7 +131,7 @@ public class PostSearcher {
                 PostSpecification.notExpired(Instant.now()),
                 PostSpecification.hasType(type),
                 PostSpecification.subjectContains(f.getSubjectName()),
-                PostSpecification.provinceContains(normalizedProvince),
+                PostSpecification.provinceContains(province),
                 PostSpecification.hasEducationLevel(f.getEducationLevel()),
                 PostSpecification.authorTutorMatches(
                         f.getMinExperienceYears(),
@@ -162,18 +146,25 @@ public class PostSearcher {
                 properties.getCandidatePoolSize(),
                 Sort.by(Sort.Direction.DESC, "createdAt")
         );
+        return postRepository.findAll(spec, page).getContent();
+    }
 
-        List<Post> posts = postRepository.findAll(spec, page).getContent();
+    private boolean isInWard(Post post, String ward) {
+        return post.getAddress() != null && locationNormalizer.isSameWard(post.getAddress().getWard(), ward);
+    }
 
-        log.debug(
-                "Chatbot search (subject={}, province={}, type={}) -> {} bài",
-                f.getSubjectName(),
-                normalizedProvince,
-                type,
-                posts.size()
-        );
+    private String wardOf(UserLocation userLocation) {
+        return userLocation != null && userLocation.isKnown() ? userLocation.getWard() : null;
+    }
 
-        return posts;
+    // Bài cùng phường/xã lên đầu, các bài còn lại giữ nguyên thứ tự (mới nhất trước).
+    private List<Post> sameWardFirst(List<Post> posts, String ward) {
+        if (!StringUtils.hasText(ward)) {
+            return posts;
+        }
+        Map<Boolean, List<Post>> split = posts.stream()
+                .collect(Collectors.partitioningBy(post -> isInWard(post, ward)));
+        return Stream.concat(split.get(true).stream(), split.get(false).stream()).toList();
     }
 
     private PostSummaryResponse toSummary(Post post) {
@@ -194,12 +185,7 @@ public class PostSearcher {
         if (address == null) {
             return null;
         }
-
-        return Stream.of(
-                        address.getStreet(),
-                        address.getWard(),
-                        address.getProvince()
-                )
+        return Stream.of(address.getStreet(), address.getWard(), address.getProvince())
                 .filter(StringUtils::hasText)
                 .collect(Collectors.joining(", "));
     }
