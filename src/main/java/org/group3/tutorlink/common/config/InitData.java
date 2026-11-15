@@ -201,9 +201,12 @@ public class InitData implements CommandLineRunner {
         }
         for (JsonNode n : root.get("matchingFeeConfigs")) {
             persist("matching_fee_configs", n, MatchingFeeConfig.builder()
-                    .id(id(n, "id")).feePercentage(n.get("feePercentage").asDouble()).fixedFee(n.get("fixedFee").asDouble())
-                    .effectiveFrom(date(n, "effectiveFrom")).effectiveTo(date(n, "effectiveTo"))
-                    .createdByAdmin(admins.get(id(n, "createdByAdminId"))).build());
+                    .id(id(n, "id"))
+                    .feePercentage(n.get("feePercentage").asDouble())
+                    .effectiveFrom(dateToInstant(n, "effectiveFrom"))
+                    .effectiveTo(dateToInstant(n, "effectiveTo"))
+                    .createdByAdmin(admins.get(id(n, "createdByAdminId")))
+                    .build());
         }
 
         for (JsonNode n : root.get("posts")) {
@@ -356,5 +359,14 @@ public class InitData implements CommandLineRunner {
             return null;
         }
         return Address.builder().street(s(a, "street")).ward(s(a, "ward")).province(s(a, "province")).build();
+    }
+    private static Instant dateToInstant(JsonNode n, String f) {
+        if (absent(n, f)) {
+            return null;
+        }
+
+        return LocalDate.parse(n.get(f).asText())
+                .atStartOfDay(ZoneOffset.UTC)
+                .toInstant();
     }
 }

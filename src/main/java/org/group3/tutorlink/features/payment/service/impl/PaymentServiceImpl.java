@@ -52,6 +52,7 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -402,21 +403,30 @@ public class PaymentServiceImpl implements PaymentService {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new AppException(PaymentErrorCode.TUTOR_NOT_FOUND)); // Tái sử dụng mã lỗi hiện có.
 
-        LocalDate effectiveFrom = request.getEffectiveFrom() != null
+        LocalDate effectiveFromDate = request.getEffectiveFrom() != null
                 ? request.getEffectiveFrom()
                 : LocalDate.now();
 
-        // Kiểm tra chồng lấn với cấu hình hiện có (effectiveTo = null nghĩa là có hiệu lực vô thời hạn)
-        List<MatchingFeeConfig> overlapping = feeConfigRepository.findOverlappingConfigs(
-                effectiveFrom,
-                effectiveFrom.plusYears(FEE_CONFIG_LOOKAHEAD_YEARS) // Giả định cấu hình mới có hiệu lực vô thời hạn
-        );
+        Instant effectiveFrom = effectiveFromDate
+                .atStartOfDay(ZoneOffset.UTC)
+                .toInstant();
 
+        Instant lookAheadEnd = effectiveFromDate
+                .plusYears(FEE_CONFIG_LOOKAHEAD_YEARS)
+                .atStartOfDay(ZoneOffset.UTC)
+                .toInstant();
+
+        List<MatchingFeeConfig> overlapping =
+                feeConfigRepository.findOverlappingConfigs(effectiveFrom, lookAheadEnd);
         if (!overlapping.isEmpty()) {
-            // Đóng các cấu hình cũ bằng cách set effectiveTo = effectiveFrom - 1
             for (MatchingFeeConfig old : overlapping) {
-                if (old.getEffectiveTo() == null || old.getEffectiveTo().isAfter(effectiveFrom)) {
-                    old.setEffectiveTo(effectiveFrom.minusDays(1));
+                if (old.getEffectiveTo() == null
+                        || old.getEffectiveTo().isAfter(effectiveFrom)) {
+
+                    old.setEffectiveTo(
+                            effectiveFrom.minus(1, ChronoUnit.DAYS)
+                    );
+
                     feeConfigRepository.save(old);
                 }
             }
@@ -425,13 +435,14 @@ public class PaymentServiceImpl implements PaymentService {
         MatchingFeeConfig config = MatchingFeeConfig.builder()
                 .id(appUtil.generateUUID())
                 .feePercentage(request.getFeePercentage())
-                .fixedFee(request.getFixedFee() != null ? request.getFixedFee() : 0.0)
                 .effectiveFrom(effectiveFrom)
-                .effectiveTo(null) // Có hiệu lực vô thời hạn cho đến khi có cấu hình mới
+                .effectiveTo(null)
                 .createdByAdmin(admin)
                 .build();
 
-        return feeConfigMapper.toFeeConfigResponse(feeConfigRepository.save(config));
+        return feeConfigMapper.toFeeConfigResponse(
+                feeConfigRepository.save(config)
+        );
     }
     @Override
     @Transactional(readOnly = true)

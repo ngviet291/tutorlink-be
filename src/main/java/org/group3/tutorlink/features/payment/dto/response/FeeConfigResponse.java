@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -22,14 +23,11 @@ public class FeeConfigResponse {
     @Schema(description = "Tỉ lệ phí, từ 0 đến 1.", example = "0.20")
     private double feePercentage;
 
-    @Schema(description = "Phí cố định, đơn vị VND.", example = "0.00")
-    private double fixedFee;
-
     @Schema(description = "Ngày bắt đầu hiệu lực.", example = "2024-01-01")
-    private LocalDate effectiveFrom;
+    private Instant effectiveFrom;
 
     @Schema(description = "Ngày kết thúc hiệu lực; null nếu chưa xác định ngày kết thúc.", example = "2024-12-31")
-    private LocalDate effectiveTo;
+    private Instant effectiveTo;
 
     @Schema(description = "Quản trị viên tạo cấu hình.")
     private UUID createdByAdminId;
