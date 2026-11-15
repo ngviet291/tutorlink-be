@@ -11,6 +11,7 @@ public interface ApplicationMapper {
     @Mapping(target = "postId", source = "post.id")
     @Mapping(target = "processedByAdminId", source = "processedByAdmin.id")
     @Mapping(target = "transactionId", source = "transaction.id")
+    @Mapping(target = "transactionStatus", source = "transaction.status")
     ApplicationResponse toApplicationResponse(Application application);
 
 

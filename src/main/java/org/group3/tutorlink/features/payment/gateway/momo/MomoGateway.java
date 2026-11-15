@@ -20,11 +20,11 @@ import java.util.UUID;
  * 
  * Luồng thanh toán:
  * 1. Backend tạo đơn hàng với MoMo -> nhận payUrl
- * 2. Frontend redirect user sang payUrl để thanh toán
- * 3. User thanh toán trên MoMo (ATM/Visa/MoMo wallet)
+ * 2. Giao diện chuyển người dùng tới payUrl để thanh toán.
+ * 3. Người dùng thanh toán trên MoMo bằng thẻ hoặc ví.
  * 4. MoMo gọi IPN (server-to-server callback) để thông báo kết quả
- * 5. Backend verify chữ ký + cộng tiền vào ví user
- * 6. MoMo redirect user về frontend với kết quả
+ * 5. Máy chủ xác thực chữ ký rồi cộng tiền vào ví người dùng.
+ * 6. MoMo chuyển người dùng về giao diện kèm kết quả.
  * 
  * Tài liệu: https://developers.momo.vn
  */
@@ -34,13 +34,13 @@ import java.util.UUID;
 @ConditionalOnProperty(name = "payment.demo.enabled", havingValue = "false", matchIfMissing = true)
 public class MomoGateway implements PaymentGateway {
 
-    // One-time MoMo wallet payment.
+    // Thanh toán một lần qua ví MoMo.
     private static final String REQUEST_TYPE = "captureWallet";
     
     private static final String IPN_PATH = "/v1/payments/momo/ipn";
 
-    // MoMo result codes that indicate payment is still in progress
-    // 1000: initialized, 7000/7002: processing, 9000: authorized -> not final result yet
+    // Các mã kết quả MoMo cho biết thanh toán vẫn đang xử lý.
+    // 1000: đã khởi tạo; 7000/7002: đang xử lý; 9000: đã cấp quyền, chưa phải kết quả cuối.
     private static final Set<Integer> PENDING_CODES = Set.of(1000, 7000, 7002, 9000);
 
     @Value("${MOMO_BASE_URL:}")
@@ -74,7 +74,7 @@ public class MomoGateway implements PaymentGateway {
 
     @Override
     public String newProviderOrderId() {
-        // Generate unique order ID with "TL" prefix (TutorLink)
+        // Tạo mã đơn duy nhất với tiền tố "TL" của TutorLink.
         return "TL" + UUID.randomUUID().toString().replace("-", "");
     }
 
@@ -82,17 +82,17 @@ public class MomoGateway implements PaymentGateway {
     public GatewayPaymentResult createPayment(GatewayPaymentRequest request) {
         validateConfiguration();
         String requestId = UUID.randomUUID().toString();
-        String amount = request.amount().setScale(0, RoundingMode.UNNECESSARY).toPlainString();
-        String orderInfo = request.description();
+        String amount = request.getAmount().setScale(0, RoundingMode.UNNECESSARY).toPlainString();
+        String orderInfo = request.getDescription();
         String extraData = "";
         String ipnUrl = ipnBaseUrl.replaceAll("/+$", "") + IPN_PATH;
 
-        // Build signature - fields must be in alphabetical order as per MoMo documentation
+        // Tạo chữ ký với các trường theo thứ tự bảng chữ cái mà MoMo quy định.
         String rawSignature = "accessKey=" + accessKey
                 + "&amount=" + amount
                 + "&extraData=" + extraData
                 + "&ipnUrl=" + ipnUrl
-                + "&orderId=" + request.providerOrderId()
+                + "&orderId=" + request.getProviderOrderId()
                 + "&orderInfo=" + orderInfo
                 + "&partnerCode=" + partnerCode
                 + "&redirectUrl=" + redirectUrl
@@ -103,7 +103,7 @@ public class MomoGateway implements PaymentGateway {
         body.put("partnerCode", partnerCode);
         body.put("requestId", requestId);
         body.put("amount", Long.parseLong(amount));
-        body.put("orderId", request.providerOrderId());
+        body.put("orderId", request.getProviderOrderId());
         body.put("orderInfo", orderInfo);
         body.put("redirectUrl", redirectUrl);
         body.put("ipnUrl", ipnUrl);
@@ -139,7 +139,7 @@ public class MomoGateway implements PaymentGateway {
         validateConfiguration();
         Map<String, Object> ipn = GatewayHttp.parse(rawBody);
 
-        // Verify signature - fields must be in alphabetical order
+        // Xác thực chữ ký với các trường theo thứ tự bảng chữ cái.
         String rawSignature = "accessKey=" + accessKey
                 + "&amount=" + GatewayHttp.str(ipn, "amount")
                 + "&extraData=" + GatewayHttp.str(ipn, "extraData")
@@ -173,7 +173,7 @@ public class MomoGateway implements PaymentGateway {
         validateConfiguration();
         String requestId = UUID.randomUUID().toString();
         
-        // Build signature for query API
+        // Tạo chữ ký cho API truy vấn trạng thái.
         String rawSignature = "accessKey=" + accessKey
                 + "&orderId=" + providerOrderId
                 + "&partnerCode=" + partnerCode
@@ -260,7 +260,7 @@ public class MomoGateway implements PaymentGateway {
         if (resultCode == null) {
             return GatewayPaymentState.PENDING;
         }
-        // MoMo result code: 0 = success, others = pending or failed
+        // Mã kết quả MoMo: 0 là thành công; các mã còn lại là đang chờ hoặc thất bại.
         if (resultCode == 0) {
             return GatewayPaymentState.SUCCESS;
         }

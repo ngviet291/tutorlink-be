@@ -18,7 +18,7 @@ public interface MatchingFeeConfigRepository extends JpaRepository<MatchingFeeCo
 
     List<MatchingFeeConfig> findByIdLessThanOrderByEffectiveFromDesc(UUID cursor, Pageable pageable);
 
-    // Tìm cấu hình đang active
+    // Tìm cấu hình đang có hiệu lực
     @Query("""
             SELECT fc FROM MatchingFeeConfig fc
             WHERE fc.effectiveFrom <= :date

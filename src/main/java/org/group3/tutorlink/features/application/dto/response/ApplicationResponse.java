@@ -44,5 +44,8 @@ public class ApplicationResponse {
     private UUID processedByAdminId;
 
     private UUID transactionId;
+
+    private String transactionStatus;
+
     private BigDecimal proposedFee;
 }
