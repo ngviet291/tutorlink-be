@@ -71,6 +71,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public int getUnreadCount() {
-        return (int) notificationRepository.countByIsReadFalseAndRecipient(appUtil.userIdFromAuthentication());
+        return (int) notificationRepository.countByIsReadFalseAndRecipientId(appUtil.userIdFromAuthentication());
     }
 }
