@@ -41,9 +41,9 @@ Sau khi chủ bài chọn một ứng viên (`ACCEPTED`), flow yêu cầu tutor 
 ### 2.1. Cấu hình (`application.properties`)
 
 ```properties
-application.expiry.payment-window-minutes=2      # test; prod nên 1440 (24h)
+application.expiry.payment-window-minutes=1440   # 24h (đã đổi từ 2 phút test, 15/11/2026)
 application.expiry.confirm-window-minutes=1440   # 24h
-application.expiry.interval-ms=3600000            # chu kỳ quét scheduler
+application.expiry.interval-ms=10000             # chu kỳ quét scheduler
 ```
 
 `ApplicationMapper` đọc cùng 2 khóa window — **phải khớp scheduler**, nếu không `expiresAt` FE hiển thị sẽ lệch với thời điểm đơn thật sự bị hủy.
@@ -76,14 +76,20 @@ Files sửa (code cũ được comment `[OLD]`, code mới `[NEW]` bên dưới)
 ## 4. Thay đổi FE
 
 - `ExpiryCountdown` component: đếm ngược tới `expiresAt`, `onExpire` → refetch.
+- `ApplyModal`: **form dùng chung cho cả student và tutor** — cùng nhập `proposedFee` + `message` (15/11/2026 chốt lại, không tách flow student).
 - `MyApplicationsPage` / `OfferList`: render countdown + nút Xác nhận/Thanh toán theo `applicationStatus` + `paid` + role.
+  - `OfferList` chỉ render cho `role === 'TUTOR'` (banner trả phí chỉ dành cho tutor).
+  - Đơn `ACCEPTED && paid` phía tutor hiển thị "Đã thanh toán — chờ học viên xác nhận" + countdown "để học viên xác nhận".
+  - Countdown label: `paid` → "học viên xác nhận"; `!paid` + fee payer → "thanh toán"; `!paid` + applicant → "xác nhận".
+- `PostDetailPage`: nút "Hủy đăng ký" guard thêm `!isAuthor` — trước đây author bài `FIND_STUDENT` bị `myApplication` match nhầm phía `tutor` nên thấy nút hủy trên bài của chính mình.
+- `i18n`: bổ sung `post.status.PENDING` ("Chờ duyệt"), `application.appliedAgo`/`rank`/`matchScore` (trước hiện raw key).
 - `navItems.ts`: thêm "Đơn đã ứng tuyển" cho student.
 - `router.tsx`: route `MY_APPLICATIONS` chuyển ra khỏi `RoleGuard TUTOR` (cả student lẫn tutor dùng chung).
 - `DashboardPage.tsx`: stat "Đơn đã ứng tuyển" link đúng `MY_APPLICATIONS`.
 
 ## 5. Việc còn lại / lưu ý
 
-- [ ] `payment-window-minutes` đang `2` cho test — **nhớ đổi 1440 trước khi demo/production**.
+- [x] `payment-window-minutes` đã đổi `1440` (24h) — 15/11/2026.
 - [ ] W2 refund phụ thuộc `RefundService.refundCommission` (module payment) — cần xác nhận refund chạy đúng khi scheduler gọi.
 - [ ] `payCommission` nên siết chỉ cho pay khi `ACCEPTED` (hiện có thể nhận `FINISHED` — việc của module payment).
 - [ ] `existsByPostIdAndStudentId/TutorId` đang chặn apply lại kể cả đơn `CANCELLED/REJECTED` — cân nhắc nới chỉ tính đơn "sống".
@@ -92,7 +98,7 @@ Files sửa (code cũ được comment `[OLD]`, code mới `[NEW]` bên dưới)
 ## 6. Cách test nhanh
 
 1. Student đăng bài `FIND_TUTOR` → tutor apply → student select.
-2. Post chuyển `PENDING`; tutor thấy offer + countdown W1 (2 phút nếu config test).
+2. Post chuyển `PENDING`; tutor thấy offer + countdown W1 (24h).
 3. Tutor trả phí → `transactionStatus=SUCCESS`; đơn hiện countdown W2 (24h).
 4. **Student KHÔNG confirm** (vì FIND_TUTOR thì tutor applicant confirm) — tutor bấm "Xác nhận" → `CONFIRMED`, post `CLOSED`.
 5. Với `FIND_STUDENT`: student applicant mới là người confirm.

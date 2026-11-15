@@ -126,7 +126,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         Application saved = applicationRepository.save(application);
         systemLogPublisher.success(userId, SystemAction.APPLICATION_CREATED,
                 Application.class.getSimpleName(), saved.getId(),
-                Map.of("postId", post.getId().toString(), "proposedFee", saved.getProposedFee().toString(), "applicant", applicant));
+                Map.of("postId", post.getId().toString(), "proposedFee", String.valueOf(saved.getProposedFee()), "applicant", applicant));
         // Đã sửa
         return applicationMapper.toApplicationResponse(saved);
     }
