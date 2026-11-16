@@ -15,7 +15,7 @@ import org.mapstruct.ReportingPolicy;
 import java.util.UUID;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, unmappedSourcePolicy = ReportingPolicy.IGNORE)
-public interface PostMapper {
+public abstract class PostMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "author", source = "user")
     @Mapping(target = "subject", source = "subject")
@@ -23,23 +23,38 @@ public interface PostMapper {
     @Mapping(target = "status", source = "request.status")
     @Mapping(target = "applications", ignore = true)
     @Mapping(target = "removalReason", ignore = true)
-    Post toPost(
+    public abstract Post toPost(
             UUID id,
             User user,
             Subject subject,
             CreatePostRequest request
     );
 
-    Address toAddress(AddressRequest request);
+    public abstract Address toAddress(AddressRequest request);
 
-    SubjectSummaryResponse toSubjectSummaryResponse(Subject subject);
+    public abstract SubjectSummaryResponse toSubjectSummaryResponse(Subject subject);
     
     @Mapping(target = "author.id", source = "post.author.id")
     @Mapping(target = "author.email", source = "post.author.email")
     @Mapping(target = "author.fullName", source = "post.author.fullName")
     @Mapping(target = "author.avatarUrl", source = "post.author.avatarUrl")
     @Mapping(target = "author.role", source = "post.author.role.name")
-    PostResponse toPostResponse(Post post);
+    @Mapping(target = "applicationCount", ignore = true)
+    public abstract PostResponse toPostResponse(Post post);
+    
+    @AfterMapping
+    protected void fillApplicationCount(Post post, @MappingTarget PostResponse response) {
+        try {
+            if (post != null && post.getApplications() != null) {
+                response.setApplicationCount(post.getApplications().size());
+            } else {
+                response.setApplicationCount(0);
+            }
+        } catch (Exception e) {
+            // Fallback nếu lazy loading fails
+            response.setApplicationCount(0);
+        }
+    }
 
     @BeanMapping(
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
@@ -50,7 +65,7 @@ public interface PostMapper {
     @Mapping(target = "applications", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    void updatePostFromRequest(
+    public abstract void updatePostFromRequest(
             @MappingTarget Post post,
             UpdatePostRequest request
     );
