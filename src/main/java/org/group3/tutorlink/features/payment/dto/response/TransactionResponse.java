@@ -40,6 +40,9 @@ public class TransactionResponse {
 
     @Schema(description = "Mã gia sư sở hữu ví.")
     private UUID tutorId;
+    
+    @Schema(description = "Tên gia sư sở hữu ví.")
+    private String tutorName;
 
     @Schema(description = "Mã đơn ứng tuyển, chỉ có ở giao dịch phí nhận lớp.")
     private UUID applicationId;
@@ -58,4 +61,13 @@ public class TransactionResponse {
 
     @Schema(description = "Liên kết mở trực tiếp ứng dụng MoMo.")
     private String deeplink;
+
+    @Schema(description = "Số tài khoản ngân hàng, chỉ có ở giao dịch rút tiền.")
+    private String bankAccountNumber;
+
+    @Schema(description = "Tên ngân hàng, chỉ có ở giao dịch rút tiền.")
+    private String bankName;
+
+    @Schema(description = "Tên chủ tài khoản ngân hàng, chỉ có ở giao dịch rút tiền.")
+    private String accountHolderName;
 }

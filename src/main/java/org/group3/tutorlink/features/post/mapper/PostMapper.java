@@ -10,10 +10,11 @@ import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.user.entity.User;
 import org.mapstruct.*;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.UUID;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface PostMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "author", source = "user")
@@ -21,6 +22,7 @@ public interface PostMapper {
     @Mapping(target = "address", source = "request.address")
     @Mapping(target = "status", source = "request.status")
     @Mapping(target = "applications", ignore = true)
+    @Mapping(target = "removalReason", ignore = true)
     Post toPost(
             UUID id,
             User user,
@@ -31,6 +33,7 @@ public interface PostMapper {
     Address toAddress(AddressRequest request);
 
     SubjectSummaryResponse toSubjectSummaryResponse(Subject subject);
+    
     @Mapping(target = "author.id", source = "post.author.id")
     @Mapping(target = "author.email", source = "post.author.email")
     @Mapping(target = "author.fullName", source = "post.author.fullName")

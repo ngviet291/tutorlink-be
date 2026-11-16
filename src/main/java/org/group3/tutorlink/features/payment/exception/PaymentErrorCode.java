@@ -28,6 +28,9 @@ public enum PaymentErrorCode implements BaseErrorCode {
     GATEWAY_ERROR("PAYMENT_502", "Payment gateway is unavailable or rejected the request, please try again later!", HttpStatus.BAD_GATEWAY),
     INVALID_DATE_RANGE("PAYMENT_400", "Both 'from' and 'to' are required (yyyy-MM-dd) and 'from' must not be after 'to'!", HttpStatus.BAD_REQUEST),
     FEE_CONFIG_NOT_FOUND("PAYMENT_404", "Fee configuration not found!", HttpStatus.NOT_FOUND),
+    WITHDRAW_AMOUNT_TOO_LOW("PAYMENT_400", "Minimum withdrawal amount is 10,000 VND!", HttpStatus.BAD_REQUEST),
+    INSUFFICIENT_BALANCE_FOR_WITHDRAWAL("PAYMENT_400", "Wallet balance is not enough for withdrawal!", HttpStatus.BAD_REQUEST),
+    WITHDRAW_NOT_PENDING("PAYMENT_409", "Only pending withdrawal can be processed!", HttpStatus.CONFLICT),
     FEE_CONFIG_OVERLAPPING("PAYMENT_409", "Fee configuration period overlaps with an existing configuration!", HttpStatus.CONFLICT);
 
     private final String code;

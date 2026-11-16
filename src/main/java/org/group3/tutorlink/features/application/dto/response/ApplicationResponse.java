@@ -55,5 +55,8 @@ public class ApplicationResponse {
     private UUID transactionId;
 
     private String transactionStatus;
+    
+    private Boolean paid;
+    
     private BigDecimal proposedFee;
 }

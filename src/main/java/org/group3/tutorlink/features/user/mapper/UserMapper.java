@@ -18,21 +18,49 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.SubclassMapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "userStatus", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "avatarUrl", ignore = true)
+    @Mapping(target = "notifications", ignore = true)
+    @Mapping(target = "media", ignore = true)
+    @Mapping(target = "posts", ignore = true)
+    @Mapping(target = "sentChannels", ignore = true)
+    @Mapping(target = "receivedChannels", ignore = true)
+    @Mapping(target = "reviews", ignore = true)
+    @Mapping(target = "applications", ignore = true)
+    @Mapping(target = "learningGoal", ignore = true)
+    @Mapping(target = "grade", ignore = true)
     Student toStudent(RegisterStudentRequest request);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "userStatus", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "avatarUrl", ignore = true)
+    @Mapping(target = "notifications", ignore = true)
+    @Mapping(target = "media", ignore = true)
+    @Mapping(target = "posts", ignore = true)
+    @Mapping(target = "sentChannels", ignore = true)
+    @Mapping(target = "receivedChannels", ignore = true)
+    @Mapping(target = "bio", ignore = true)
+    @Mapping(target = "hourlyRate", ignore = true)
+    @Mapping(target = "teachingLevels", ignore = true)
+    @Mapping(target = "teachingMode", ignore = true)
+    @Mapping(target = "availableSlots", ignore = true)
+    @Mapping(target = "teachingAreas", ignore = true)
+    @Mapping(target = "certificates", ignore = true)
     @Mapping(target = "subjects", ignore = true)
     @Mapping(target = "averageRating", ignore = true)
     @Mapping(target = "verificationStatus", ignore = true)
@@ -55,5 +83,17 @@ public interface UserMapper {
     BaseUserResponse toBaseUserResponse(User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "userStatus", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "notifications", ignore = true)
+    @Mapping(target = "media", ignore = true)
+    @Mapping(target = "posts", ignore = true)
+    @Mapping(target = "sentChannels", ignore = true)
+    @Mapping(target = "receivedChannels", ignore = true)
     void updateUserFromRequest(@MappingTarget User user, UpdateProfileRequest request);
 }

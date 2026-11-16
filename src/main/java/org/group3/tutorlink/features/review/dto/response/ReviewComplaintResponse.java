@@ -14,5 +14,6 @@ public class ReviewComplaintResponse {
     ComplaintStatus status;
     UUID reviewId;
     UUID tutorId;
+    String tutorName;
     UUID adminId;
 }

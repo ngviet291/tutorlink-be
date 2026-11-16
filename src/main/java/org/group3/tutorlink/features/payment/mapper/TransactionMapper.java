@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 public interface TransactionMapper {
 
     @Mapping(source = "tutor.id", target = "tutorId")
+    @Mapping(source = "tutor.fullName", target = "tutorName")
     @Mapping(source = "application.id", target = "applicationId")
     // Liên kết thanh toán được bổ sung từ kết quả của cổng, không lưu trong thực thể.
     @Mapping(target = "paymentLink", ignore = true)

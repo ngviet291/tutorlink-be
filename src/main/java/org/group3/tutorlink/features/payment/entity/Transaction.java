@@ -57,4 +57,9 @@ public class Transaction extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "application_id", unique = true)
     private Application application;
+
+    // Thông tin rút tiền (chỉ áp dụng cho type = WITHDRAW)
+    private String bankAccountNumber;
+    private String bankName;
+    private String accountHolderName;
 }

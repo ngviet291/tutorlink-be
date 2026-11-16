@@ -20,7 +20,12 @@ public interface PaymentService {
 
     CursorResponse<TransactionResponse> getMyTransactions(UUID cursor, int limit);
 
-    CursorResponse<TransactionResponse> getAllTransactions(TransactionStatus status, UUID cursor, int limit);
+    CursorResponse<TransactionResponse> getAllTransactions(
+            TransactionStatus status,
+            org.group3.tutorlink.features.payment.enums.TransactionType type,
+            UUID cursor,
+            int limit
+    );
 
     TransactionResponse getTransactionDetail(UUID transactionId);
 
@@ -37,5 +42,15 @@ public interface PaymentService {
 
     // Hỏi lại cổng về trạng thái giao dịch nạp tiền đang PENDING (Tutor sở hữu giao dịch)
     TransactionResponse syncTopUpStatus(UUID transactionId);
+    
     FeeQuoteResponse getFeeQuote(UUID applicationId);
+
+    // Rút tiền từ ví
+    TransactionResponse withdrawFromWallet(org.group3.tutorlink.features.payment.dto.request.WithdrawRequest request);
+
+    // Admin duyệt rút tiền
+    TransactionResponse approveWithdrawal(UUID transactionId);
+
+    // Admin từ chối rút tiền
+    TransactionResponse rejectWithdrawal(UUID transactionId);
 }

@@ -77,9 +77,14 @@ public class ReviewComplaintServiceImpl implements ReviewComplaintService {
     }
 
     private ReviewComplaintResponse toResponse(ReviewComplaint complaint) {
-        return ReviewComplaintResponse.builder().id(complaint.getId()).reason(complaint.getReason())
-                .status(complaint.getStatus()).reviewId(complaint.getReview().getId())
+        return ReviewComplaintResponse.builder()
+                .id(complaint.getId())
+                .reason(complaint.getReason())
+                .status(complaint.getStatus())
+                .reviewId(complaint.getReview().getId())
                 .tutorId(complaint.getTutor().getId())
-                .adminId(complaint.getAdmin() == null ? null : complaint.getAdmin().getId()).build();
+                .tutorName(complaint.getTutor().getFullName())
+                .adminId(complaint.getAdmin() == null ? null : complaint.getAdmin().getId())
+                .build();
     }
 }
