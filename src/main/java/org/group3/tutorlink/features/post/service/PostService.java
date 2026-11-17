@@ -67,6 +67,7 @@ public interface PostService {
 
     @Transactional(readOnly = true)
     CursorResponse<PostResponse> getAllPostsAdmin(
+            PostStatus status,
             String keyword,
             PostType type,
             String subjectName,

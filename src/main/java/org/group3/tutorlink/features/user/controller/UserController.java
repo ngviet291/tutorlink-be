@@ -16,7 +16,9 @@ import org.group3.tutorlink.features.user.enums.UserStatus;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.user.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -45,6 +47,17 @@ public class UserController {
                 .code(UserResponseCode.PROFILE_UPDATED.getCode())
                 .message(UserResponseCode.PROFILE_UPDATED.getMessage())
                 .data(userService.updateMyProfile(request))
+                .build();
+    }
+
+    // POST /v1/users/me/avatar — multipart, part "avatar"
+    @PostMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<BaseUserResponse> updateMyAvatar(
+            @RequestPart("avatar") MultipartFile avatar) {
+        return ApiResponse.<BaseUserResponse>builder()
+                .code(UserResponseCode.PROFILE_UPDATED.getCode())
+                .message(UserResponseCode.PROFILE_UPDATED.getMessage())
+                .data(userService.updateMyAvatar(avatar))
                 .build();
     }
 

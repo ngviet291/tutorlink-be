@@ -121,13 +121,6 @@ public class PostServiceImpl implements PostService {
     //     return postMapper.toPostResponse(post);
     // }
 
-    /**
-     * [NEW] Chi tiết bài đăng công khai — phân quyền theo status:
-     * PUBLISHED: public cho mọi người (kể cả anonymous).
-     * PENDING/CLOSED: chỉ author hoặc applicant (có đơn trên bài) xem được —
-     * họ cần thấy bài để thanh toán phí / xác nhận / kết nối lớp.
-     * DRAFT/REMOVED: 404 với non-author (author dùng /me).
-     */
     @Transactional(readOnly = true)
     @Override
     public PostResponse getPostById(UUID postId) {
@@ -145,9 +138,6 @@ public class PostServiceImpl implements PostService {
 
         throw new PostNotFoundException();
     }
-
-    // [NEW] Author hoặc bất kỳ ai có application trên bài (student/tutor,
-    // mọi status đơn) đều được xem post non-public.
     private boolean isPostParticipant(Post post, UUID userId) {
         if (post.getAuthor().getId().equals(userId)) {
             return true;
@@ -214,6 +204,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
     public CursorResponse<PostResponse> getAllPostsAdmin(
+            PostStatus status,
             String keyword,
             PostType type,
             String subjectName,
@@ -226,12 +217,9 @@ public class PostServiceImpl implements PostService {
     ) {
         Specification<Post> spec = Specification
                 .where(PostSpecification.keyword(keyword))
-                .and(PostSpecification.hasStatus(
-                        PostStatus.PUBLISHED,
-                        PostStatus.CLOSED,
-                        PostStatus.REMOVED,
-                        PostStatus.DRAFT
-                ))
+                .and(status != null
+                        ? PostSpecification.hasStatus(status)
+                        : PostSpecification.hasStatus(PostStatus.values()))
                 .and(PostSpecification.hasType(type))
                 .and(PostSpecification.hasSubject(subjectName))
                 .and(PostSpecification.hasTeachingMode(teachingMode))
