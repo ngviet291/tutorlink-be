@@ -95,7 +95,39 @@ Files sửa (code cũ được comment `[OLD]`, code mới `[NEW]` bên dưới)
 - [ ] `existsByPostIdAndStudentId/TutorId` đang chặn apply lại kể cả đơn `CANCELLED/REJECTED` — cân nhắc nới chỉ tính đơn "sống".
 - [ ] Post `PENDING`/`CLOSED` giờ participant xem được — nếu sau này muốn chặt hơn (chỉ applicant của đơn ACCEPTED trở lên) thì siết `existsParticipantByPostIdAndUserId` thêm filter status.
 
-## 6. Cách test nhanh
+## 6. Cập nhật 17/11/2026 — paidAt, thông báo nhắc thanh toán, fix lỗi liên quan
+
+### 6.1. `ApplicationResponse.paidAt` (BE + FE)
+
+- `ApplicationResponse` thêm `Instant paidAt` — thời điểm thanh toán thành công.
+- `ApplicationMapper`: `paidAt = transaction.transactionDate` khi `transaction.status = SUCCESS`, ngược lại `null`.
+- FE `application.types.ts` / `application.dto.ts` / `application.service.ts build()` truyền `selectedAt` + `paidAt` xuống `ApplicationResponse`.
+
+### 6.2. Thông báo nhắc thanh toán gửi đúng người (`ApplicationServiceImpl.selectApplication`)
+
+Trước đây mọi đơn `ACCEPTED` đều bắn notification "vui lòng thanh toán" cho applicant — sai với `FIND_STUDENT` (student apply, tutor là chủ bài và là người trả phí).
+
+| Post type | Người trả phí | Notification |
+| --- | --- | --- |
+| `FIND_TUTOR` (student đăng, tutor apply) | Tutor applicant | Applicant nhận "vui lòng thanh toán phí trong thời hạn quy định" |
+| `FIND_STUDENT` (tutor đăng, student apply) | Tutor = post author | Post author nhận nhắc trả phí; student applicant nhận "chờ gia sư thanh toán" |
+
+### 6.3. Fix 500 khi tutor apply (`ChatService.createChannel`)
+
+- **Bug**: `selectApplication`/payment flow tạo chat channel; nếu channel đã tồn tại → `DataIntegrityViolationException` mark transaction rollback-only → commit ném `UnexpectedRollbackException` → **500**, thanh toán fail riêng với case tutor apply (`FIND_TUTOR`).
+- **Fix**: `createChannel` check `chatChannelRepository.findBetween(sender, receiver)` trước — có rồi trả về luôn; giữ nguyên `try/catch DataIntegrityViolationException` làm dự phòng.
+
+### 6.4. Fix 500 `/v1/notifications/unread-count` (lỗi ngắt quãng)
+
+- **Bug**: derived query `countByIsReadFalseAndRecipient(UUID)` bind UUID vào association `User` → `IllegalArgumentException` → 500, gây "An unexpected error occurred" ngắt quãng trên FE.
+- **Fix**: đổi thành `countByIsReadFalseAndRecipient_Id(UUID)` trong `NotificationRepository` + caller `NotificationServiceImpl`.
+
+### 6.5. FE liên quan
+
+- `ApplicantRow.tsx`: countdown label phân biệt người trả — `FIND_TUTOR` hiển thị "gia sư thanh toán" thay "thanh toán".
+- `application.service.ts`: thêm `getApplicationById(id)` (dùng cho admin complaint modal).
+
+## 7. Cách test nhanh
 
 1. Student đăng bài `FIND_TUTOR` → tutor apply → student select.
 2. Post chuyển `PENDING`; tutor thấy offer + countdown W1 (24h).

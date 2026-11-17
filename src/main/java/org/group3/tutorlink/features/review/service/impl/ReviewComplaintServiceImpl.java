@@ -44,6 +44,10 @@ public class ReviewComplaintServiceImpl implements ReviewComplaintService {
         if (!review.getTutor().getId().equals(tutor.getId())) {
             throw new org.group3.tutorlink.features.review.exception.ReviewAccessDeniedException();
         }
+        // Mỗi review chỉ 1 khiếu nại — chặn spam
+        if (complaintRepository.existsByReview_Id(review.getId())) {
+            throw new org.group3.tutorlink.features.review.exception.ReviewAlreadyExistsException();
+        }
         ReviewComplaint complaint = ReviewComplaint.builder()
                 .id(appUtil.generateUUID()).reason(request.getReason().trim())
                 .status(ComplaintStatus.PENDING).review(review).tutor(tutor).build();
@@ -79,7 +83,9 @@ public class ReviewComplaintServiceImpl implements ReviewComplaintService {
     private ReviewComplaintResponse toResponse(ReviewComplaint complaint) {
         return ReviewComplaintResponse.builder().id(complaint.getId()).reason(complaint.getReason())
                 .status(complaint.getStatus()).reviewId(complaint.getReview().getId())
+                .applicationId(complaint.getReview().getApplication().getId())
                 .tutorId(complaint.getTutor().getId())
-                .adminId(complaint.getAdmin() == null ? null : complaint.getAdmin().getId()).build();
+                .adminId(complaint.getAdmin() == null ? null : complaint.getAdmin().getId())
+                .createdAt(complaint.getCreatedAt()).build();
     }
 }

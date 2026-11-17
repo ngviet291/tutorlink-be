@@ -40,4 +40,8 @@ public class Review extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "application_id", nullable = false, unique = true)
     private Application application;
+
+    // Trạng thái khiếu nại (nếu có) — fill thủ công trong service, không map DB
+    @Transient
+    private String complaintStatus;
 }

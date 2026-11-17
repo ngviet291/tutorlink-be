@@ -55,5 +55,7 @@ public class ApplicationResponse {
     private UUID transactionId;
 
     private String transactionStatus;
+    // Thoi diem thanh toan thanh cong (transaction SUCCESS); null neu chua tra
+    private Instant paidAt;
     private BigDecimal proposedFee;
 }

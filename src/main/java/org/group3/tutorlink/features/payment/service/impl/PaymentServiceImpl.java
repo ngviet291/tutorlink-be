@@ -35,6 +35,7 @@ import org.group3.tutorlink.features.payment.repository.RevenueStatisticsRow;
 import org.group3.tutorlink.features.payment.repository.WalletRepository;
 import org.group3.tutorlink.features.payment.service.PaymentService;
 import org.group3.tutorlink.features.post.entity.Post;
+import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.repository.AdminRepository;
@@ -73,6 +74,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Value("${payment.commission-rate:0.20}")
     private BigDecimal commissionRate;
+
+    // [APPLICATION-EXPIRY] Cửa sổ chờ thanh toán (W1) — phải khớp
+    // ApplicationExpiryScheduler/ApplicationMapper (module application).
+    // Quá hạn này đơn sẽ bị scheduler CANCELLED, không nhận thanh toán nữa.
+    @Value("${application.expiry.payment-window-minutes:1440}")
+    private long paymentWindowMinutes;
 
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
@@ -233,9 +240,24 @@ public class PaymentServiceImpl implements PaymentService {
             throw new AppException(PaymentErrorCode.NOT_APPLICATION_TUTOR);
         }
 
+        // [APPLICATION-EXPIRY] Siết điều kiện trả phí — file thuộc module payment,
+        // sửa theo yêu cầu của luồng expiry đơn ứng tuyển (module application).
+        // Chỉ đơn ACCEPTED đang chờ thanh toán/xác nhận (post PENDING) mới được trả phí.
+        // FINISHED/CONFIRMED/CANCELLED... không còn payable; đơn quá payment-window cũng chặn
+        // (scheduler có thể chưa kịp chạy nhưng đơn đã chết).
         ApplicationStatus applicationStatus = application.getApplicationStatus();
-        if (applicationStatus != ApplicationStatus.ACCEPTED
-                && applicationStatus != ApplicationStatus.FINISHED) {
+        if (applicationStatus != ApplicationStatus.ACCEPTED) {
+            throw new AppException(PaymentErrorCode.APPLICATION_NOT_PAYABLE);
+        }
+        Post post = application.getPost();
+        if (post == null || post.getStatus() != PostStatus.PENDING) {
+            throw new AppException(PaymentErrorCode.APPLICATION_NOT_PAYABLE);
+        }
+        Transaction existing = transactionRepository.findByApplicationId(applicationId).orElse(null);
+        boolean alreadyPaid = existing != null && existing.getStatus() == TransactionStatus.SUCCESS;
+        if (!alreadyPaid && application.getSelectedAt() != null
+                && application.getSelectedAt().plus(paymentWindowMinutes, ChronoUnit.MINUTES)
+                        .isBefore(Instant.now())) {
             throw new AppException(PaymentErrorCode.APPLICATION_NOT_PAYABLE);
         }
 
