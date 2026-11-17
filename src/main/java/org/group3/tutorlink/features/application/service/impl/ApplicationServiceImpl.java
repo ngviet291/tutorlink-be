@@ -21,6 +21,7 @@ import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.notification.enums.NotificationType;
 import org.group3.tutorlink.features.notification.service.NotificationCreator;
 import org.group3.tutorlink.features.payment.enums.TransactionStatus;
+import org.group3.tutorlink.features.payment.service.RefundService;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
@@ -57,6 +58,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final SystemLogPublisher systemLogPublisher;
     private final ApplicationEventPublisher eventPublisher;
     private final NotificationCreator notificationCreator;
+    private final RefundService refundService;
 
     private static final String NOTI_APPLICATION_CREATED_TITLE = "Bạn có đơn ứng tuyển mới";
     private static final String NOTI_APPLICATION_SELECTED_TITLE = "Bạn được chọn nhận lớp";
@@ -262,9 +264,22 @@ public class ApplicationServiceImpl implements ApplicationService {
         Application saved = applicationRepository.save(application);
 
         User applicant = applicantOf(saved);
-        notifyUser(applicant, NotificationType.APPLICATION,
-                NOTI_APPLICATION_SELECTED_TITLE,
-                String.format("Bạn được chọn cho bài \"%s\". Vui lòng thanh toán phí trong thời hạn quy định.", post.getTitle()));
+        // [PAYMENT-NOTI] Phí luôn do gia sư trả — chỉ nhắc người trả phí, không báo nhầm student.
+        // FIND_TUTOR: gia sư là ứng viên (applicant) -> nhắc applicant thanh toán như cũ.
+        // FIND_STUDENT: gia sư là chủ bài -> nhắc chủ bài thanh toán, báo học viên đang chờ.
+        if (post.getType() == PostType.FIND_STUDENT) {
+            notifyUser(post.getAuthor(), NotificationType.APPLICATION,
+                    NOTI_APPLICATION_SELECTED_TITLE,
+                    String.format("Bạn đã chọn %s cho bài \"%s\". Vui lòng thanh toán phí trong thời hạn quy định.",
+                            applicantName(saved), post.getTitle()));
+            notifyUser(applicant, NotificationType.APPLICATION,
+                    NOTI_APPLICATION_SELECTED_TITLE,
+                    String.format("Bạn được chọn cho bài \"%s\". Vui lòng chờ gia sư thanh toán phí.", post.getTitle()));
+        } else {
+            notifyUser(applicant, NotificationType.APPLICATION,
+                    NOTI_APPLICATION_SELECTED_TITLE,
+                    String.format("Bạn được chọn cho bài \"%s\". Vui lòng thanh toán phí trong thời hạn quy định.", post.getTitle()));
+        }
         for (Application rejected : rejectedOthers) {
             notifyUser(applicantOf(rejected), NotificationType.APPLICATION,
                     NOTI_APPLICATION_REJECTED_TITLE,
@@ -308,6 +323,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         Post post = application.getPost();
 
         if (application.getApplicationStatus() != ApplicationStatus.ACCEPTED) {
+            throw new AppException(ErrorCodeApplication.INVALID_APPLICATION_STATUS);
+        }
+
+        if (post.getStatus() != PostStatus.PENDING) {
             throw new AppException(ErrorCodeApplication.INVALID_APPLICATION_STATUS);
         }
 
@@ -366,8 +385,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         application.setApplicationStatus(ApplicationStatus.PENDING);
         application.setSelectedAt(null);
-        post.setStatus(PostStatus.PUBLISHED);
-        restoreRejectedApplications(post);
+        revertPostToPublished(post);
 
         Application saved = applicationRepository.save(application);
         notifyUser(applicantOf(saved), NotificationType.APPLICATION,
@@ -392,8 +410,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         if (!isParticipant || !isStudentOrTutor) {
             throw new ApplicationNotAllowedException();
         }
-        if (application.getApplicationStatus() != ApplicationStatus.CONFIRMED
-                && application.getApplicationStatus() != ApplicationStatus.FINISHED) {
+        // Chỉ CONFIRMED -> FINISHED; chặn re-finish để không gửi notification lặp
+        if (application.getApplicationStatus() != ApplicationStatus.CONFIRMED) {
             throw new ApplicationInvalidStatusException();
         }
         application.setApplicationStatus(ApplicationStatus.FINISHED);
@@ -454,10 +472,12 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         if (currentStatus == ApplicationStatus.ACCEPTED) {
             application.setSelectedAt(null);
-            if (post != null) {
-                post.setStatus(PostStatus.PUBLISHED);
-                restoreRejectedApplications(post);
+            // Đã trả phí mà applicant hủy -> hoàn lại commission cho tutor
+            if (application.getTransaction() != null
+                    && application.getTransaction().getStatus() == TransactionStatus.SUCCESS) {
+                refundService.refundCommission(application);
             }
+            revertPostToPublished(post);
         }
 
         Application saved = applicationRepository.save(application);
@@ -484,6 +504,15 @@ public class ApplicationServiceImpl implements ApplicationService {
     private void notifyUser(User recipient, NotificationType type, String title, String content) {
         if (recipient != null) {
             notificationCreator.createNotification(recipient.getId(), type, title, content);
+        }
+    }
+
+    // Chỉ mở lại bài khi bài đang PENDING (đang chờ thanh toán/xác nhận).
+    // Post CLOSED/REMOVED không được hồi sinh về PUBLISHED.
+    private void revertPostToPublished(Post post) {
+        if (post != null && post.getStatus() == PostStatus.PENDING) {
+            post.setStatus(PostStatus.PUBLISHED);
+            restoreRejectedApplications(post);
         }
     }
 

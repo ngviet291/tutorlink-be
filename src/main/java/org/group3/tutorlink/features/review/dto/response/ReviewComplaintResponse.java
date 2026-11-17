@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Value;
 import org.group3.tutorlink.features.review.enums.ComplaintStatus;
 
+import java.time.Instant;
+
 import java.util.UUID;
 
 @Value
@@ -13,6 +15,8 @@ public class ReviewComplaintResponse {
     String reason;
     ComplaintStatus status;
     UUID reviewId;
+    UUID applicationId;
     UUID tutorId;
     UUID adminId;
+    Instant createdAt;
 }

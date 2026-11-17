@@ -10,5 +10,7 @@ public interface ReviewMapper {
     @Mapping(target = "applicationId", source = "application.id")
     @Mapping(target = "studentId", source = "student.id")
     @Mapping(target = "tutorId", source = "tutor.id")
+    @Mapping(target = "studentName", source = "student.fullName")
+    @Mapping(target = "tutorName", source = "tutor.fullName")
     ReviewResponse toResponse(Review review);
 }
