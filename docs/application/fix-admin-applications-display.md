@@ -1,14 +1,5 @@
 # Fix: Hiển thị danh sách ứng tuyển trong trang Admin - Complete Guide
 
-## 📋 Tổng quan
-
-Tài liệu này gộp 3 phần:
-1. **Version 1**: Thêm field `applicationCount` và cải thiện UI modal
-2. **Version 2**: Fix LAZY loading để count đúng số lượng
-3. **Debug Guide**: Hướng dẫn debug khi gặp vấn đề
-
----
-
 # Part 1: Thêm Application Count và Cải thiện Modal
 
 ## Vấn đề ban đầu
