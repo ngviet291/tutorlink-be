@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.features.notification.dto.response.NotificationResponse;
 import org.group3.tutorlink.features.notification.entity.Notification;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
 import org.group3.tutorlink.features.notification.enums.NotificationType;
 import org.group3.tutorlink.features.notification.event.NotificationCreated;
 import org.group3.tutorlink.features.notification.mapper.NotificationMapper;
@@ -35,6 +36,18 @@ public class NotificationCreatorImpl implements NotificationCreator {
             NotificationType notificationType,
             String title,
             String content) {
+        return createNotification(recipientId, notificationType, title, content, null, null);
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    @Override
+    public NotificationResponse createNotification(
+            UUID recipientId,
+            NotificationType notificationType,
+            String title,
+            String content,
+            NotificationTarget targetType,
+            UUID targetId) {
 
         User recipient = entityManager.getReference(User.class, recipientId);
 
@@ -44,6 +57,8 @@ public class NotificationCreatorImpl implements NotificationCreator {
                 .notificationType(notificationType)
                 .title(title)
                 .content(content)
+                .targetType(targetType)
+                .targetId(targetId)
                 .build();
 
         Notification saved = notificationRepository.save(notification);

@@ -16,6 +16,7 @@ import org.group3.tutorlink.features.chat.entity.Message;
 import org.group3.tutorlink.features.chat.enums.MediaType;
 import org.group3.tutorlink.features.favorite.entity.Favorite;
 import org.group3.tutorlink.features.notification.entity.Notification;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
 import org.group3.tutorlink.features.notification.enums.NotificationType;
 import org.group3.tutorlink.features.payment.entity.MatchingFeeConfig;
 import org.group3.tutorlink.features.payment.entity.RevenueReport;
@@ -290,6 +291,8 @@ public class InitData implements CommandLineRunner {
         for (JsonNode n : root.get("notifications")) {
             persist("notifications", n, Notification.builder().id(id(n, "id")).title(s(n, "title")).content(s(n, "content"))
                     .notificationType(NotificationType.valueOf(s(n, "notificationType"))).isRead(n.get("isRead").asBoolean())
+                    .targetType(absent(n, "targetType") ? null : NotificationTarget.valueOf(s(n, "targetType")))
+                    .targetId(id(n, "targetId"))
                     .recipient(users.get(id(n, "recipientId"))).build());
         }
         for (JsonNode n : root.get("revenueReports")) {
