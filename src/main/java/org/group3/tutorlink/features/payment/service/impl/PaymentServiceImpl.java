@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.exception.AppException;
+import org.group3.tutorlink.common.utils.AfterCommit;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
+import org.group3.tutorlink.features.application.scheduler.ApplicationExpiryQueue;
 import org.group3.tutorlink.features.payment.dto.request.CreateFeeConfigRequest;
 import org.group3.tutorlink.features.payment.dto.request.TopUpRequest;
 import org.group3.tutorlink.features.payment.dto.response.*;
@@ -81,6 +83,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Value("${application.expiry.payment-window-minutes:1440}")
     private long paymentWindowMinutes;
 
+    // [APPLICATION-EXPIRY] Cửa sổ chờ applicant xác nhận (W2) — phải khớp
+    // ApplicationExpiryService/ApplicationMapper (module application).
+    @Value("${application.expiry.confirm-window-minutes:1440}")
+    private long confirmWindowMinutes;
+
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
     private final TutorRepository tutorRepository;
@@ -94,6 +101,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final List<PaymentGateway> paymentGateways;
     private final AppUtil appUtil;
     private final org.group3.tutorlink.features.chat.service.ChatService chatService;
+    private final ApplicationExpiryQueue expiryQueue;
+    private final AfterCommit afterCommit;
 
     @Override
     @Transactional
@@ -299,9 +308,32 @@ public class PaymentServiceImpl implements PaymentService {
         transaction.setStatus(TransactionStatus.SUCCESS);
         Transaction saved = transactionRepository.save(transaction);
 
+        scheduleConfirmExpiry(application, saved);
+
         createChatChannelForApplication(application);
 
         return transactionMapper.toTransactionResponse(saved);
+    }
+
+    /**
+     * [APPLICATION-EXPIRY] Thanh toán thành công -> hủy lịch W1 (chờ thanh toán),
+     * đặt lịch W2 (chờ applicant xác nhận) sau khi commit.
+     * Lỗi Redis không làm fail request — reconciler sẽ vớt lại.
+     */
+    private void scheduleConfirmExpiry(Application application, Transaction transaction) {
+        UUID applicationId = application.getId();
+        Instant paidAt = transaction.getTransactionDate() != null
+                ? transaction.getTransactionDate()
+                : Instant.now();
+        Instant expireAt = paidAt.plus(confirmWindowMinutes, ChronoUnit.MINUTES);
+        afterCommit.run(() -> {
+            try {
+                expiryQueue.cancel(ApplicationExpiryQueue.Stage.PAYMENT, applicationId);
+                expiryQueue.schedule(ApplicationExpiryQueue.Stage.CONFIRM, applicationId, expireAt);
+            } catch (Exception e) {
+                log.warn("Failed to schedule confirm expiry for application {}", applicationId, e);
+            }
+        });
     }
 
     @Override

@@ -1,8 +1,10 @@
 package org.group3.tutorlink.features.application.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.logging.SystemLogPublisher;
+import org.group3.tutorlink.common.utils.AfterCommit;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.features.application.dto.request.CreateApplicationRequest;
@@ -16,6 +18,7 @@ import org.group3.tutorlink.features.application.exception.ApplicationNotAllowed
 import org.group3.tutorlink.features.application.exception.ErrorCodeApplication;
 import org.group3.tutorlink.features.application.mapper.ApplicationMapper;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
+import org.group3.tutorlink.features.application.scheduler.ApplicationExpiryQueue;
 import org.group3.tutorlink.features.application.service.ApplicationService;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.notification.enums.NotificationTarget;
@@ -32,6 +35,7 @@ import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,10 +45,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -58,6 +64,11 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final SystemLogPublisher systemLogPublisher;
     private final ApplicationEventPublisher eventPublisher;
     private final NotificationCreator notificationCreator;
+    private final ApplicationExpiryQueue expiryQueue;
+    private final AfterCommit afterCommit;
+
+    @Value("${application.expiry.payment-window-minutes:1440}")
+    private long paymentWindowMinutes;
 
     private static final String NOTI_APPLICATION_CREATED_TITLE = "Bạn có đơn ứng tuyển mới";
     private static final String NOTI_APPLICATION_SELECTED_TITLE = "Bạn được chọn nhận lớp";
@@ -262,6 +273,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         post.setStatus(PostStatus.PENDING);
 
         Application saved = applicationRepository.save(application);
+        schedulePaymentExpiry(saved);
 
         User applicant = applicantOf(saved);
         notifyUser(applicant, NotificationType.APPLICATION,
@@ -338,6 +350,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         post.setStatus(PostStatus.CLOSED);
 
         Application saved = applicationRepository.save(application);
+        cancelExpiry(saved);
         notifyUser(post.getAuthor(), NotificationType.APPLICATION,
                 NOTI_APPLICATION_CONFIRMED_TITLE,
                 String.format("%s đã xác nhận lớp học cho bài \"%s\".", applicantName(saved), post.getTitle()),
@@ -376,6 +389,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         restoreRejectedApplications(post);
 
         Application saved = applicationRepository.save(application);
+        cancelExpiry(saved);
         notifyUser(applicantOf(saved), NotificationType.APPLICATION,
                 NOTI_APPLICATION_UNSELECTED_TITLE,
                 String.format("Chủ bài đã bỏ chọn bạn cho bài \"%s\". Đơn quay về trạng thái chờ xử lý.", post.getTitle()),
@@ -473,11 +487,50 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         Application saved = applicationRepository.save(application);
+        if (currentStatus == ApplicationStatus.ACCEPTED) {
+            cancelExpiry(saved);
+        }
         notifyUser(post.getAuthor(), NotificationType.APPLICATION,
                 NOTI_APPLICATION_CANCELLED_TITLE,
                 String.format("%s đã hủy đơn ứng tuyển vào bài \"%s\".", applicantName(saved), post.getTitle()),
                 NotificationTarget.POST, post.getId());
         return applicationMapper.toApplicationResponse(saved);
+    }
+
+    /**
+     * Đặt lịch hết hạn W1 (chờ thanh toán) vào Redis sau khi commit.
+     * Lỗi Redis không làm fail request — reconciler sẽ vớt lại.
+     */
+    private void schedulePaymentExpiry(Application application) {
+        UUID id = application.getId();
+        Instant selectedAt = application.getSelectedAt();
+        if (id == null || selectedAt == null) {
+            return;
+        }
+        Instant expireAt = selectedAt.plus(paymentWindowMinutes, ChronoUnit.MINUTES);
+        afterCommit.run(() -> {
+            try {
+                expiryQueue.schedule(ApplicationExpiryQueue.Stage.PAYMENT, id, expireAt);
+            } catch (Exception e) {
+                log.warn("Failed to schedule payment expiry for application {}", id, e);
+            }
+        });
+    }
+
+    /** Hủy mọi lịch hết hạn của đơn (PAYMENT + CONFIRM) sau khi commit. */
+    private void cancelExpiry(Application application) {
+        UUID id = application.getId();
+        if (id == null) {
+            return;
+        }
+        afterCommit.run(() -> {
+            try {
+                expiryQueue.cancel(ApplicationExpiryQueue.Stage.PAYMENT, id);
+                expiryQueue.cancel(ApplicationExpiryQueue.Stage.CONFIRM, id);
+            } catch (Exception e) {
+                log.warn("Failed to cancel expiry for application {}", id, e);
+            }
+        });
     }
 
     /** Người apply: FIND_TUTOR → tutor, FIND_STUDENT → student. */

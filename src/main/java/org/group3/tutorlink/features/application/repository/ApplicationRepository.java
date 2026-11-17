@@ -283,4 +283,12 @@ public interface ApplicationRepository
             @Param("successStatus") TransactionStatus successStatus,
             @Param("cutoff") Instant cutoff
     );
+
+    // Backfill Redis expiry queue: nạp các đơn ACCEPTED đang tồn tại
+    @Query("""
+            SELECT a FROM Application a
+            LEFT JOIN FETCH a.transaction t
+            WHERE a.applicationStatus = :status
+            """)
+    List<Application> findAllByApplicationStatus(@Param("status") ApplicationStatus status);
 }
