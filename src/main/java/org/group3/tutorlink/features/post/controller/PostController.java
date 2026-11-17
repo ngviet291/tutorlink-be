@@ -93,6 +93,7 @@ public class PostController {
 
     @GetMapping("/admin")
     public ApiResponse<CursorResponse<PostResponse>> getAllPostsAdmin(
+            @RequestParam(required = false) PostStatus status,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) PostType type,
             @RequestParam(required = false) String subjectName,
@@ -107,7 +108,8 @@ public class PostController {
         return ApiResponse.<CursorResponse<PostResponse>>builder()
                 .code(PostResponseCode.GET_POSTS.getCode())
                 .message(PostResponseCode.GET_POSTS.getMessage())
-                .data(postService.getAllPostsAdmin(keyword,
+                .data(postService.getAllPostsAdmin(status,
+                        keyword,
                         type,
                         subjectName,
                         teachingMode,

@@ -3,6 +3,10 @@ package org.group3.tutorlink.features.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
+import org.group3.tutorlink.common.dto.response.UploadMediaResponse;
+import org.group3.tutorlink.common.enums.MediaType;
+import org.group3.tutorlink.common.exception.AppException;
+import org.group3.tutorlink.common.service.MediaStorageService;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
@@ -30,6 +34,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,6 +51,10 @@ public class UserService {
     private final AppUtil appUtil;
     private final TutorRepository tutorRepository;
     private final SubjectRepository subjectRepository;
+    private final MediaStorageService mediaStorageService;
+
+    private static final long MAX_AVATAR_BYTES = 5L * 1024 * 1024;
+    private static final String AVATAR_FOLDER = "avatars/";
 
     @Transactional(readOnly = true)
     public BaseUserResponse getMyProfile() {
@@ -62,6 +71,25 @@ public class UserService {
         return userMapper.toBaseUserResponse(userRepository.save(user));
     }
     
+    /** Đổi ảnh đại diện của người dùng hiện tại (mọi role). */
+    @Transactional
+    public BaseUserResponse updateMyAvatar(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new AppException(UserErrorCode.AVATAR_FILE_REQUIRED);
+        }
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")
+                || file.getSize() > MAX_AVATAR_BYTES) {
+            throw new AppException(UserErrorCode.AVATAR_FILE_INVALID);
+        }
+        User user = userRepository.findById(appUtil.userIdFromAuthentication())
+                .orElseThrow(UserNotFoundException::new);
+        UploadMediaResponse uploaded = mediaStorageService.uploadSync(
+                file, AVATAR_FOLDER + user.getId(), MediaType.IMAGE);
+        user.setAvatarUrl(uploaded.getUrl());
+        return userMapper.toBaseUserResponse(userRepository.save(user));
+    }
+
     @Transactional(readOnly = true)
     public BaseUserResponse getPublicProfile(UUID userId) {
         User user = userRepository.findById(userId)
