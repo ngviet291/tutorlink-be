@@ -1,6 +1,7 @@
 package org.group3.tutorlink.features.notification.dto.response;
 
 import lombok.*;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
 import org.group3.tutorlink.features.notification.enums.NotificationType;
 
 import java.time.Instant;
@@ -19,4 +20,6 @@ public class NotificationResponse {
     private NotificationType notificationType;
     private boolean isRead;
     private Instant createdAt;
+    private NotificationTarget targetType;
+    private UUID targetId;
 }

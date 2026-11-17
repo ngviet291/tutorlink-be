@@ -8657,7 +8657,8 @@
       "content": "Tài khoản của bạn đã được tạo thành công. Hãy hoàn thiện hồ sơ để bắt đầu kết nối.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d4764-9f70-776d-b7ce-db2a30b1b82c",
@@ -8677,7 +8678,8 @@
       "content": "Tài khoản của bạn đã được tạo thành công. Hãy hoàn thiện hồ sơ để bắt đầu kết nối.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d4ddb-e570-73f5-b91a-8470db8ffac6",
@@ -8697,7 +8699,8 @@
       "content": "Tài khoản của bạn đã được tạo thành công. Hãy hoàn thiện hồ sơ để bắt đầu kết nối.",
       "notificationType": "SYSTEM",
       "isRead": false,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d5131-a020-776f-9e49-2337bd583e69",
@@ -8707,7 +8710,8 @@
       "content": "Chúc mừng! Hồ sơ của bạn đã được phê duyệt, bạn có thể ứng tuyển và đăng bài.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d51c0-72a0-7063-b739-3ce2109e155a",
@@ -8717,7 +8721,8 @@
       "content": "Chúc mừng! Hồ sơ của bạn đã được phê duyệt, bạn có thể ứng tuyển và đăng bài.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d53b3-de30-7fef-ad9c-ffb6c8fc4f6a",
@@ -8727,7 +8732,8 @@
       "content": "Tài khoản của bạn đã được tạo thành công. Hãy hoàn thiện hồ sơ để bắt đầu kết nối.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d5489-2f90-7a90-8aef-0860dd0aa38f",
@@ -8747,7 +8753,8 @@
       "content": "Tài khoản của bạn đã được tạo thành công. Hãy hoàn thiện hồ sơ để bắt đầu kết nối.",
       "notificationType": "SYSTEM",
       "isRead": false,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d5ac0-d480-755b-8b7f-afcd1fa6681f",
@@ -8757,7 +8764,8 @@
       "content": "Chúc mừng! Hồ sơ của bạn đã được phê duyệt, bạn có thể ứng tuyển và đăng bài.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d5b3b-f7f0-74aa-8b79-9aa9e339e213",
@@ -8777,7 +8785,8 @@
       "content": "Tài khoản của bạn đã được tạo thành công. Hãy hoàn thiện hồ sơ để bắt đầu kết nối.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d5fef-e310-7845-a88c-426ed5e132b3",
@@ -8787,7 +8796,8 @@
       "content": "Tài khoản của bạn đã được tạo thành công. Hãy hoàn thiện hồ sơ để bắt đầu kết nối.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d62b3-96f0-7e7c-b1be-53b5b68986ea",
@@ -8807,7 +8817,8 @@
       "content": "Chúc mừng! Hồ sơ của bạn đã được phê duyệt, bạn có thể ứng tuyển và đăng bài.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d64d3-69b0-74f8-8ba8-a170df6093b6",
@@ -8817,7 +8828,8 @@
       "content": "Tài khoản của bạn đã được tạo thành công. Hãy hoàn thiện hồ sơ để bắt đầu kết nối.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d67c8-18a0-768e-ac88-73cb033628ab",
@@ -8827,7 +8839,8 @@
       "content": "Chúc mừng! Hồ sơ của bạn đã được phê duyệt, bạn có thể ứng tuyển và đăng bài.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d68a1-88b0-787f-b6aa-1b0b11691288",
@@ -8837,7 +8850,8 @@
       "content": "Tài khoản của bạn đã được tạo thành công. Hãy hoàn thiện hồ sơ để bắt đầu kết nối.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d68a1-1380-748e-99b2-13fd33fa4e6c"
+      "recipientId": "019d68a1-1380-748e-99b2-13fd33fa4e6c",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d694a-e810-7590-a504-aaf675f4fd6c",
@@ -8857,7 +8871,8 @@
       "content": "Chúc mừng! Hồ sơ của bạn đã được phê duyệt, bạn có thể ứng tuyển và đăng bài.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d6b42-e780-78a2-b44f-454b6b108321",
@@ -8867,7 +8882,8 @@
       "content": "Chúc mừng! Hồ sơ của bạn đã được phê duyệt, bạn có thể ứng tuyển và đăng bài.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d6c35-84e0-7b80-bca9-d06b6be8ef04",
@@ -8877,7 +8893,8 @@
       "content": "Chúc mừng! Hồ sơ của bạn đã được phê duyệt, bạn có thể ứng tuyển và đăng bài.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d6c70-9210-77e0-bb3a-69c2022f2e61",
@@ -8887,7 +8904,8 @@
       "content": "Tài khoản của bạn đã được tạo thành công. Hãy hoàn thiện hồ sơ để bắt đầu kết nối.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d6c70-1ce0-7eca-8934-3fdf043a54b8"
+      "recipientId": "019d6c70-1ce0-7eca-8934-3fdf043a54b8",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d6f2b-1e30-78be-b8e1-2df64b335d8e",
@@ -8907,7 +8925,8 @@
       "content": "Tài khoản của bạn đã được tạo thành công. Hãy hoàn thiện hồ sơ để bắt đầu kết nối.",
       "notificationType": "SYSTEM",
       "isRead": false,
-      "recipientId": "019d7075-2a60-7e54-9070-d3c8a487c287"
+      "recipientId": "019d7075-2a60-7e54-9070-d3c8a487c287",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d76de-3f90-7030-95a1-6fa18de8c627",
@@ -8927,7 +8946,8 @@
       "content": "Chứng chỉ/bằng cấp tải lên không rõ nét, vui lòng bổ sung lại ảnh chụp bản gốc.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d6c70-1ce0-7eca-8934-3fdf043a54b8"
+      "recipientId": "019d6c70-1ce0-7eca-8934-3fdf043a54b8",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d7d74-a650-7318-9496-fc36c7b9412b",
@@ -8947,7 +8967,8 @@
       "content": "Chúc mừng! Hồ sơ của bạn đã được phê duyệt, bạn có thể ứng tuyển và đăng bài.",
       "notificationType": "SYSTEM",
       "isRead": true,
-      "recipientId": "019d7075-2a60-7e54-9070-d3c8a487c287"
+      "recipientId": "019d7075-2a60-7e54-9070-d3c8a487c287",
+      "targetType": "TUTOR_PROFILE"
     },
     {
       "id": "019d8690-f4a0-7dfc-bf3e-08ae0bb4d15e",
@@ -8957,7 +8978,9 @@
       "content": "Có bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "POST",
+      "targetId": "019d868b-7660-7ce0-a7c8-d40d947f6031"
     },
     {
       "id": "019d87d5-3470-76b0-b7b6-9298109067c0",
@@ -8967,7 +8990,9 @@
       "content": "Dương Gia Nam vừa ứng tuyển vào bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "POST",
+      "targetId": "019d868b-7660-7ce0-a7c8-d40d947f6031"
     },
     {
       "id": "019d8be8-c0e0-725b-8219-a42cdb5ad02b",
@@ -8977,7 +9002,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019d8e95-d263-7d8e-9b45-4ed04b7a20cd",
@@ -8987,7 +9013,8 @@
       "content": "Bạn đã nạp 550.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "WALLET"
     },
     {
       "id": "019d8ea7-cfdb-7238-ba01-fa6afc53c3b0",
@@ -8997,7 +9024,8 @@
       "content": "Đã trừ 460.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "WALLET"
     },
     {
       "id": "019d8fc5-85e0-7636-9fc9-f9347c978c1b",
@@ -9007,7 +9035,8 @@
       "content": "Bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019d9012-d6d8-7308-86fa-1874c4acbfd1",
@@ -9017,7 +9046,9 @@
       "content": "Có bài đăng \"Cần gia sư Ngữ văn lớp 11 tại Phường An Phú\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "POST",
+      "targetId": "019d900f-2d58-72a9-8820-0edf02211f69"
     },
     {
       "id": "019d92d9-70e8-7af6-8f63-2cc60de7dc45",
@@ -9027,7 +9058,9 @@
       "content": "Hoàng Tuấn Long vừa ứng tuyển vào bài đăng \"Cần gia sư Ngữ văn lớp 11 tại Phường An Phú\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62"
+      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "targetType": "POST",
+      "targetId": "019d900f-2d58-72a9-8820-0edf02211f69"
     },
     {
       "id": "019d9ac9-c258-7d6e-be8e-a632bbc55380",
@@ -9037,7 +9070,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Cần gia sư Ngữ văn lớp 11 tại Phường An Phú\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019d9cf8-58eb-7649-b0e9-5f0c5a40dfb1",
@@ -9047,7 +9081,8 @@
       "content": "Bạn đã nạp 200.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "WALLET"
     },
     {
       "id": "019d9d1f-16e3-7cbb-a0df-f8b8d02e8262",
@@ -9057,7 +9092,8 @@
       "content": "Đã trừ 56.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "WALLET"
     },
     {
       "id": "019da102-c6d8-7318-b8ac-bf22e2b1f448",
@@ -9067,7 +9103,8 @@
       "content": "Bài đăng \"Cần gia sư Ngữ văn lớp 11 tại Phường An Phú\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019da501-a268-75e1-b7f5-1f61e256b4ae",
@@ -9077,7 +9114,9 @@
       "content": "Có bài đăng \"Gia sư Piano nhận dạy THCS khu vực Phường 25\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "019da500-b808-77ce-8883-09856bbd6bde"
     },
     {
       "id": "019da509-dfc8-7d79-9c15-2932fa9545ae",
@@ -9087,7 +9126,9 @@
       "content": "Có bài đăng \"Gia sư Piano nhận dạy THCS khu vực Phường 25\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "019da500-b808-77ce-8883-09856bbd6bde"
     },
     {
       "id": "019da75d-1e98-7da6-8a03-62b27f83f9f2",
@@ -9097,7 +9138,9 @@
       "content": "Ngô Hải Uyên vừa ứng tuyển vào bài đăng \"Gia sư Piano nhận dạy THCS khu vực Phường 25\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "POST",
+      "targetId": "019da500-b808-77ce-8883-09856bbd6bde"
     },
     {
       "id": "019daacc-0698-7001-b959-679a940aee63",
@@ -9107,7 +9150,9 @@
       "content": "Lê Minh Long vừa ứng tuyển vào bài đăng \"Gia sư Piano nhận dạy THCS khu vực Phường 25\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "POST",
+      "targetId": "019da500-b808-77ce-8883-09856bbd6bde"
     },
     {
       "id": "019db3cf-0088-750a-8b35-c6842602e924",
@@ -9117,7 +9162,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư Piano nhận dạy THCS khu vực Phường 25\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019db3cf-0089-7262-a222-43cfa7d6ae43",
@@ -9127,7 +9173,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Gia sư Piano nhận dạy THCS khu vực Phường 25\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019db5b5-7565-7162-bd79-19714602cea8",
@@ -9137,7 +9184,8 @@
       "content": "Bạn đã nạp 350.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": false,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "WALLET"
     },
     {
       "id": "019db5bd-6308-7c24-a640-f8ee34bae341",
@@ -9147,7 +9195,8 @@
       "content": "Bài đăng \"Gia sư Piano nhận dạy THCS khu vực Phường 25\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019db5f7-25cd-781d-8537-d200ee1b93c9",
@@ -9157,7 +9206,8 @@
       "content": "Đã trừ 40.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "WALLET"
     },
     {
       "id": "019dce10-8390-7fb7-926d-945c371ef161",
@@ -9167,7 +9217,9 @@
       "content": "Có bài đăng \"Gia sư Ngữ văn nhận dạy THCS khu vực Phường Hiệp Bình Chánh\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "019dce0f-9930-7a12-9853-ec03f6d14be4"
     },
     {
       "id": "019dce15-1770-74cf-965c-e871d259d1c0",
@@ -9177,7 +9229,9 @@
       "content": "Có bài đăng \"Gia sư Ngữ văn nhận dạy THCS khu vực Phường Hiệp Bình Chánh\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "019dce0f-9930-7a12-9853-ec03f6d14be4"
     },
     {
       "id": "019dd2ff-2dc0-7a18-8d5c-eb04f38c627b",
@@ -9187,7 +9241,9 @@
       "content": "Lê Minh Long vừa ứng tuyển vào bài đăng \"Gia sư Ngữ văn nhận dạy THCS khu vực Phường Hiệp Bình Chánh\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "POST",
+      "targetId": "019dce0f-9930-7a12-9853-ec03f6d14be4"
     },
     {
       "id": "019dd524-7ec0-7e72-850b-cbc676bd35b1",
@@ -9197,7 +9253,9 @@
       "content": "Ngô Hải Uyên vừa ứng tuyển vào bài đăng \"Gia sư Ngữ văn nhận dạy THCS khu vực Phường Hiệp Bình Chánh\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "POST",
+      "targetId": "019dce0f-9930-7a12-9853-ec03f6d14be4"
     },
     {
       "id": "019de316-e630-7ee9-8bb3-9a92303b1d62",
@@ -9207,7 +9265,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Gia sư Ngữ văn nhận dạy THCS khu vực Phường Hiệp Bình Chánh\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019de7c1-8a50-74ec-a1a3-c140cf85a820",
@@ -9217,7 +9276,9 @@
       "content": "Có bài đăng \"Cần gia sư Toán lớp 11 học tại nhà tại Phường An Phú\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "019de7bd-e0d0-7bf0-9345-86f403be337f"
     },
     {
       "id": "019de918-fc30-7c61-980f-298b18408dd7",
@@ -9227,7 +9288,8 @@
       "content": "Bài đăng \"Gia sư Ngữ văn nhận dạy THCS khu vực Phường Hiệp Bình Chánh\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019dec77-fde0-7835-ae06-ae2a45f9fc80",
@@ -9237,7 +9299,9 @@
       "content": "Khóa học từ bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "POST",
+      "targetId": "019d868b-7660-7ce0-a7c8-d40d947f6031"
     },
     {
       "id": "019decad-7560-7710-af31-88eae16314ff",
@@ -9247,7 +9311,9 @@
       "content": "Đỗ Gia Quân vừa ứng tuyển vào bài đăng \"Cần gia sư Toán lớp 11 học tại nhà tại Phường An Phú\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62"
+      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "targetType": "POST",
+      "targetId": "019de7bd-e0d0-7bf0-9345-86f403be337f"
     },
     {
       "id": "019df2ae-52e0-72de-af66-4e79812ce5e0",
@@ -9257,7 +9323,8 @@
       "content": "Bạn đã nạp 300.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "WALLET"
     },
     {
       "id": "019df3fa-ace8-749d-9bc7-61e55e3e1a14",
@@ -9277,7 +9344,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Cần gia sư Toán lớp 11 học tại nhà tại Phường An Phú\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019df80c-aed0-77b8-b49f-fbe37155d27c",
@@ -9287,7 +9355,8 @@
       "content": "Bài đăng \"Cần gia sư Toán lớp 11 học tại nhà tại Phường An Phú\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019dfab4-c351-7eff-bd47-bc7ad9e2e4aa",
@@ -9297,7 +9366,8 @@
       "content": "Bạn đã nạp 850.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "WALLET"
     },
     {
       "id": "019dfae9-63f9-7051-8331-dbc0caa38db5",
@@ -9307,7 +9377,8 @@
       "content": "Đã trừ 740.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "WALLET"
     },
     {
       "id": "019e02db-9ad8-7238-80dc-6936abe9fa8e",
@@ -9317,7 +9388,9 @@
       "content": "Khóa học từ bài đăng \"Cần gia sư Ngữ văn lớp 11 tại Phường An Phú\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62"
+      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "targetType": "POST",
+      "targetId": "019d900f-2d58-72a9-8820-0edf02211f69"
     },
     {
       "id": "019e3a61-1730-7d84-8879-84a14d637e97",
@@ -9327,7 +9400,9 @@
       "content": "Có bài đăng \"Cần gia sư Piano lớp 4 học online tại Phường 12\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "POST",
+      "targetId": "019e3a5d-6db0-7d52-afeb-082a1ba0939e"
     },
     {
       "id": "019e3ff1-cdc0-7f9f-aa7f-1f8c99dad8bf",
@@ -9337,7 +9412,9 @@
       "content": "Lý Minh Dũng vừa ứng tuyển vào bài đăng \"Cần gia sư Piano lớp 4 học online tại Phường 12\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "POST",
+      "targetId": "019e3a5d-6db0-7d52-afeb-082a1ba0939e"
     },
     {
       "id": "019e454e-f130-74af-84a0-81c4c5cebab5",
@@ -9347,7 +9424,8 @@
       "content": "Rất tiếc, bài đăng \"Cần gia sư Piano lớp 4 học online tại Phường 12\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019e503c-2b08-7e39-89b6-472fa0d3f48e",
@@ -9357,7 +9435,9 @@
       "content": "Khóa học từ bài đăng \"Gia sư Piano nhận dạy THCS khu vực Phường 25\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "POST",
+      "targetId": "019da500-b808-77ce-8883-09856bbd6bde"
     },
     {
       "id": "019e74ed-8e10-7f3e-b433-72540e56121c",
@@ -9377,7 +9457,9 @@
       "content": "Vũ Thị My vừa ứng tuyển vào bài đăng \"Gia sư Lập trình Python nhận dạy Đại học (dạy online)\".",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "POST",
+      "targetId": "019e7d22-0ca0-7f81-ba4f-555756e18417"
     },
     {
       "id": "019e96e1-d8a0-7324-9771-d01918dde29c",
@@ -9387,7 +9469,8 @@
       "content": "Bài đăng \"Gia sư Lập trình Python nhận dạy Đại học (dạy online)\" đã bị gỡ do vi phạm quy định đăng bài.",
       "notificationType": "POST",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "MY_POSTS"
     },
     {
       "id": "019e97b9-9ee8-7f09-bc80-1fa39433524f",
@@ -9397,7 +9480,9 @@
       "content": "Có bài đăng \"Gia sư Lập trình Python nhận dạy THPT (dạy online)\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019e97b8-b488-79f2-8886-b7f5dbe5e9ad"
     },
     {
       "id": "019e97bf-1d28-751c-91f1-f335493f1986",
@@ -9407,7 +9492,9 @@
       "content": "Có bài đăng \"Gia sư Lập trình Python nhận dạy THPT (dạy online)\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "POST",
+      "targetId": "019e97b8-b488-79f2-8886-b7f5dbe5e9ad"
     },
     {
       "id": "019e9b27-c398-7f7c-8610-6b63c7fd92dc",
@@ -9417,7 +9504,9 @@
       "content": "Phạm Thanh Linh vừa ứng tuyển vào bài đăng \"Gia sư Lập trình Python nhận dạy THPT (dạy online)\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "POST",
+      "targetId": "019e97b8-b488-79f2-8886-b7f5dbe5e9ad"
     },
     {
       "id": "019e9c6d-62f8-7e01-90d6-b73da3f6291f",
@@ -9427,7 +9516,9 @@
       "content": "Có bài đăng \"Tìm gia sư Tiếng Anh cho lớp 11 tại Phường An Phú\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "POST",
+      "targetId": "019e9c64-3b38-7ae2-a3e9-5c9d769a1475"
     },
     {
       "id": "019e9ca8-4918-77fc-9f13-f80f0362a107",
@@ -9437,7 +9528,9 @@
       "content": "Phạm Anh Tâm vừa ứng tuyển vào bài đăng \"Gia sư Lập trình Python nhận dạy THPT (dạy online)\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "POST",
+      "targetId": "019e97b8-b488-79f2-8886-b7f5dbe5e9ad"
     },
     {
       "id": "019e9e89-b348-74f8-9311-9364a00539d6",
@@ -9447,7 +9540,9 @@
       "content": "Lê Anh Nam vừa ứng tuyển vào bài đăng \"Tìm gia sư Tiếng Anh cho lớp 11 tại Phường An Phú\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62"
+      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "targetType": "POST",
+      "targetId": "019e9c64-3b38-7ae2-a3e9-5c9d769a1475"
     },
     {
       "id": "019eac7c-1ab8-7746-b955-b0ba19d94e1e",
@@ -9457,7 +9552,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Tìm gia sư Tiếng Anh cho lớp 11 tại Phường An Phú\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019eb1c5-39c4-7fa9-9597-e22a68957a78",
@@ -9467,7 +9563,8 @@
       "content": "Bạn đã nạp 100.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "WALLET"
     },
     {
       "id": "019eb1f9-26bc-7916-ab5c-a341b41f6fb3",
@@ -9477,7 +9574,8 @@
       "content": "Đã trừ 66.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "WALLET"
     },
     {
       "id": "019eb210-53b8-7096-ba96-df36cb5bdd8a",
@@ -9487,7 +9585,8 @@
       "content": "Bài đăng \"Tìm gia sư Tiếng Anh cho lớp 11 tại Phường An Phú\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019ecbc8-b548-742c-97c1-63fcd056f3dd",
@@ -9497,7 +9596,9 @@
       "content": "Có bài đăng \"Cần gia sư IELTS lớp 10 tại Phường Tân Phong\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "POST",
+      "targetId": "019ecbc1-6248-7ad6-9351-edd0dc73da96"
     },
     {
       "id": "019ecdaf-ebd8-74da-925b-4fdb42712771",
@@ -9507,7 +9608,9 @@
       "content": "Lê Anh Nam vừa ứng tuyển vào bài đăng \"Cần gia sư IELTS lớp 10 tại Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "POST",
+      "targetId": "019ecbc1-6248-7ad6-9351-edd0dc73da96"
     },
     {
       "id": "019eda55-ce48-75b5-97d2-82492a0a822a",
@@ -9517,7 +9620,9 @@
       "content": "Có bài đăng \"Tìm gia sư Toán cho lớp 12 tại Phường Linh Trung\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "POST",
+      "targetId": "019eda53-f988-7602-80a6-891042102d8c"
     },
     {
       "id": "019eda5a-6228-7e42-a999-b7b02532b885",
@@ -9527,7 +9632,9 @@
       "content": "Có bài đăng \"Tìm gia sư Toán cho lớp 12 tại Phường Linh Trung\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "019eda53-f988-7602-80a6-891042102d8c"
     },
     {
       "id": "019edbd9-41c8-7683-875b-11c5a95386a1",
@@ -9537,7 +9644,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Cần gia sư IELTS lớp 10 tại Phường Tân Phong\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019edd55-2b98-7427-8a3e-1f829d736c64",
@@ -9547,7 +9655,9 @@
       "content": "Đỗ Gia Quân vừa ứng tuyển vào bài đăng \"Tìm gia sư Toán cho lớp 12 tại Phường Linh Trung\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019eda53-f988-7602-80a6-891042102d8c"
     },
     {
       "id": "019ede2c-b226-78ad-aaa5-23a11e51412e",
@@ -9557,7 +9667,8 @@
       "content": "Bạn đã nạp 650.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "WALLET"
     },
     {
       "id": "019ede44-06ce-7bf4-b70b-44fdfa8b3d2f",
@@ -9567,7 +9678,8 @@
       "content": "Đã trừ 560.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "WALLET"
     },
     {
       "id": "019ede6c-6fc8-7c40-8ea4-1ffe76637737",
@@ -9577,7 +9689,8 @@
       "content": "Bài đăng \"Cần gia sư IELTS lớp 10 tại Phường Tân Phong\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019edfca-dad0-73e6-8903-c3a0be532e20",
@@ -9587,7 +9700,9 @@
       "content": "Khóa học từ bài đăng \"Cần gia sư Toán lớp 11 học tại nhà tại Phường An Phú\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62"
+      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "targetType": "POST",
+      "targetId": "019de7bd-e0d0-7bf0-9345-86f403be337f"
     },
     {
       "id": "019ee3fc-0d18-7fdf-8191-d4a795a4341f",
@@ -9597,7 +9712,9 @@
       "content": "Hồ Hải Uyên vừa ứng tuyển vào bài đăng \"Tìm gia sư Toán cho lớp 12 tại Phường Linh Trung\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019eda53-f988-7602-80a6-891042102d8c"
     },
     {
       "id": "019ee959-3088-74cd-af33-0f9bf7509863",
@@ -9607,7 +9724,8 @@
       "content": "Rất tiếc, bài đăng \"Tìm gia sư Toán cho lớp 12 tại Phường Linh Trung\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019ee959-3089-7d6a-a0f1-528c8dd681d0",
@@ -9617,7 +9735,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Tìm gia sư Toán cho lớp 12 tại Phường Linh Trung\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019eed46-9e34-7eca-8b4b-f2bfbf256bb5",
@@ -9627,7 +9746,8 @@
       "content": "Đã trừ 38.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "WALLET"
     },
     {
       "id": "019eedda-c108-724b-a438-f48be262c50a",
@@ -9637,7 +9757,8 @@
       "content": "Bài đăng \"Tìm gia sư Toán cho lớp 12 tại Phường Linh Trung\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019eef83-2d60-7e15-9270-53de8b40420f",
@@ -9647,7 +9768,9 @@
       "content": "Có bài đăng \"Cần gia sư Tiếng Anh lớp 11 học tại nhà tại Phường An Phú\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "POST",
+      "targetId": "019eef7c-c4c0-70cd-827d-5b02c0719c05"
     },
     {
       "id": "019ef322-c250-7a17-ad80-e709b3bcd833",
@@ -9657,7 +9780,9 @@
       "content": "Lê Anh Nam vừa ứng tuyển vào bài đăng \"Cần gia sư Tiếng Anh lớp 11 học tại nhà tại Phường An Phú\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62"
+      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "targetType": "POST",
+      "targetId": "019eef7c-c4c0-70cd-827d-5b02c0719c05"
     },
     {
       "id": "019ef8a8-a758-7f91-b093-6eeccc073d15",
@@ -9667,7 +9792,9 @@
       "content": "Có bài đăng \"Tìm gia sư Tin học cho lớp 10 tại Phường Tân Phong\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "POST",
+      "targetId": "019ef8a4-1378-7667-8e1b-49562d37cf3d"
     },
     {
       "id": "019efc8d-05a8-79ca-a093-854b2ebb1bc8",
@@ -9677,7 +9804,9 @@
       "content": "Có bài đăng \"Tìm gia sư Vật lý cho lớp 12 tại Phường Linh Trung\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "019efc8b-30e8-78e4-9ccb-77cd7970073b"
     },
     {
       "id": "019efc92-83e8-7e89-98dc-7e8a94ca4d74",
@@ -9687,7 +9816,9 @@
       "content": "Có bài đăng \"Tìm gia sư Vật lý cho lớp 12 tại Phường Linh Trung\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "POST",
+      "targetId": "019efc8b-30e8-78e4-9ccb-77cd7970073b"
     },
     {
       "id": "019eff4b-1c08-7d61-8b5e-799587d2a9bf",
@@ -9697,7 +9828,9 @@
       "content": "Nguyễn Anh Bảo vừa ứng tuyển vào bài đăng \"Tìm gia sư Tin học cho lớp 10 tại Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "POST",
+      "targetId": "019ef8a4-1378-7667-8e1b-49562d37cf3d"
     },
     {
       "id": "019f009f-0b78-77eb-8cc6-04efe531c540",
@@ -9707,7 +9840,9 @@
       "content": "Đỗ Gia Quân vừa ứng tuyển vào bài đăng \"Tìm gia sư Vật lý cho lớp 12 tại Phường Linh Trung\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019efc8b-30e8-78e4-9ccb-77cd7970073b"
     },
     {
       "id": "019f01b9-f540-7c58-8e68-519cade68a3f",
@@ -9717,7 +9852,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Cần gia sư Tiếng Anh lớp 11 học tại nhà tại Phường An Phú\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f0242-236a-7caf-b11f-9d7b283fe47d",
@@ -9727,7 +9863,8 @@
       "content": "Đã trừ 50.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "WALLET"
     },
     {
       "id": "019f02fb-4af8-74dd-950e-98fe6f60cae7",
@@ -9737,7 +9874,9 @@
       "content": "Hồ Hải Uyên vừa ứng tuyển vào bài đăng \"Tìm gia sư Vật lý cho lớp 12 tại Phường Linh Trung\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019efc8b-30e8-78e4-9ccb-77cd7970073b"
     },
     {
       "id": "019f055f-cbc0-721e-bcac-cb6b3f1641ae",
@@ -9747,7 +9886,8 @@
       "content": "Bài đăng \"Cần gia sư Tiếng Anh lớp 11 học tại nhà tại Phường An Phú\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f0704-7ef8-7a61-9539-dee042d669af",
@@ -9757,7 +9897,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Tìm gia sư Tin học cho lớp 10 tại Phường Tân Phong\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f075e-37b8-75d9-9ee2-e0ca19c4fabe",
@@ -9767,7 +9908,9 @@
       "content": "Có bài đăng \"Cần gia sư Tin học lớp 12 học tại nhà\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "POST",
+      "targetId": "019f0759-a3d8-7e66-b718-a417c002f3bb"
     },
     {
       "id": "019f0a3c-7878-762f-b250-bfc37d905f94",
@@ -9777,7 +9920,8 @@
       "content": "Bài đăng \"Tìm gia sư Tin học cho lớp 10 tại Phường Tân Phong\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f0adc-5413-7eb9-8783-7ceb0f67504c",
@@ -9787,7 +9931,8 @@
       "content": "Bạn đã nạp 100.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "WALLET"
     },
     {
       "id": "019f0af8-f433-7612-9a16-af3abba4bc28",
@@ -9797,7 +9942,8 @@
       "content": "Đã trừ 48.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "WALLET"
     },
     {
       "id": "019f0eff-4fe8-7ea3-9d7f-5e6540dbfe4c",
@@ -9807,7 +9953,8 @@
       "content": "Rất tiếc, bài đăng \"Tìm gia sư Vật lý cho lớp 12 tại Phường Linh Trung\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f0eff-4fe9-7ae7-82e0-617d2d80f2b1",
@@ -9817,7 +9964,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Tìm gia sư Vật lý cho lớp 12 tại Phường Linh Trung\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f0fef-0ee8-7fc1-bd12-a564ee5c4782",
@@ -9827,7 +9975,9 @@
       "content": "Nguyễn Anh Bảo vừa ứng tuyển vào bài đăng \"Cần gia sư Tin học lớp 12 học tại nhà\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019f0759-a3d8-7e66-b718-a417c002f3bb"
     },
     {
       "id": "019f1138-7ed8-7edb-9f89-7baf73c1d2bf",
@@ -9837,7 +9987,8 @@
       "content": "Rất tiếc, bài đăng \"Cần gia sư Tin học lớp 12 học tại nhà\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f1276-b7be-71ed-98dd-c4bab40ce100",
@@ -9847,7 +9998,8 @@
       "content": "Đã trừ 50.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "WALLET"
     },
     {
       "id": "019f1501-65e8-7924-9277-5fd459a72778",
@@ -9857,7 +10009,8 @@
       "content": "Bài đăng \"Tìm gia sư Vật lý cho lớp 12 tại Phường Linh Trung\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f1816-75e8-7796-aed8-7552a054fcc5",
@@ -9867,7 +10020,9 @@
       "content": "Dương Gia Nam vừa ứng tuyển vào bài đăng \"Cần gia sư Tin học lớp 12 học tại nhà\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019f0759-a3d8-7e66-b718-a417c002f3bb"
     },
     {
       "id": "019f195f-e5d8-7789-853c-5220b1fdd3f2",
@@ -9877,7 +10032,8 @@
       "content": "Rất tiếc, bài đăng \"Cần gia sư Tin học lớp 12 học tại nhà\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f2c0c-e370-778c-ad4d-3635fde48df1",
@@ -9887,7 +10043,8 @@
       "content": "Giao dịch nạp tiền không thành công, vui lòng thử lại.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "WALLET"
     },
     {
       "id": "019f4514-a240-758e-86e1-de8475f09712",
@@ -9897,7 +10054,9 @@
       "content": "Có bài đăng \"Gia sư IELTS nhận dạy THPT khu vực Phường Bến Nghé\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019f4510-f8c0-78df-bd80-9e3d6a87d98d"
     },
     {
       "id": "019f4518-4bc0-7d2b-8ca0-b2feae9be175",
@@ -9907,7 +10066,9 @@
       "content": "Có bài đăng \"Gia sư IELTS nhận dạy THPT khu vực Phường Bến Nghé\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "POST",
+      "targetId": "019f4510-f8c0-78df-bd80-9e3d6a87d98d"
     },
     {
       "id": "019f4992-b050-7f67-af97-c8ff9191f12d",
@@ -9917,7 +10078,9 @@
       "content": "Phạm Anh Tâm vừa ứng tuyển vào bài đăng \"Gia sư IELTS nhận dạy THPT khu vực Phường Bến Nghé\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "POST",
+      "targetId": "019f4510-f8c0-78df-bd80-9e3d6a87d98d"
     },
     {
       "id": "019f4f26-e950-7268-a595-bdd339547fc4",
@@ -9927,7 +10090,9 @@
       "content": "Phạm Mai Anh vừa ứng tuyển vào bài đăng \"Gia sư IELTS nhận dạy THPT khu vực Phường Bến Nghé\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "POST",
+      "targetId": "019f4510-f8c0-78df-bd80-9e3d6a87d98d"
     },
     {
       "id": "019f529f-2fc0-76b6-bd46-33c6d7645e19",
@@ -9937,7 +10102,9 @@
       "content": "Khóa học từ bài đăng \"Cần gia sư Tiếng Anh lớp 11 học tại nhà tại Phường An Phú\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62"
+      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "targetType": "POST",
+      "targetId": "019eef7c-c4c0-70cd-827d-5b02c0719c05"
     },
     {
       "id": "019f5442-5c58-7597-a237-a35f9961f183",
@@ -9947,7 +10114,9 @@
       "content": "Có bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "POST",
+      "targetId": "019f5439-3498-7e1d-acf7-2397a3bb1157"
     },
     {
       "id": "019f593c-8bc0-7b22-a9a5-e8c91df9b097",
@@ -9957,7 +10126,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư IELTS nhận dạy THPT khu vực Phường Bến Nghé\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f593c-8bc1-73b3-843b-ba358a42d18f",
@@ -9967,7 +10137,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Gia sư IELTS nhận dạy THPT khu vực Phường Bến Nghé\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f5a04-8328-7864-86bc-dd155942de9e",
@@ -9977,7 +10148,9 @@
       "content": "Dương Gia Nam vừa ứng tuyển vào bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "POST",
+      "targetId": "019f5439-3498-7e1d-acf7-2397a3bb1157"
     },
     {
       "id": "019f5b69-f6f8-7c89-b8b7-3fc24e24bc1b",
@@ -9987,7 +10160,9 @@
       "content": "Có bài đăng \"Tìm gia sư Piano cho lớp 7 tại Phường 7\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "POST",
+      "targetId": "019f5b65-6318-7d97-b57b-3b7284aa7c71"
     },
     {
       "id": "019f6074-4f18-7eb4-ab47-4b1ccfe5c229",
@@ -9997,7 +10172,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f638a-35f0-7756-80d6-70c838011be7",
@@ -10007,7 +10183,8 @@
       "content": "Bạn đã nạp 200.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": false,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "WALLET"
     },
     {
       "id": "019f63fa-ce28-7b62-a9e6-74083d95d25b",
@@ -10017,7 +10194,9 @@
       "content": "Lý Minh Dũng vừa ứng tuyển vào bài đăng \"Tìm gia sư Piano cho lớp 7 tại Phường 7\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "019f5b65-6318-7d97-b57b-3b7284aa7c71"
     },
     {
       "id": "019f654e-1137-7d7c-b07c-d804d2be48f8",
@@ -10027,7 +10206,8 @@
       "content": "Bạn đã nạp 650.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "WALLET"
     },
     {
       "id": "019f654f-f27b-75e7-9adc-492db4f49e2a",
@@ -10037,7 +10217,8 @@
       "content": "Đã trừ 46.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "WALLET"
     },
     {
       "id": "019f6591-ffd7-73a3-a28c-0c9f598f2e8c",
@@ -10047,7 +10228,8 @@
       "content": "Đã trừ 700.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "WALLET"
     },
     {
       "id": "019f69f9-36c0-71f8-b7d3-44104f2d11b6",
@@ -10057,7 +10239,9 @@
       "content": "Phạm Anh Tâm đã hủy ứng tuyển vào bài đăng \"Gia sư IELTS nhận dạy THPT khu vực Phường Bến Nghé\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "POST",
+      "targetId": "019f4510-f8c0-78df-bd80-9e3d6a87d98d"
     },
     {
       "id": "019f6b0f-6598-7cfa-b5ce-b55d20a46841",
@@ -10067,7 +10251,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Tìm gia sư Piano cho lớp 7 tại Phường 7\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f6cfa-41c0-7af5-94f3-0e785b59fa18",
@@ -10077,7 +10262,8 @@
       "content": "Quản trị viên đã hoàn 700.000đ vào ví của bạn.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "WALLET"
     },
     {
       "id": "019f7096-b9d0-7eae-9f76-af5bd8b5dfd7",
@@ -10087,7 +10273,8 @@
       "content": "Bài đăng \"Cần gia sư Toán lớp 12 tại Phường Linh Trung\" đã bị gỡ do vi phạm quy định đăng bài.",
       "notificationType": "POST",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "MY_POSTS"
     },
     {
       "id": "019f768e-4498-7c30-ad3a-b45e0bce2eb7",
@@ -10097,7 +10284,9 @@
       "content": "Dương Gia Nam đã hủy ứng tuyển vào bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\".",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "POST",
+      "targetId": "019f5439-3498-7e1d-acf7-2397a3bb1157"
     },
     {
       "id": "019f77a0-ed18-7924-a110-381a21991d4e",
@@ -10107,7 +10296,8 @@
       "content": "Quản trị viên đã hoàn 46.000đ vào ví của bạn.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "WALLET"
     },
     {
       "id": "019f8216-c088-77f9-bf36-f450fca64c5f",
@@ -10117,7 +10307,9 @@
       "content": "Ngô Hải Uyên vừa ứng tuyển vào bài đăng \"Gia sư Tiếng Anh nhận dạy THCS khu vực Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "POST",
+      "targetId": "019f7ede-9ff8-7b5e-bd99-cee6958e1aac"
     },
     {
       "id": "019f828f-6358-771f-a721-49e3ab0299d9",
@@ -10127,7 +10319,9 @@
       "content": "Có bài đăng \"Gia sư Vật lý nhận dạy THCS khu vực Phường 12\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "019f828a-cf78-70b4-ba4d-52e206c41ee2"
     },
     {
       "id": "019f8291-3818-761d-b32d-416e94a95eb9",
@@ -10137,7 +10331,9 @@
       "content": "Có bài đăng \"Gia sư Vật lý nhận dạy THCS khu vực Phường 12\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "019f828a-cf78-70b4-ba4d-52e206c41ee2"
     },
     {
       "id": "019f8ae9-4c08-7dd9-a7df-7edc57f7a853",
@@ -10147,7 +10343,9 @@
       "content": "Lê Minh Long vừa ứng tuyển vào bài đăng \"Gia sư Vật lý nhận dạy THCS khu vực Phường 12\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "019f828a-cf78-70b4-ba4d-52e206c41ee2"
     },
     {
       "id": "019f8ca0-c008-7b69-9e81-0cd0e79b1227",
@@ -10157,7 +10355,9 @@
       "content": "Ngô Hải Uyên vừa ứng tuyển vào bài đăng \"Gia sư Vật lý nhận dạy THCS khu vực Phường 12\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "019f828a-cf78-70b4-ba4d-52e206c41ee2"
     },
     {
       "id": "019f9a5c-38f8-7751-8b40-78545e02be7b",
@@ -10167,7 +10367,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư Vật lý nhận dạy THCS khu vực Phường 12\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f9a5c-38f9-7298-abf0-74e6b38d4fea",
@@ -10177,7 +10378,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Gia sư Vật lý nhận dạy THCS khu vực Phường 12\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f9ba5-cff8-75ab-87c6-1278ae6adc74",
@@ -10187,7 +10389,8 @@
       "content": "Bài đăng \"Gia sư Vật lý nhận dạy THCS khu vực Phường 12\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019f9ddd-9ad4-775e-b6cc-9b5f6ee51d80",
@@ -10197,7 +10400,8 @@
       "content": "Bạn đã nạp 100.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "WALLET"
     },
     {
       "id": "019f9def-84c4-7850-95d6-8e982234582a",
@@ -10207,7 +10411,8 @@
       "content": "Đã trừ 44.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "WALLET"
     },
     {
       "id": "019fa65c-9c38-7a52-845d-1c8d71eb95d5",
@@ -10217,7 +10422,9 @@
       "content": "Có bài đăng \"Gia sư Ngữ văn nhận dạy THPT khu vực Phường Hiệp Bình Chánh\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "POST",
+      "targetId": "019fa658-f2b8-747d-b757-496df44c4c8d"
     },
     {
       "id": "019fa662-1a78-7dc5-bfa9-8df1dd494bda",
@@ -10227,7 +10434,9 @@
       "content": "Có bài đăng \"Gia sư Ngữ văn nhận dạy THPT khu vực Phường Hiệp Bình Chánh\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019fa658-f2b8-747d-b757-496df44c4c8d"
     },
     {
       "id": "019faa6c-cd48-7e94-9138-594405b1c282",
@@ -10237,7 +10446,9 @@
       "content": "Phạm Anh Tâm vừa ứng tuyển vào bài đăng \"Gia sư Ngữ văn nhận dạy THPT khu vực Phường Hiệp Bình Chánh\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "POST",
+      "targetId": "019fa658-f2b8-747d-b757-496df44c4c8d"
     },
     {
       "id": "019faddb-b548-75f3-975d-add721024f42",
@@ -10247,7 +10458,9 @@
       "content": "Phạm Thanh Linh vừa ứng tuyển vào bài đăng \"Gia sư Ngữ văn nhận dạy THPT khu vực Phường Hiệp Bình Chánh\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "POST",
+      "targetId": "019fa658-f2b8-747d-b757-496df44c4c8d"
     },
     {
       "id": "019faf93-0238-7f1c-8f26-47d8c90261e2",
@@ -10257,7 +10470,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư Ngữ văn nhận dạy THPT khu vực Phường Hiệp Bình Chánh\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62"
+      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019fafca-17c8-795b-9890-ad7027989b2c",
@@ -10267,7 +10481,9 @@
       "content": "Phạm Mai Anh vừa ứng tuyển vào bài đăng \"Gia sư Ngữ văn nhận dạy THPT khu vực Phường Hiệp Bình Chánh\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "POST",
+      "targetId": "019fa658-f2b8-747d-b757-496df44c4c8d"
     },
     {
       "id": "019fb294-0d38-7ce0-b11e-5e5796cf41bc",
@@ -10277,7 +10493,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư Ngữ văn nhận dạy THPT khu vực Phường Hiệp Bình Chánh\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019fb6a7-c0b8-732e-b8ad-bcecbe89e5f0",
@@ -10287,7 +10504,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Gia sư Ngữ văn nhận dạy THPT khu vực Phường Hiệp Bình Chánh\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019fb85f-34b8-751f-a0be-f7b6ffe3d633",
@@ -10297,7 +10515,8 @@
       "content": "Bài đăng \"Gia sư Ngữ văn nhận dạy THPT khu vực Phường Hiệp Bình Chánh\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019fbbd9-2108-77b5-b10a-b05b1acf26d1",
@@ -10307,7 +10526,9 @@
       "content": "Khóa học từ bài đăng \"Tìm gia sư Toán cho lớp 12 tại Phường Linh Trung\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019eda53-f988-7602-80a6-891042102d8c"
     },
     {
       "id": "019fbd39-1e68-7722-8964-512f61051bf9",
@@ -10317,7 +10538,8 @@
       "content": "Giao dịch nạp tiền không thành công, vui lòng thử lại.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "WALLET"
     },
     {
       "id": "019fddc0-6790-7b25-9cc0-f35548fc6caf",
@@ -10337,7 +10559,9 @@
       "content": "Có bài đăng \"Gia sư Piano nhận dạy THCS khu vực Phường 25\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "019fdfe9-13f0-79de-9fe6-604d83a9a493"
     },
     {
       "id": "019fdfed-a7d1-7c16-a288-fa80d395c7a7",
@@ -10347,7 +10571,9 @@
       "content": "Có bài đăng \"Gia sư Piano nhận dạy THCS khu vực Phường 25\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "019fdfe9-13f0-79de-9fe6-604d83a9a493"
     },
     {
       "id": "019fe5eb-5100-7154-8cf2-26ee06b4a914",
@@ -10357,7 +10583,9 @@
       "content": "Lê Minh Long vừa ứng tuyển vào bài đăng \"Gia sư Piano nhận dạy THCS khu vực Phường 25\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "POST",
+      "targetId": "019fdfe9-13f0-79de-9fe6-604d83a9a493"
     },
     {
       "id": "019fe6a8-01b0-7319-9956-e6fd8764e6f7",
@@ -10367,7 +10595,9 @@
       "content": "Có bài đăng \"Cần gia sư IELTS lớp 10 tại Phường Tân Phong\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "POST",
+      "targetId": "019fe6a3-6dd0-77d2-999f-2b3015dafdd9"
     },
     {
       "id": "019feb25-2560-7601-bace-b1fc948e328f",
@@ -10377,7 +10607,9 @@
       "content": "Lê Anh Nam vừa ứng tuyển vào bài đăng \"Cần gia sư IELTS lớp 10 tại Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "POST",
+      "targetId": "019fe6a3-6dd0-77d2-999f-2b3015dafdd9"
     },
     {
       "id": "019fec92-3280-79b6-bcd2-7ceb9bdbfcee",
@@ -10387,7 +10619,9 @@
       "content": "Ngô Hải Uyên vừa ứng tuyển vào bài đăng \"Gia sư Piano nhận dạy THCS khu vực Phường 25\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "POST",
+      "targetId": "019fdfe9-13f0-79de-9fe6-604d83a9a493"
     },
     {
       "id": "019fee5c-f7d0-7b98-96c4-26ea8ed3c473",
@@ -10397,7 +10631,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Cần gia sư IELTS lớp 10 tại Phường Tân Phong\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019fef77-0ea8-7914-9ce7-f431bb47405e",
@@ -10407,7 +10642,9 @@
       "content": "Có bài đăng \"Cần gia sư Vật lý lớp 10 học online tại Phường Tân Phong\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "019fef72-7ac8-7179-9768-47a195f9137e"
     },
     {
       "id": "019fefb0-629f-7fe6-a190-dd6f1593d8f2",
@@ -10417,7 +10654,8 @@
       "content": "Đã trừ 44.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "WALLET"
     },
     {
       "id": "019ff0bc-38d8-72de-b3ea-eaa11054152e",
@@ -10427,7 +10665,9 @@
       "content": "Đỗ Gia Quân vừa ứng tuyển vào bài đăng \"Cần gia sư Vật lý lớp 10 học online tại Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "POST",
+      "targetId": "019fef72-7ac8-7179-9768-47a195f9137e"
     },
     {
       "id": "019ff130-5f38-796e-981f-b7ad773fb1c6",
@@ -10437,7 +10677,9 @@
       "content": "Có bài đăng \"Cần gia sư Tin học lớp 12 tại Phường Linh Trung\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "POST",
+      "targetId": "019ff129-0c38-7ba8-8583-93e30a681cfe"
     },
     {
       "id": "019ff204-ed48-7a0c-9747-e70a34642104",
@@ -10447,7 +10689,9 @@
       "content": "Nguyễn Anh Bảo vừa ứng tuyển vào bài đăng \"Cần gia sư Tin học lớp 12 tại Phường Linh Trung\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019ff129-0c38-7ba8-8583-93e30a681cfe"
     },
     {
       "id": "019ff2de-8850-7188-bc5a-25e6570a9cff",
@@ -10457,7 +10701,8 @@
       "content": "Bài đăng \"Cần gia sư IELTS lớp 10 tại Phường Tân Phong\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019ff393-0370-736c-9f96-79a3c5848076",
@@ -10467,7 +10712,9 @@
       "content": "Có bài đăng \"Gia sư Toán nhận dạy THPT (dạy online)\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019ff391-2eb0-7695-87d2-9f6c5b518854"
     },
     {
       "id": "019ff394-d830-7d75-9fe6-6bd60a474223",
@@ -10477,7 +10724,9 @@
       "content": "Có bài đăng \"Gia sư Toán nhận dạy THPT (dạy online)\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "POST",
+      "targetId": "019ff391-2eb0-7695-87d2-9f6c5b518854"
     },
     {
       "id": "019ff439-bf08-778c-9be0-a1b277a18d8d",
@@ -10487,7 +10736,8 @@
       "content": "Bạn đã nạp 1.000.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "WALLET"
     },
     {
       "id": "019ff4a2-d178-75e1-aa03-b05b88a5bfe1",
@@ -10497,7 +10747,9 @@
       "content": "Có bài đăng \"Tìm gia sư Hóa học cho lớp 9 tại Phường Linh Trung\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "POST",
+      "targetId": "019ff49f-27f8-7e2a-99e6-eabc53777334"
     },
     {
       "id": "019ff52a-a300-7b6a-ba6f-93b7a4f33cf3",
@@ -10507,7 +10759,9 @@
       "content": "Có bài đăng \"Tìm gia sư Tiếng Anh cho lớp 11\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "POST",
+      "targetId": "019ff521-7b40-7677-8eaf-29498df2a2e6"
     },
     {
       "id": "019ff53d-a248-70c0-9d6f-91ce65c3db88",
@@ -10517,7 +10771,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Cần gia sư Vật lý lớp 10 học online tại Phường Tân Phong\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "019ff7db-f7c0-762f-b82a-64ab0d461597",
@@ -10527,7 +10782,9 @@
       "content": "Phạm Anh Tâm vừa ứng tuyển vào bài đăng \"Gia sư Toán nhận dạy THPT (dạy online)\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "POST",
+      "targetId": "019ff391-2eb0-7695-87d2-9f6c5b518854"
     },
     {
       "id": "019ff8c9-b708-7ea0-af48-69bd6df4c4e4",
@@ -10547,7 +10804,9 @@
       "content": "Đặng Đức Hiếu vừa ứng tuyển vào bài đăng \"Tìm gia sư Hóa học cho lớp 9 tại Phường Linh Trung\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "019ff49f-27f8-7e2a-99e6-eabc53777334"
     },
     {
       "id": "019ffcdb-2c50-7505-8862-f221d67580a0",
@@ -10557,7 +10816,9 @@
       "content": "Lê Anh Nam vừa ứng tuyển vào bài đăng \"Tìm gia sư Tiếng Anh cho lớp 11\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62"
+      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "targetType": "POST",
+      "targetId": "019ff521-7b40-7677-8eaf-29498df2a2e6"
     },
     {
       "id": "019fff5e-9340-7d24-9438-5a7056fe18a1",
@@ -10567,7 +10828,9 @@
       "content": "Phạm Thanh Linh vừa ứng tuyển vào bài đăng \"Gia sư Toán nhận dạy THPT (dạy online)\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "POST",
+      "targetId": "019ff391-2eb0-7695-87d2-9f6c5b518854"
     },
     {
       "id": "019ffff7-54b8-773e-af4c-9d5f2fa30a2c",
@@ -10577,7 +10840,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Cần gia sư Tin học lớp 12 tại Phường Linh Trung\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a00071-3bc0-70b8-a841-ef60c5f4ba38",
@@ -10587,7 +10851,9 @@
       "content": "Phạm Mai Anh vừa ứng tuyển vào bài đăng \"Gia sư Toán nhận dạy THPT (dạy online)\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "POST",
+      "targetId": "019ff391-2eb0-7695-87d2-9f6c5b518854"
     },
     {
       "id": "01a003d4-fc48-7e24-86c5-62383120aff9",
@@ -10597,7 +10863,9 @@
       "content": "Đỗ Gia Quân đã hủy ứng tuyển vào bài đăng \"Cần gia sư Vật lý lớp 10 học online tại Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "POST",
+      "targetId": "019fef72-7ac8-7179-9768-47a195f9137e"
     },
     {
       "id": "01a0047a-7adb-722c-bfcf-c54921a86fc0",
@@ -10607,7 +10875,8 @@
       "content": "Bạn đã nạp 350.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "WALLET"
     },
     {
       "id": "01a00480-18f8-779f-86ea-837a54d1c78b",
@@ -10617,7 +10886,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Tìm gia sư Hóa học cho lớp 9 tại Phường Linh Trung\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a004a5-c4e3-7dae-8487-dd3b0c2713e6",
@@ -10627,7 +10897,8 @@
       "content": "Đã trừ 64.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "WALLET"
     },
     {
       "id": "01a0051d-b0b8-7737-ab8b-2e30fc242cac",
@@ -10637,7 +10908,8 @@
       "content": "Bài đăng \"Cần gia sư Tin học lớp 12 tại Phường Linh Trung\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a006b4-115a-7041-8906-ed60d0b95e0b",
@@ -10647,7 +10919,8 @@
       "content": "Đã trừ 36.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "WALLET"
     },
     {
       "id": "01a00893-cc78-7041-803e-a69f78b0e9b7",
@@ -10657,7 +10930,8 @@
       "content": "Bài đăng \"Tìm gia sư Hóa học cho lớp 9 tại Phường Linh Trung\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a00c07-63b0-7b66-8d58-b8c071d3c89b",
@@ -10667,7 +10941,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư Toán nhận dạy THPT (dạy online)\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62"
+      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a00c07-63b1-72e5-b996-277ef79788fd",
@@ -10677,7 +10952,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư Toán nhận dạy THPT (dạy online)\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a00c07-63b2-7dfc-a072-43a283e7343a",
@@ -10687,7 +10963,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Gia sư Toán nhận dạy THPT (dạy online)\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a00db3-e63a-751b-8e99-98ff8fbf87a5",
@@ -10697,7 +10974,8 @@
       "content": "Bạn đã nạp 400.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "WALLET"
     },
     {
       "id": "01a00de2-0ea2-7249-b3c7-5b50d89215df",
@@ -10707,7 +10985,8 @@
       "content": "Đã trừ 64.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "WALLET"
     },
     {
       "id": "01a011d2-8b30-77da-963b-595f349648d3",
@@ -10717,7 +10996,8 @@
       "content": "Bài đăng \"Gia sư Toán nhận dạy THPT (dạy online)\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a022b5-b1c0-7150-bc4e-44d03596b0f4",
@@ -10727,7 +11007,9 @@
       "content": "Có bài đăng \"Tìm gia sư Vật lý cho năm 2 tại Phường Phú Mỹ\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "POST",
+      "targetId": "01a022b2-0840-7fb5-959b-894decc986fe"
     },
     {
       "id": "01a02356-fad0-7984-9246-48a5263be6e9",
@@ -10737,7 +11019,9 @@
       "content": "Hồ Hải Uyên vừa ứng tuyển vào bài đăng \"Tìm gia sư Vật lý cho năm 2 tại Phường Phú Mỹ\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe"
+      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "targetType": "POST",
+      "targetId": "01a022b2-0840-7fb5-959b-894decc986fe"
     },
     {
       "id": "01a027e6-e718-704f-aee4-303d65539ade",
@@ -10747,7 +11031,9 @@
       "content": "Có bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "POST",
+      "targetId": "01a027e5-fcb8-7ecd-8e74-390c8bc7b6f0"
     },
     {
       "id": "01a029a1-9b20-7454-b1aa-16581384eb06",
@@ -10757,7 +11043,9 @@
       "content": "Có bài đăng \"Tìm gia sư Tiếng Anh cho lớp 7 tại Phường 7\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "POST",
+      "targetId": "01a0299d-0740-7642-b1d9-44dfac65ee75"
     },
     {
       "id": "01a029a1-9b21-7e59-883d-53420323c5e7",
@@ -10767,7 +11055,9 @@
       "content": "Có bài đăng \"Tìm gia sư Tiếng Anh cho lớp 7 tại Phường 7\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "POST",
+      "targetId": "01a0299d-0740-7642-b1d9-44dfac65ee75"
     },
     {
       "id": "01a02aaf-d6d0-77d5-9b02-89f2f41b8d90",
@@ -10777,7 +11067,9 @@
       "content": "Dương Gia Nam vừa ứng tuyển vào bài đăng \"Tìm gia sư Tiếng Anh cho lớp 7 tại Phường 7\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "01a0299d-0740-7642-b1d9-44dfac65ee75"
     },
     {
       "id": "01a02b18-cde8-76e9-9df9-965a67ee9bbb",
@@ -10787,7 +11079,9 @@
       "content": "Khóa học từ bài đăng \"Tìm gia sư Vật lý cho lớp 12 tại Phường Linh Trung\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019efc8b-30e8-78e4-9ccb-77cd7970073b"
     },
     {
       "id": "01a02d22-a7a8-7e56-821f-e8b58441971c",
@@ -10797,7 +11091,9 @@
       "content": "Có bài đăng \"Gia sư IELTS nhận dạy Đại học khu vực Phường Bến Nghé\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe"
+      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "targetType": "POST",
+      "targetId": "01a02d1f-e888-7586-906e-f8a315097f5e"
     },
     {
       "id": "01a02e29-4238-7bc1-84b5-acde5d565541",
@@ -10807,7 +11103,9 @@
       "content": "Có bài đăng \"Gia sư Toán nhận dạy Đại học (dạy online)\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe"
+      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "targetType": "POST",
+      "targetId": "01a02e22-d998-7cc0-b2d9-03737ff2339a"
     },
     {
       "id": "01a02e8c-9bd0-7a30-8f11-ed657f4ac79b",
@@ -10817,7 +11115,9 @@
       "content": "Lý Minh Dũng vừa ứng tuyển vào bài đăng \"Tìm gia sư Tiếng Anh cho lớp 7 tại Phường 7\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "01a0299d-0740-7642-b1d9-44dfac65ee75"
     },
     {
       "id": "01a02ea0-9518-7705-bbf0-5e2761c5c129",
@@ -10827,7 +11127,9 @@
       "content": "Vũ Thị My vừa ứng tuyển vào bài đăng \"Gia sư IELTS nhận dạy Đại học khu vực Phường Bến Nghé\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "POST",
+      "targetId": "01a02d1f-e888-7586-906e-f8a315097f5e"
     },
     {
       "id": "01a02f68-bf48-7598-8756-8ef983aab1a7",
@@ -10837,7 +11139,9 @@
       "content": "Dương Gia Nam vừa ứng tuyển vào bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "POST",
+      "targetId": "01a027e5-fcb8-7ecd-8e74-390c8bc7b6f0"
     },
     {
       "id": "01a0311f-a2c0-7bb1-a6c4-8c4f752aa17e",
@@ -10847,7 +11151,8 @@
       "content": "Rất tiếc, bài đăng \"Tìm gia sư Tiếng Anh cho lớp 7 tại Phường 7\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a03425-16a8-71c9-8060-1ce2cdaef9c8",
@@ -10857,7 +11162,9 @@
       "content": "Vũ Thị My vừa ứng tuyển vào bài đăng \"Gia sư Toán nhận dạy Đại học (dạy online)\".",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "POST",
+      "targetId": "01a02e22-d998-7cc0-b2d9-03737ff2339a"
     },
     {
       "id": "01a0367c-ed40-7ff4-8b92-8235885d0f2f",
@@ -10867,7 +11174,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Tìm gia sư Tiếng Anh cho lớp 7 tại Phường 7\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a03692-0f68-74f4-b2a9-30dc0c0fb3f3",
@@ -10877,7 +11185,8 @@
       "content": "Giao dịch nạp tiền không thành công, vui lòng thử lại.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "WALLET"
     },
     {
       "id": "01a03810-e350-792f-90c2-acb2996e81e8",
@@ -10887,7 +11196,9 @@
       "content": "Có bài đăng \"Cần gia sư Lập trình Python năm 2 tại Phường Phú Mỹ\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "POST",
+      "targetId": "01a0380f-f8f0-71b2-85c8-8e0e4007e5e8"
     },
     {
       "id": "01a0397e-61b8-76e3-ab5d-ad6c753aa0ef",
@@ -10897,7 +11208,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a03a35-7100-7216-ac74-82d0c13eb619",
@@ -10907,7 +11219,9 @@
       "content": "Nguyễn Anh Bảo vừa ứng tuyển vào bài đăng \"Cần gia sư Lập trình Python năm 2 tại Phường Phú Mỹ\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe"
+      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "targetType": "POST",
+      "targetId": "01a0380f-f8f0-71b2-85c8-8e0e4007e5e8"
     },
     {
       "id": "01a03acb-2f67-76bd-9c7d-d30eb97c2e3f",
@@ -10917,7 +11231,8 @@
       "content": "Đã trừ 620.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": false,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "WALLET"
     },
     {
       "id": "01a03d30-6107-7f2a-98d5-050da48f5fbc",
@@ -10927,7 +11242,8 @@
       "content": "Đã trừ 72.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "WALLET"
     },
     {
       "id": "01a03e12-0ef0-7587-a8ed-eb6d1ddcde09",
@@ -10937,7 +11253,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Cần gia sư Lập trình Python năm 2 tại Phường Phú Mỹ\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a03fb7-6638-7ee5-b8bd-b5e7187785b8",
@@ -10947,7 +11264,8 @@
       "content": "Bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a0401d-ec50-7b6c-86e1-a32b51ba3d62",
@@ -10957,7 +11275,9 @@
       "content": "Khóa học từ bài đăng \"Cần gia sư IELTS lớp 10 tại Phường Tân Phong\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "POST",
+      "targetId": "019fe6a3-6dd0-77d2-999f-2b3015dafdd9"
     },
     {
       "id": "01a040c4-f9f0-7533-bd12-a2b477dae49d",
@@ -10977,7 +11297,8 @@
       "content": "Bạn đã nạp 500.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": false,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "WALLET"
     },
     {
       "id": "01a042f3-3818-7267-8ff0-4d8063926513",
@@ -10987,7 +11308,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Gia sư Toán nhận dạy Đại học (dạy online)\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe"
+      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a04325-e4c0-733d-8a7a-cb4ce5451436",
@@ -10997,7 +11319,9 @@
       "content": "Dương Gia Nam đã hủy ứng tuyển vào bài đăng \"Tìm gia sư Tiếng Anh cho lớp 7 tại Phường 7\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "01a0299d-0740-7642-b1d9-44dfac65ee75"
     },
     {
       "id": "01a04369-ba47-7eed-a9bd-5b33bf2e374f",
@@ -11007,7 +11331,8 @@
       "content": "Bạn đã nạp 600.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "WALLET"
     },
     {
       "id": "01a043b0-3157-777d-a6eb-d30cb98b723a",
@@ -11017,7 +11342,8 @@
       "content": "Đã trừ 620.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "WALLET"
     },
     {
       "id": "01a043dd-3670-7345-9479-5c5940b908c7",
@@ -11027,7 +11353,8 @@
       "content": "Bài đăng \"Cần gia sư Lập trình Python năm 2 tại Phường Phú Mỹ\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a0457a-0620-7aa4-885f-28b0798ee2ca",
@@ -11037,7 +11364,9 @@
       "content": "Có bài đăng \"Tìm gia sư Toán cho lớp 7 tại Phường 7\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "01a04573-9d80-7760-a439-be41329fbc3a"
     },
     {
       "id": "01a0457a-f080-77b5-ade5-618f8dc1834d",
@@ -11047,7 +11376,9 @@
       "content": "Có bài đăng \"Tìm gia sư Toán cho lớp 7 tại Phường 7\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "POST",
+      "targetId": "01a04573-9d80-7760-a439-be41329fbc3a"
     },
     {
       "id": "01a04620-a660-721a-8df0-711f2c7df31a",
@@ -11057,7 +11388,9 @@
       "content": "Có bài đăng \"Gia sư Vật lý nhận dạy Đại học (dạy online)\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe"
+      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "targetType": "POST",
+      "targetId": "01a04618-6900-753b-be40-dce685ae0309"
     },
     {
       "id": "01a04806-f290-77c1-8fb4-345b0a35ef9d",
@@ -11067,7 +11400,9 @@
       "content": "Dương Gia Nam vừa ứng tuyển vào bài đăng \"Tìm gia sư Toán cho lớp 7 tại Phường 7\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "01a04573-9d80-7760-a439-be41329fbc3a"
     },
     {
       "id": "01a048e2-ac90-7106-846a-9e852bb36e26",
@@ -11077,7 +11412,9 @@
       "content": "Vũ Thị My vừa ứng tuyển vào bài đăng \"Gia sư Vật lý nhận dạy Đại học (dạy online)\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "POST",
+      "targetId": "01a04618-6900-753b-be40-dce685ae0309"
     },
     {
       "id": "01a048e2-ac91-7699-bec4-98aa70f8f3f1",
@@ -11087,7 +11424,9 @@
       "content": "Đỗ Gia Quân vừa ứng tuyển vào bài đăng \"Tìm gia sư Toán cho lớp 7 tại Phường 7\".",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "01a04573-9d80-7760-a439-be41329fbc3a"
     },
     {
       "id": "01a04cc1-1f40-736c-832a-f872b3444c9c",
@@ -11097,7 +11436,9 @@
       "content": "Có bài đăng \"Gia sư Tiếng Anh nhận dạy Tiểu học khu vực Phường Tân Phong\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "POST",
+      "targetId": "01a04cbf-4a80-71d6-8cf8-62ea3308ad2c"
     },
     {
       "id": "01a052f8-7610-7c3f-9f31-844493f634d0",
@@ -11107,7 +11448,9 @@
       "content": "Lý Hải Nhi vừa ứng tuyển vào bài đăng \"Gia sư Tiếng Anh nhận dạy Tiểu học khu vực Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "POST",
+      "targetId": "01a04cbf-4a80-71d6-8cf8-62ea3308ad2c"
     },
     {
       "id": "01a05480-8158-7f3e-a8eb-e8c999acd678",
@@ -11127,7 +11470,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Gia sư Vật lý nhận dạy Đại học (dạy online)\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe"
+      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a0558b-7d01-761b-bbac-644ca2efb33a",
@@ -11137,7 +11481,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Gia sư Tiếng Anh nhận dạy Tiểu học khu vực Phường Tân Phong\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a0558b-7d02-7d49-b488-0f083223b2da",
@@ -11147,7 +11492,8 @@
       "content": "Rất tiếc, bài đăng \"Tìm gia sư Toán cho lớp 7 tại Phường 7\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a0558b-7d03-7797-b42e-e4f06f0b9cd7",
@@ -11157,7 +11503,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Tìm gia sư Toán cho lớp 7 tại Phường 7\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a05630-4880-7b49-b186-ec703cb24eff",
@@ -11167,7 +11514,8 @@
       "content": "Bài đăng \"Gia sư Tiếng Anh nhận dạy Tiểu học khu vực Phường Tân Phong\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a0569e-2580-7a3e-857e-88c5f44d6481",
@@ -11177,7 +11525,8 @@
       "content": "Bài đăng \"Tìm gia sư Toán cho lớp 7 tại Phường 7\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a0570f-40bc-7503-a09b-9d4cc1faee8a",
@@ -11187,7 +11536,8 @@
       "content": "Đã trừ 60.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": false,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "WALLET"
     },
     {
       "id": "01a05736-3566-7424-8535-f5e637328b4b",
@@ -11197,7 +11547,8 @@
       "content": "Đã trừ 54.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "WALLET"
     },
     {
       "id": "01a05742-f100-77a0-ab42-bf15f3959a5d",
@@ -11207,7 +11558,8 @@
       "content": "Bài đăng \"Gia sư Vật lý nhận dạy Đại học (dạy online)\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe"
+      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a05a7a-98e7-70b0-a46d-e81d79b7864a",
@@ -11217,7 +11569,8 @@
       "content": "Đã trừ 32.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "WALLET"
     },
     {
       "id": "01a05d3b-23c0-7ffa-a2a3-e8fa955cab67",
@@ -11227,7 +11580,8 @@
       "content": "Bạn đã nạp 500.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "WALLET"
     },
     {
       "id": "01a07669-98b8-722c-aea1-e26eff430650",
@@ -11237,7 +11591,9 @@
       "content": "Khóa học từ bài đăng \"Cần gia sư Tin học lớp 12 tại Phường Linh Trung\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "019ff129-0c38-7ba8-8583-93e30a681cfe"
     },
     {
       "id": "01a07c34-d3c0-7bb5-acdd-a431cf088062",
@@ -11257,7 +11613,8 @@
       "content": "Bạn đã nạp 200.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": false,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "WALLET"
     },
     {
       "id": "01a08656-7c50-7ad4-b1f2-320702382802",
@@ -11267,7 +11624,8 @@
       "content": "Bạn đã nạp 300.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "WALLET"
     },
     {
       "id": "01a09743-8238-77ec-9721-ef1a546157cf",
@@ -11277,7 +11635,9 @@
       "content": "Khóa học từ bài đăng \"Tìm gia sư Toán cho lớp 4 tại Phường 12\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "POST",
+      "targetId": "01a027e5-fcb8-7ecd-8e74-390c8bc7b6f0"
     },
     {
       "id": "01a09f57-0f30-74e8-8d46-42f4ab8b7cb5",
@@ -11287,7 +11647,9 @@
       "content": "Có bài đăng \"Gia sư Lịch sử nhận dạy THPT khu vực Phường Hiệp Bình Chánh\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "01a09f50-a690-79d4-aaa7-4bf1d5fbdf75"
     },
     {
       "id": "01a09f58-e3f0-75a9-9a28-261133b4175f",
@@ -11297,7 +11659,9 @@
       "content": "Có bài đăng \"Gia sư Lịch sử nhận dạy THPT khu vực Phường Hiệp Bình Chánh\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "POST",
+      "targetId": "01a09f50-a690-79d4-aaa7-4bf1d5fbdf75"
     },
     {
       "id": "01a0a312-9478-73c6-8073-7f7e6347e1ea",
@@ -11307,7 +11671,9 @@
       "content": "Khóa học từ bài đăng \"Tìm gia sư Hóa học cho lớp 9 tại Phường Linh Trung\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "019ff49f-27f8-7e2a-99e6-eabc53777334"
     },
     {
       "id": "01a0a7e6-11a0-7e9b-81d5-d95983a9d2c6",
@@ -11317,7 +11683,9 @@
       "content": "Phạm Anh Tâm vừa ứng tuyển vào bài đăng \"Gia sư Lịch sử nhận dạy THPT khu vực Phường Hiệp Bình Chánh\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "POST",
+      "targetId": "01a09f50-a690-79d4-aaa7-4bf1d5fbdf75"
     },
     {
       "id": "01a0a99d-85a0-78b4-8400-f7b221c9df1f",
@@ -11327,7 +11695,9 @@
       "content": "Phạm Thanh Linh vừa ứng tuyển vào bài đăng \"Gia sư Lịch sử nhận dạy THPT khu vực Phường Hiệp Bình Chánh\".",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "POST",
+      "targetId": "01a09f50-a690-79d4-aaa7-4bf1d5fbdf75"
     },
     {
       "id": "01a0a9a8-b100-7a18-9276-fade035fec8b",
@@ -11337,7 +11707,9 @@
       "content": "Khóa học từ bài đăng \"Gia sư Vật lý nhận dạy Đại học (dạy online)\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "POST",
+      "targetId": "01a04618-6900-753b-be40-dce685ae0309"
     },
     {
       "id": "01a0aa79-3fa0-7b18-94b4-9bc6d2a8fa19",
@@ -11347,7 +11719,9 @@
       "content": "Phạm Mai Anh vừa ứng tuyển vào bài đăng \"Gia sư Lịch sử nhận dạy THPT khu vực Phường Hiệp Bình Chánh\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "POST",
+      "targetId": "01a09f50-a690-79d4-aaa7-4bf1d5fbdf75"
     },
     {
       "id": "01a0adb1-1210-724a-a91a-32d8ef89f809",
@@ -11357,7 +11731,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư Lịch sử nhận dạy THPT khu vực Phường Hiệp Bình Chánh\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62"
+      "recipientId": "019d6f2a-a900-7a3d-805d-b8cb033f9f62",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a0adb1-1211-7e0f-b46a-c82c5e96c234",
@@ -11367,7 +11742,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư Lịch sử nhận dạy THPT khu vực Phường Hiệp Bình Chánh\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a0adb1-1212-701f-9bb1-65130ab11939",
@@ -11377,7 +11753,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Gia sư Lịch sử nhận dạy THPT khu vực Phường Hiệp Bình Chánh\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a0aff0-b940-75b6-bea0-f5a76fb39639",
@@ -11397,7 +11774,8 @@
       "content": "Đã trừ 42.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f"
+      "recipientId": "019d53b3-6900-79c2-bebd-1cd63e6bde5f",
+      "targetType": "WALLET"
     },
     {
       "id": "01a0b18d-d710-720e-8f93-a673f0e0d8cf",
@@ -11407,7 +11785,8 @@
       "content": "Bài đăng \"Gia sư Lịch sử nhận dạy THPT khu vực Phường Hiệp Bình Chánh\" đã được xác nhận. Chúc hai bên có những buổi học hiệu quả!",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a0b1bd-37f8-7834-81f0-262688d562ec",
@@ -11417,7 +11796,9 @@
       "content": "Khóa học từ bài đăng \"Gia sư Vật lý nhận dạy THCS khu vực Phường 12\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "019f828a-cf78-70b4-ba4d-52e206c41ee2"
     },
     {
       "id": "01a0b2e2-c080-74b9-a34a-29a5808e0f8a",
@@ -11427,7 +11808,9 @@
       "content": "Khóa học từ bài đăng \"Gia sư Tiếng Anh nhận dạy Tiểu học khu vực Phường Tân Phong\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "POST",
+      "targetId": "01a04cbf-4a80-71d6-8cf8-62ea3308ad2c"
     },
     {
       "id": "01a0b32a-8780-718c-9feb-c11622954b9f",
@@ -11447,7 +11830,9 @@
       "content": "Có bài đăng \"Gia sư Hóa học nhận dạy THCS khu vực Phường Tân Phong\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "01a0bcc1-4590-73db-a78c-62ff67df0bfb"
     },
     {
       "id": "01a0bcc4-04b0-7f21-a623-6dddf504da7a",
@@ -11457,7 +11842,9 @@
       "content": "Có bài đăng \"Gia sư Hóa học nhận dạy THCS khu vực Phường Tân Phong\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "01a0bcc1-4590-73db-a78c-62ff67df0bfb"
     },
     {
       "id": "01a0be42-3488-7b2f-8e85-98af3cf92674",
@@ -11477,7 +11864,9 @@
       "content": "Lê Minh Long vừa ứng tuyển vào bài đăng \"Gia sư Hóa học nhận dạy THCS khu vực Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "POST",
+      "targetId": "01a0bcc1-4590-73db-a78c-62ff67df0bfb"
     },
     {
       "id": "01a0c0d5-2020-7bc8-ab9f-3249d396f4c2",
@@ -11487,7 +11876,9 @@
       "content": "Ngô Hải Uyên vừa ứng tuyển vào bài đăng \"Gia sư Hóa học nhận dạy THCS khu vực Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "POST",
+      "targetId": "01a0bcc1-4590-73db-a78c-62ff67df0bfb"
     },
     {
       "id": "01a0c255-7e90-71b4-bdab-69f6e8a28fe6",
@@ -11497,7 +11888,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư Hóa học nhận dạy THCS khu vực Phường Tân Phong\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a0c2fa-b388-70f6-8da2-1062c4b8fe67",
@@ -11517,7 +11909,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Gia sư Hóa học nhận dạy THCS khu vực Phường Tân Phong\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a0cb80-7419-7f0d-85e1-45468b321518",
@@ -11527,7 +11920,8 @@
       "content": "Đã trừ 500.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "WALLET"
     },
     {
       "id": "01a0cc8f-c000-73b1-b951-b2150ee34a3d",
@@ -11547,7 +11941,9 @@
       "content": "Khóa học từ bài đăng \"Gia sư Toán nhận dạy THPT (dạy online)\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c"
+      "recipientId": "019d5fef-6de0-742a-a365-ce5b408dde6c",
+      "targetType": "POST",
+      "targetId": "019ff391-2eb0-7695-87d2-9f6c5b518854"
     },
     {
       "id": "01a0f05b-e388-7185-a5b2-6b4a09713e6c",
@@ -11557,7 +11953,8 @@
       "content": "Giao dịch nạp tiền không thành công, vui lòng thử lại.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "WALLET"
     },
     {
       "id": "01a0f6f3-3890-76bd-aba2-abf170229df2",
@@ -11567,7 +11964,9 @@
       "content": "Có bài đăng \"Gia sư Toán nhận dạy THCS khu vực Phường 12\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": false,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "01a0f6f2-4e30-767d-b4c2-af54452d97e6"
     },
     {
       "id": "01a0f6fb-75f0-75f6-adae-663677779433",
@@ -11577,7 +11976,9 @@
       "content": "Có bài đăng \"Gia sư Toán nhận dạy THCS khu vực Phường 12\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "01a0f6f2-4e30-767d-b4c2-af54452d97e6"
     },
     {
       "id": "01a0fada-61b8-7c23-8b20-68092ec15ac4",
@@ -11597,7 +11998,9 @@
       "content": "Ngô Hải Uyên vừa ứng tuyển vào bài đăng \"Gia sư Toán nhận dạy THCS khu vực Phường 12\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "01a0f6f2-4e30-767d-b4c2-af54452d97e6"
     },
     {
       "id": "01a10552-e0c0-7189-ac63-342c095f2cc2",
@@ -11607,7 +12010,9 @@
       "content": "Lê Minh Long vừa ứng tuyển vào bài đăng \"Gia sư Toán nhận dạy THCS khu vực Phường 12\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "01a0f6f2-4e30-767d-b4c2-af54452d97e6"
     },
     {
       "id": "01a113b3-2530-7666-a842-56ff7f19a7f5",
@@ -11617,7 +12022,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư Toán nhận dạy THCS khu vực Phường 12\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a113b3-2531-7126-bc5f-66d94516e652",
@@ -11627,7 +12033,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Gia sư Toán nhận dạy THCS khu vực Phường 12\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a1163a-9b30-753b-8797-4c92166e3020",
@@ -11637,7 +12044,9 @@
       "content": "Có bài đăng \"Tìm gia sư Tiếng Anh cho năm 2 tại Phường Phú Mỹ\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "POST",
+      "targetId": "01a11637-dc10-789a-9f58-fb71a68dbb7d"
     },
     {
       "id": "01a1196f-fca0-7d4d-bce5-1bce79884fbf",
@@ -11647,7 +12056,9 @@
       "content": "Lê Anh Nam vừa ứng tuyển vào bài đăng \"Tìm gia sư Tiếng Anh cho năm 2 tại Phường Phú Mỹ\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe"
+      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "targetType": "POST",
+      "targetId": "01a11637-dc10-789a-9f58-fb71a68dbb7d"
     },
     {
       "id": "01a119bc-2433-73ab-9ea4-d1876050b444",
@@ -11657,7 +12068,8 @@
       "content": "Đã trừ 52.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "WALLET"
     },
     {
       "id": "01a11a4f-cd80-718e-b95f-9e03b0ead84e",
@@ -11667,7 +12079,9 @@
       "content": "Khóa học từ bài đăng \"Tìm gia sư Toán cho lớp 7 tại Phường 7\" đã hoàn thành.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "01a12514-f588-7a7a-b7e9-6b570f62625b"
     },
     {
       "id": "01a12436-2e48-7c9c-9cd0-82adfced198b",
@@ -11677,7 +12091,9 @@
       "content": "Có bài đăng \"Tìm gia sư IELTS cho năm 2\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "POST",
+      "targetId": "01a1242e-db48-7454-8530-4b1c62a78e5b"
     },
     {
       "id": "01a12518-9f08-7aa1-9a27-6e095d065edb",
@@ -11687,7 +12103,9 @@
       "content": "Có bài đăng \"Tìm gia sư Toán cho lớp 7 tại Phường 7\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "POST",
+      "targetId": "01a12514-f588-7a7a-b7e9-6b570f62625b"
     },
     {
       "id": "01a1251c-4888-7dbc-a5fc-1170192c930c",
@@ -11697,7 +12115,9 @@
       "content": "Có bài đăng \"Tìm gia sư Toán cho lớp 7 tại Phường 7\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "01a12514-f588-7a7a-b7e9-6b570f62625b"
     },
     {
       "id": "01a12a31-1858-727d-a0aa-a2dab6b15712",
@@ -11707,7 +12127,9 @@
       "content": "Lê Anh Nam vừa ứng tuyển vào bài đăng \"Tìm gia sư IELTS cho năm 2\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe"
+      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "targetType": "POST",
+      "targetId": "01a1242e-db48-7454-8530-4b1c62a78e5b"
     },
     {
       "id": "01a12a72-6718-79ba-b9b3-854ee9796a06",
@@ -11717,7 +12139,9 @@
       "content": "Đỗ Gia Quân vừa ứng tuyển vào bài đăng \"Tìm gia sư Toán cho lớp 7 tại Phường 7\".",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "01a12514-f588-7a7a-b7e9-6b570f62625b"
     },
     {
       "id": "01a12cfb-0dc8-7541-a846-2ba642ed2b23",
@@ -11727,7 +12151,8 @@
       "content": "Bạn đã được chọn cho bài đăng \"Tìm gia sư IELTS cho năm 2\". Vui lòng chờ xác nhận.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a12e9c-f240-7398-bbd7-978cc2d6bb1f",
@@ -11737,7 +12162,9 @@
       "content": "Có bài đăng \"Tìm gia sư Tiếng Anh cho lớp 4 tại Phường 12\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "POST",
+      "targetId": "01a12e9c-07e0-71db-91db-2546f02e1fa2"
     },
     {
       "id": "01a12ea5-2fa0-77ce-a3eb-3d858a8600f0",
@@ -11747,7 +12174,9 @@
       "content": "Có bài đăng \"Tìm gia sư Tiếng Anh cho lớp 4 tại Phường 12\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": false,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "POST",
+      "targetId": "01a12e9c-07e0-71db-91db-2546f02e1fa2"
     },
     {
       "id": "01a12f1c-d271-7f6b-b9a5-41f1f8c04895",
@@ -11757,7 +12186,8 @@
       "content": "Đã trừ 38.000đ phí nhận lớp từ ví.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "WALLET"
     },
     {
       "id": "01a12f20-3f88-7583-a7da-5ca49aec5ef9",
@@ -11777,7 +12207,9 @@
       "content": "Có bài đăng \"Tìm gia sư Tiếng Anh cho lớp 9 tại Phường Linh Trung\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "POST",
+      "targetId": "01a12fe3-be68-7ceb-b2ca-88bbd18cc035"
     },
     {
       "id": "01a12fe8-5249-7e40-8308-108ed2e71391",
@@ -11787,7 +12219,9 @@
       "content": "Có bài đăng \"Tìm gia sư Tiếng Anh cho lớp 9 tại Phường Linh Trung\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "POST",
+      "targetId": "01a12fe3-be68-7ceb-b2ca-88bbd18cc035"
     },
     {
       "id": "01a12ff8-2510-7719-b8e7-8fa1f1adeb06",
@@ -11797,7 +12231,9 @@
       "content": "Có bài đăng \"Gia sư Lập trình Python nhận dạy Đại học (dạy online)\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe"
+      "recipientId": "019d62b3-21c0-76dc-ace6-747b761240fe",
+      "targetType": "POST",
+      "targetId": "01a12ff6-5050-7f33-a73a-924e421c0c86"
     },
     {
       "id": "01a131be-1418-778a-bc4d-73e47bc7f999",
@@ -11807,7 +12243,9 @@
       "content": "Dương Gia Nam vừa ứng tuyển vào bài đăng \"Tìm gia sư Toán cho lớp 7 tại Phường 7\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "01a12514-f588-7a7a-b7e9-6b570f62625b"
     },
     {
       "id": "01a13252-b6e0-78e4-a0b5-9b7aea6fb62f",
@@ -11817,7 +12255,9 @@
       "content": "Vũ Thị My vừa ứng tuyển vào bài đăng \"Gia sư Lập trình Python nhận dạy Đại học (dạy online)\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255"
+      "recipientId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "targetType": "POST",
+      "targetId": "01a12ff6-5050-7f33-a73a-924e421c0c86"
     },
     {
       "id": "01a13389-bbf8-7271-81c5-aea982da6520",
@@ -11827,7 +12267,9 @@
       "content": "Dương Gia Nam vừa ứng tuyển vào bài đăng \"Tìm gia sư Tiếng Anh cho lớp 9 tại Phường Linh Trung\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "01a12fe3-be68-7ceb-b2ca-88bbd18cc035"
     },
     {
       "id": "01a13404-bc40-72b5-a53a-4d150ebd3067",
@@ -11837,7 +12279,8 @@
       "content": "Bạn đã nạp 100.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": false,
-      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc"
+      "recipientId": "019d4b9d-6720-7794-be4e-8745dee7fbbc",
+      "targetType": "WALLET"
     },
     {
       "id": "01a134d5-3370-73f1-962b-f3f709de771c",
@@ -11847,7 +12290,9 @@
       "content": "Dương Gia Nam vừa ứng tuyển vào bài đăng \"Tìm gia sư Tiếng Anh cho lớp 4 tại Phường 12\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "POST",
+      "targetId": "01a12e9c-07e0-71db-91db-2546f02e1fa2"
     },
     {
       "id": "01a1368a-9fe8-7db5-966b-43504077dcce",
@@ -11857,7 +12302,8 @@
       "content": "Rất tiếc, bài đăng \"Tìm gia sư Tiếng Anh cho lớp 9 tại Phường Linh Trung\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a1398b-d1f8-71b5-b41e-6cc8443a74c3",
@@ -11867,7 +12313,9 @@
       "content": "Hồ Hải Uyên vừa ứng tuyển vào bài đăng \"Tìm gia sư Tiếng Anh cho lớp 9 tại Phường Linh Trung\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "01a12fe3-be68-7ceb-b2ca-88bbd18cc035"
     },
     {
       "id": "01a13c20-e070-71f4-9374-32cdaeb03509",
@@ -11877,7 +12325,9 @@
       "content": "Lý Minh Dũng vừa ứng tuyển vào bài đăng \"Tìm gia sư Tiếng Anh cho lớp 4 tại Phường 12\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "POST",
+      "targetId": "01a12e9c-07e0-71db-91db-2546f02e1fa2"
     },
     {
       "id": "01a13dd8-2d60-72b8-92ce-0bf2a3950687",
@@ -11887,7 +12337,8 @@
       "content": "Rất tiếc, bài đăng \"Tìm gia sư Tiếng Anh cho lớp 4 tại Phường 12\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a13f18-a858-771a-bbc6-96f75a72e0d0",
@@ -11897,7 +12348,9 @@
       "content": "Có bài đăng \"Gia sư Toán nhận dạy THPT khu vực Phường 12\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "POST",
+      "targetId": "01a13f17-bdf8-7692-8303-2472ea9809fa"
     },
     {
       "id": "01a13f19-92b8-7603-93a0-bf983d349d3e",
@@ -11907,7 +12360,9 @@
       "content": "Có bài đăng \"Gia sư Toán nhận dạy THPT khu vực Phường 12\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "01a13f17-bdf8-7692-8303-2472ea9809fa"
     },
     {
       "id": "01a14286-cd08-7b0d-b1d2-fc7001e94ee7",
@@ -11917,7 +12372,9 @@
       "content": "Phạm Thanh Linh vừa ứng tuyển vào bài đăng \"Gia sư Toán nhận dạy THPT khu vực Phường 12\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "01a13f17-bdf8-7692-8303-2472ea9809fa"
     },
     {
       "id": "01a142f2-5078-7cbb-9762-2045336ec185",
@@ -11927,7 +12384,9 @@
       "content": "Có bài đăng \"Cần gia sư Toán lớp 9 học online\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "01a142f0-7bb8-7fb4-95d1-d3cebe093f6f"
     },
     {
       "id": "01a142f5-0f98-74cf-be99-557d5950b763",
@@ -11937,7 +12396,9 @@
       "content": "Có bài đăng \"Cần gia sư Toán lớp 9 học online\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "POST",
+      "targetId": "01a142f0-7bb8-7fb4-95d1-d3cebe093f6f"
     },
     {
       "id": "01a147e0-1048-716c-afcd-2cbbd64353c1",
@@ -11947,7 +12408,9 @@
       "content": "Dương Gia Nam vừa ứng tuyển vào bài đăng \"Cần gia sư Toán lớp 9 học online\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "01a142f0-7bb8-7fb4-95d1-d3cebe093f6f"
     },
     {
       "id": "01a14851-f488-7874-821b-5487257d70ca",
@@ -11957,7 +12420,9 @@
       "content": "Phạm Mai Anh vừa ứng tuyển vào bài đăng \"Gia sư Toán nhận dạy THPT khu vực Phường 12\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "01a13f17-bdf8-7692-8303-2472ea9809fa"
     },
     {
       "id": "01a14c65-80f8-7d92-b48d-1fde0baf701d",
@@ -11967,7 +12432,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư Toán nhận dạy THPT khu vực Phường 12\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a14f2b-bd48-7354-b428-9a2b8d2a70d2",
@@ -11977,7 +12443,9 @@
       "content": "Đỗ Gia Quân vừa ứng tuyển vào bài đăng \"Cần gia sư Toán lớp 9 học online\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "01a142f0-7bb8-7fb4-95d1-d3cebe093f6f"
     },
     {
       "id": "01a1574e-0b98-7f60-bc5e-1da6c031107c",
@@ -11987,7 +12455,9 @@
       "content": "Có bài đăng \"Gia sư Sinh học nhận dạy THCS khu vực Phường Tân Phong\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7"
+      "recipientId": "019d5488-ba60-7064-aee9-a80c3c5dece7",
+      "targetType": "POST",
+      "targetId": "01a15746-b898-745c-ae7a-b5f8afe5133b"
     },
     {
       "id": "01a1574e-0b99-7100-bb86-20dd21965cae",
@@ -11997,7 +12467,9 @@
       "content": "Có bài đăng \"Gia sư Sinh học nhận dạy THCS khu vực Phường Tân Phong\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "01a15746-b898-745c-ae7a-b5f8afe5133b"
     },
     {
       "id": "01a158ab-0b58-760f-8493-ede19fddba63",
@@ -12007,7 +12479,9 @@
       "content": "Có bài đăng \"Gia sư Piano nhận dạy Tiểu học khu vực Phường 25\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "POST",
+      "targetId": "01a158aa-20f8-7c17-92fb-0656c312930d"
     },
     {
       "id": "01a15da7-9c20-7095-ba23-4465c352b554",
@@ -12017,7 +12491,9 @@
       "content": "Có bài đăng \"Gia sư Sinh học nhận dạy THPT khu vực Phường Tân Phong\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b"
+      "recipientId": "019d4764-2a40-7a87-b0d2-dcba8c64189b",
+      "targetType": "POST",
+      "targetId": "01a15da6-b1c0-7c21-9d35-db7f10557940"
     },
     {
       "id": "01a15da8-8680-7472-a5dc-cd2e783f991d",
@@ -12027,7 +12503,9 @@
       "content": "Có bài đăng \"Gia sư Sinh học nhận dạy THPT khu vực Phường Tân Phong\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "POST",
+      "targetId": "01a15da6-b1c0-7c21-9d35-db7f10557940"
     },
     {
       "id": "01a15e07-9288-7437-9b0b-c766fe6cc950",
@@ -12037,7 +12515,9 @@
       "content": "Lý Hải Nhi vừa ứng tuyển vào bài đăng \"Gia sư Piano nhận dạy Tiểu học khu vực Phường 25\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd"
+      "recipientId": "019d64d2-f480-7f0c-876e-46b66ee04dcd",
+      "targetType": "POST",
+      "targetId": "01a158aa-20f8-7c17-92fb-0656c312930d"
     },
     {
       "id": "01a15f37-5828-7fd4-8afc-6c06c9adda93",
@@ -12047,7 +12527,9 @@
       "content": "Ngô Hải Uyên vừa ứng tuyển vào bài đăng \"Gia sư Sinh học nhận dạy THCS khu vực Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "POST",
+      "targetId": "01a15746-b898-745c-ae7a-b5f8afe5133b"
     },
     {
       "id": "01a1615c-a928-77a2-8a5f-385b18387448",
@@ -12057,7 +12539,9 @@
       "content": "Lê Minh Long vừa ứng tuyển vào bài đăng \"Gia sư Sinh học nhận dạy THCS khu vực Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "POST",
+      "targetId": "01a15746-b898-745c-ae7a-b5f8afe5133b"
     },
     {
       "id": "01a164f2-85d0-7517-b7b8-ee298ac1b4e5",
@@ -12067,7 +12551,9 @@
       "content": "Phạm Mai Anh vừa ứng tuyển vào bài đăng \"Gia sư Sinh học nhận dạy THPT khu vực Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "POST",
+      "targetId": "01a15da6-b1c0-7c21-9d35-db7f10557940"
     },
     {
       "id": "01a165ce-3fd0-7059-bee5-e2f89658e855",
@@ -12077,7 +12563,9 @@
       "content": "Phạm Anh Tâm vừa ứng tuyển vào bài đăng \"Gia sư Sinh học nhận dạy THPT khu vực Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b"
+      "recipientId": "019d503d-2e00-72e4-88f8-399afb33115b",
+      "targetType": "POST",
+      "targetId": "01a15da6-b1c0-7c21-9d35-db7f10557940"
     },
     {
       "id": "01a16af4-74c0-7d44-aa7e-bc93e0412ed5",
@@ -12087,7 +12575,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư Sinh học nhận dạy THPT khu vực Phường Tân Phong\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": true,
-      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae"
+      "recipientId": "019d4ddb-7040-7f6b-b56a-abda14ac4aae",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a16da0-7638-7a92-99e2-1004b29c14d5",
@@ -12097,7 +12586,8 @@
       "content": "Bạn đã nạp 300.000đ vào ví qua MOMO.",
       "notificationType": "TRANSACTION",
       "isRead": true,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "WALLET"
     },
     {
       "id": "01a17bcd-fa78-70c9-86ee-e818cae6e29f",
@@ -12107,7 +12597,9 @@
       "content": "Có bài đăng \"Gia sư Toán nhận dạy Tiểu học khu vực Phường Tân Phong\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": true,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "POST",
+      "targetId": "01a17bc4-d2b8-7451-b70d-97aefbf9fb49"
     },
     {
       "id": "01a18310-a6c8-79f2-a666-27de058597fb",
@@ -12117,7 +12609,9 @@
       "content": "Lý Hải Nhi vừa ứng tuyển vào bài đăng \"Gia sư Toán nhận dạy Tiểu học khu vực Phường Tân Phong\".",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc"
+      "recipientId": "019d5c54-93e0-7645-ae87-14a1fda92cfc",
+      "targetType": "POST",
+      "targetId": "01a17bc4-d2b8-7451-b70d-97aefbf9fb49"
     },
     {
       "id": "01a185bf-57c0-7d9b-affe-be604921f060",
@@ -12127,7 +12621,9 @@
       "content": "Có bài đăng \"Tìm gia sư Vật lý cho lớp 9 tại Phường Linh Trung\" phù hợp với chuyên môn/nhu cầu của bạn.",
       "notificationType": "MATCHING",
       "isRead": false,
-      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef"
+      "recipientId": "019d473c-cc20-7e30-9125-b2ad43149aef",
+      "targetType": "POST",
+      "targetId": "01a185b7-1a60-785b-8f49-d34d3e5163d8"
     },
     {
       "id": "01a1886d-ca38-72de-953c-bca5c16c6b1f",
@@ -12137,7 +12633,8 @@
       "content": "Rất tiếc, bài đăng \"Gia sư Toán nhận dạy Tiểu học khu vực Phường Tân Phong\" đã chọn ứng viên khác hoặc từ chối hồ sơ của bạn.",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e"
+      "recipientId": "019d5b3b-82c0-7fdc-9a40-7828d1ffdf5e",
+      "targetType": "MY_APPLICATIONS"
     },
     {
       "id": "01a188ef-3af0-73a3-a9cd-26c3b3a4b371",
@@ -12147,7 +12644,9 @@
       "content": "Đỗ Gia Quân vừa ứng tuyển vào bài đăng \"Tìm gia sư Vật lý cho lớp 9 tại Phường Linh Trung\".",
       "notificationType": "APPLICATION",
       "isRead": false,
-      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff"
+      "recipientId": "019d694a-72e0-7614-8729-469cbded25ff",
+      "targetType": "POST",
+      "targetId": "01a185b7-1a60-785b-8f49-d34d3e5163d8"
     }
   ],
   "revenueReports": [

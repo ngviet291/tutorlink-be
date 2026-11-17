@@ -18,10 +18,10 @@ import org.group3.tutorlink.features.application.mapper.ApplicationMapper;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
 import org.group3.tutorlink.features.application.service.ApplicationService;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
 import org.group3.tutorlink.features.notification.enums.NotificationType;
 import org.group3.tutorlink.features.notification.service.NotificationCreator;
 import org.group3.tutorlink.features.payment.enums.TransactionStatus;
-import org.group3.tutorlink.features.payment.service.RefundService;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
@@ -58,7 +58,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final SystemLogPublisher systemLogPublisher;
     private final ApplicationEventPublisher eventPublisher;
     private final NotificationCreator notificationCreator;
-    private final RefundService refundService;
 
     private static final String NOTI_APPLICATION_CREATED_TITLE = "Bạn có đơn ứng tuyển mới";
     private static final String NOTI_APPLICATION_SELECTED_TITLE = "Bạn được chọn nhận lớp";
@@ -143,7 +142,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         notifyUser(post.getAuthor(), NotificationType.APPLICATION,
                 NOTI_APPLICATION_CREATED_TITLE,
-                String.format("%s đã ứng tuyển vào bài \"%s\"", currentUser.getFullName(), post.getTitle()));
+                String.format("%s đã ứng tuyển vào bài \"%s\"", currentUser.getFullName(), post.getTitle()),
+                NotificationTarget.POST, post.getId());
         return applicationMapper.toApplicationResponse(saved);
     }
 
@@ -264,26 +264,15 @@ public class ApplicationServiceImpl implements ApplicationService {
         Application saved = applicationRepository.save(application);
 
         User applicant = applicantOf(saved);
-        // [PAYMENT-NOTI] Phí luôn do gia sư trả — chỉ nhắc người trả phí, không báo nhầm student.
-        // FIND_TUTOR: gia sư là ứng viên (applicant) -> nhắc applicant thanh toán như cũ.
-        // FIND_STUDENT: gia sư là chủ bài -> nhắc chủ bài thanh toán, báo học viên đang chờ.
-        if (post.getType() == PostType.FIND_STUDENT) {
-            notifyUser(post.getAuthor(), NotificationType.APPLICATION,
-                    NOTI_APPLICATION_SELECTED_TITLE,
-                    String.format("Bạn đã chọn %s cho bài \"%s\". Vui lòng thanh toán phí trong thời hạn quy định.",
-                            applicantName(saved), post.getTitle()));
-            notifyUser(applicant, NotificationType.APPLICATION,
-                    NOTI_APPLICATION_SELECTED_TITLE,
-                    String.format("Bạn được chọn cho bài \"%s\". Vui lòng chờ gia sư thanh toán phí.", post.getTitle()));
-        } else {
-            notifyUser(applicant, NotificationType.APPLICATION,
-                    NOTI_APPLICATION_SELECTED_TITLE,
-                    String.format("Bạn được chọn cho bài \"%s\". Vui lòng thanh toán phí trong thời hạn quy định.", post.getTitle()));
-        }
+        notifyUser(applicant, NotificationType.APPLICATION,
+                NOTI_APPLICATION_SELECTED_TITLE,
+                String.format("Bạn được chọn cho bài \"%s\". Vui lòng thanh toán phí trong thời hạn quy định.", post.getTitle()),
+                NotificationTarget.MY_APPLICATIONS, null);
         for (Application rejected : rejectedOthers) {
             notifyUser(applicantOf(rejected), NotificationType.APPLICATION,
                     NOTI_APPLICATION_REJECTED_TITLE,
-                    String.format("Bài \"%s\" đã chọn ứng viên khác.", post.getTitle()));
+                    String.format("Bài \"%s\" đã chọn ứng viên khác.", post.getTitle()),
+                    NotificationTarget.MY_APPLICATIONS, null);
         }
         return applicationMapper.toApplicationResponse(saved);
     }
@@ -309,7 +298,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         Application saved = applicationRepository.save(application);
         notifyUser(applicantOf(saved), NotificationType.APPLICATION,
                 NOTI_APPLICATION_REJECTED_TITLE,
-                String.format("Đơn ứng tuyển của bạn vào bài \"%s\" đã bị từ chối.", post.getTitle()));
+                String.format("Đơn ứng tuyển của bạn vào bài \"%s\" đã bị từ chối.", post.getTitle()),
+                NotificationTarget.MY_APPLICATIONS, null);
         return applicationMapper.toApplicationResponse(saved);
     }
 
@@ -323,10 +313,6 @@ public class ApplicationServiceImpl implements ApplicationService {
         Post post = application.getPost();
 
         if (application.getApplicationStatus() != ApplicationStatus.ACCEPTED) {
-            throw new AppException(ErrorCodeApplication.INVALID_APPLICATION_STATUS);
-        }
-
-        if (post.getStatus() != PostStatus.PENDING) {
             throw new AppException(ErrorCodeApplication.INVALID_APPLICATION_STATUS);
         }
 
@@ -354,7 +340,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         Application saved = applicationRepository.save(application);
         notifyUser(post.getAuthor(), NotificationType.APPLICATION,
                 NOTI_APPLICATION_CONFIRMED_TITLE,
-                String.format("%s đã xác nhận lớp học cho bài \"%s\".", applicantName(saved), post.getTitle()));
+                String.format("%s đã xác nhận lớp học cho bài \"%s\".", applicantName(saved), post.getTitle()),
+                NotificationTarget.POST, post.getId());
         return applicationMapper.toApplicationResponse(saved);
     }
 
@@ -385,12 +372,14 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         application.setApplicationStatus(ApplicationStatus.PENDING);
         application.setSelectedAt(null);
-        revertPostToPublished(post);
+        post.setStatus(PostStatus.PUBLISHED);
+        restoreRejectedApplications(post);
 
         Application saved = applicationRepository.save(application);
         notifyUser(applicantOf(saved), NotificationType.APPLICATION,
                 NOTI_APPLICATION_UNSELECTED_TITLE,
-                String.format("Chủ bài đã bỏ chọn bạn cho bài \"%s\". Đơn quay về trạng thái chờ xử lý.", post.getTitle()));
+                String.format("Chủ bài đã bỏ chọn bạn cho bài \"%s\". Đơn quay về trạng thái chờ xử lý.", post.getTitle()),
+                NotificationTarget.MY_APPLICATIONS, null);
         return applicationMapper.toApplicationResponse(saved);
     }
 
@@ -410,20 +399,25 @@ public class ApplicationServiceImpl implements ApplicationService {
         if (!isParticipant || !isStudentOrTutor) {
             throw new ApplicationNotAllowedException();
         }
-        // Chỉ CONFIRMED -> FINISHED; chặn re-finish để không gửi notification lặp
-        if (application.getApplicationStatus() != ApplicationStatus.CONFIRMED) {
+        if (application.getApplicationStatus() != ApplicationStatus.CONFIRMED
+                && application.getApplicationStatus() != ApplicationStatus.FINISHED) {
             throw new ApplicationInvalidStatusException();
         }
         application.setApplicationStatus(ApplicationStatus.FINISHED);
         Application saved = applicationRepository.save(application);
         Post finishedPost = saved.getPost();
-        User other = finishedPost != null && finishedPost.getAuthor() != null
-                && finishedPost.getAuthor().getId().equals(userId)
+        boolean finisherIsAuthor = finishedPost != null && finishedPost.getAuthor() != null
+                && finishedPost.getAuthor().getId().equals(userId);
+        User other = finisherIsAuthor
                 ? applicantOf(saved)
                 : finishedPost != null ? finishedPost.getAuthor() : null;
+        // Người nhận là applicant → xem đơn của tôi; người nhận là chủ bài → xem chi tiết bài
+        NotificationTarget finishedTarget = finisherIsAuthor ? NotificationTarget.MY_APPLICATIONS : NotificationTarget.POST;
+        UUID finishedTargetId = finisherIsAuthor || finishedPost == null ? null : finishedPost.getId();
         notifyUser(other, NotificationType.APPLICATION,
                 NOTI_APPLICATION_FINISHED_TITLE,
-                String.format("Lớp học cho bài \"%s\" đã hoàn thành.", finishedPost != null ? finishedPost.getTitle() : ""));
+                String.format("Lớp học cho bài \"%s\" đã hoàn thành.", finishedPost != null ? finishedPost.getTitle() : ""),
+                finishedTarget, finishedTargetId);
         return applicationMapper.toApplicationResponse(saved);
     }
 
@@ -472,18 +466,17 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         if (currentStatus == ApplicationStatus.ACCEPTED) {
             application.setSelectedAt(null);
-            // Đã trả phí mà applicant hủy -> hoàn lại commission cho tutor
-            if (application.getTransaction() != null
-                    && application.getTransaction().getStatus() == TransactionStatus.SUCCESS) {
-                refundService.refundCommission(application);
+            if (post != null) {
+                post.setStatus(PostStatus.PUBLISHED);
+                restoreRejectedApplications(post);
             }
-            revertPostToPublished(post);
         }
 
         Application saved = applicationRepository.save(application);
         notifyUser(post.getAuthor(), NotificationType.APPLICATION,
                 NOTI_APPLICATION_CANCELLED_TITLE,
-                String.format("%s đã hủy đơn ứng tuyển vào bài \"%s\".", applicantName(saved), post.getTitle()));
+                String.format("%s đã hủy đơn ứng tuyển vào bài \"%s\".", applicantName(saved), post.getTitle()),
+                NotificationTarget.POST, post.getId());
         return applicationMapper.toApplicationResponse(saved);
     }
 
@@ -501,18 +494,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         return applicant != null ? applicant.getFullName() : "Ứng viên";
     }
 
-    private void notifyUser(User recipient, NotificationType type, String title, String content) {
+    private void notifyUser(User recipient, NotificationType type, String title, String content,
+                            NotificationTarget targetType, UUID targetId) {
         if (recipient != null) {
-            notificationCreator.createNotification(recipient.getId(), type, title, content);
-        }
-    }
-
-    // Chỉ mở lại bài khi bài đang PENDING (đang chờ thanh toán/xác nhận).
-    // Post CLOSED/REMOVED không được hồi sinh về PUBLISHED.
-    private void revertPostToPublished(Post post) {
-        if (post != null && post.getStatus() == PostStatus.PENDING) {
-            post.setStatus(PostStatus.PUBLISHED);
-            restoreRejectedApplications(post);
+            notificationCreator.createNotification(recipient.getId(), type, title, content, targetType, targetId);
         }
     }
 

@@ -8,6 +8,7 @@ import org.group3.tutorlink.common.logging.SystemLogPublisher;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
 import org.group3.tutorlink.features.notification.enums.NotificationType;
 import org.group3.tutorlink.features.notification.service.NotificationCreator;
 import org.group3.tutorlink.features.post.dto.request.CreatePostRequest;
@@ -453,7 +454,9 @@ public class PostServiceImpl implements PostService {
                 post.getAuthor().getId(),
                 NotificationType.SYSTEM,
                 ADMIN_REMOVE_POST,
-                String.format("%s %s", ADMIN_REMOVE_POST_REASON, reason)
+                String.format("%s %s", ADMIN_REMOVE_POST_REASON, reason),
+                NotificationTarget.MY_POSTS,
+                null
         );
     }
 }

@@ -6,6 +6,7 @@ import org.group3.tutorlink.features.ai.dto.CertificateSnapshot;
 import org.group3.tutorlink.features.ai.dto.TutorReviewSnapshot;
 import org.group3.tutorlink.features.ai.service.CertificateReviewAiService;
 import org.group3.tutorlink.features.auth.dto.CertificateCheck;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
 import org.group3.tutorlink.features.notification.enums.NotificationType;
 import org.group3.tutorlink.features.notification.service.NotificationCreator;
 import org.group3.tutorlink.features.subject.entity.Certificate;
@@ -184,7 +185,8 @@ public class TutorCertificateReviewService {
 
     private void notify(UUID tutorId, String title, String content) {
         String safe = content.length() > MAX_CONTENT_LENGTH ? content.substring(0, MAX_CONTENT_LENGTH) : content;
-        notificationCreator.createNotification(tutorId, NotificationType.SYSTEM, title, safe);
+        notificationCreator.createNotification(tutorId, NotificationType.SYSTEM, title, safe,
+                NotificationTarget.TUTOR_PROFILE, null);
     }
 
     private static String firstNonBlank(String preferred, String fallback) {
