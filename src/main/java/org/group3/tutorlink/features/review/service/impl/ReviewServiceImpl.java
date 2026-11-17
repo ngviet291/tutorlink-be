@@ -16,6 +16,7 @@ import org.group3.tutorlink.features.review.exception.ReviewApplicationNotFoundE
 import org.group3.tutorlink.features.review.exception.ReviewInvalidApplicationException;
 import org.group3.tutorlink.features.review.exception.ReviewNotFoundException;
 import org.group3.tutorlink.features.review.mapper.ReviewMapper;
+import org.group3.tutorlink.features.review.repository.ReviewComplaintRepository;
 import org.group3.tutorlink.features.review.repository.ReviewRepository;
 import org.group3.tutorlink.features.review.service.ReviewService;
 import org.group3.tutorlink.features.user.entity.Student;
@@ -27,12 +28,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
+    private final ReviewComplaintRepository complaintRepository;
     private final ApplicationRepository applicationRepository;
     private final StudentRepository studentRepository;
     private final AppUtil appUtil;
@@ -86,8 +91,21 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public CursorResponse<ReviewResponse> getReviewsByTutor(UUID tutorId, UUID cursor, int limit) {
         Pageable pageable = PageRequest.of(0, limit + 1);
+        List<Review> items = reviewRepository.findByTutorIdAfterCursor(tutorId, cursor, pageable);
+        // Batch-fill trạng thái khiếu nại (tránh N+1) — FE cần để ẩn/hiện nút complaint
+        if (!items.isEmpty()) {
+            Map<UUID, String> statuses = complaintRepository
+                    .findByReview_IdIn(items.stream().map(Review::getId).toList())
+                    .stream()
+                    .collect(Collectors.toMap(
+                            c -> c.getReview().getId(),
+                            c -> c.getStatus().name(),
+                            (a, b) -> a));
+            items.forEach(r -> r.setComplaintStatus(
+                    statuses.getOrDefault(r.getId(), "NONE")));
+        }
         return appUtil.buildCursorResponse(
-                reviewRepository.findByTutorIdAfterCursor(tutorId, cursor, pageable),
+                items,
                 limit,
                 Review::getId,
                 reviewMapper::toResponse

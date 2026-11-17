@@ -252,19 +252,19 @@ public interface ApplicationRepository
     List<TutorAcceptedRow> countByTutorIdsAndStatus(@Param("tutorIds") Collection<UUID> tutorIds,
                                                     @Param("status") ApplicationStatus status);
 
-    // W1: đơn ACCEPTED đã quá 24h kể từ lúc select mà chưa có transaction SUCCESS
+    // W1: đơn ACCEPTED đã quá payment-window kể từ lúc select mà chưa có transaction SUCCESS.
+    // Không filter post status: post có thể đã CLOSED/REMOVED bởi admin — đơn vẫn phải được dọn,
+    // việc revert post do scheduler quyết định theo status hiện tại.
     @Query("""
             SELECT a FROM Application a
             JOIN FETCH a.post p
             LEFT JOIN FETCH a.transaction t
             WHERE a.applicationStatus = :status
-              AND p.status = :postStatus
               AND a.selectedAt < :cutoff
               AND (t IS NULL OR t.status <> :successStatus)
             """)
     List<Application> findExpiredSelections(
             @Param("status") ApplicationStatus status,
-            @Param("postStatus") PostStatus postStatus,
             @Param("cutoff") Instant cutoff,
             @Param("successStatus") TransactionStatus successStatus
     );

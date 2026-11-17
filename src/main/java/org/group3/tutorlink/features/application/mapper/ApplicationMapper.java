@@ -29,6 +29,7 @@ public abstract class ApplicationMapper {
     @Mapping(target = "processedByAdminId", source = "processedByAdmin.id")
     @Mapping(target = "transactionId", source = "transaction.id")
     @Mapping(target = "transactionStatus", expression = "java(application.getTransaction() != null ? application.getTransaction().getStatus().name() : null)")
+    @Mapping(target = "paidAt", expression = "java(application.getTransaction() != null && application.getTransaction().getStatus() == org.group3.tutorlink.features.payment.enums.TransactionStatus.SUCCESS ? application.getTransaction().getTransactionDate() : null)")
     public abstract ApplicationResponse toApplicationResponse(Application application);
 
     /**

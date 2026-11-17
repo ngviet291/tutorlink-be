@@ -130,6 +130,12 @@ public class ChatService {
     }
 
     public ChatChannel createChannel(User sender, User receiver) {
+        // Channel da ton tai thi tra ve luon - tranh insert trung lam transaction
+        // bi mark rollback-only (DataIntegrityViolationException) roi commit 500.
+        Optional<ChatChannel> existing = chatChannelRepository.findBetween(sender.getId(), receiver.getId());
+        if (existing.isPresent()) {
+            return existing.get();
+        }
         ChatChannel channel = ChatChannel.builder()
                 .id(appUtil.generateUUID())
                 .sender(sender)     // người khởi tạo cuộc trò chuyện
