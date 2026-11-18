@@ -1,7 +1,7 @@
 package org.group3.tutorlink.features.payment.mapper;
 
 import org.group3.tutorlink.features.payment.dto.response.RevenueStatisticsResponse;
-import org.group3.tutorlink.features.payment.repository.RevenueStatisticsRow;
+import org.group3.tutorlink.features.payment.dto.projection.RevenueStatisticsRow;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
