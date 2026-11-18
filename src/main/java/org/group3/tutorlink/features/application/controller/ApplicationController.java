@@ -15,7 +15,6 @@ import org.group3.tutorlink.features.application.service.ApplicationRankingServi
 import org.group3.tutorlink.features.application.service.ApplicationService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import java.util.UUID;
@@ -165,7 +164,6 @@ public class ApplicationController {
     
     // Admin/Post Owner xem tất cả ứng tuyển của 1 bài đăng
     @GetMapping("/post/{postId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ApiResponse<CursorResponse<ApplicationResponse>> getApplicationsByPost(
             @PathVariable UUID postId,
             @RequestParam(required = false) UUID cursor,
