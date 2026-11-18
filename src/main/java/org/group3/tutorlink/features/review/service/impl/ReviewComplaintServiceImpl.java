@@ -81,11 +81,14 @@ public class ReviewComplaintServiceImpl implements ReviewComplaintService {
     }
 
     private ReviewComplaintResponse toResponse(ReviewComplaint complaint) {
-        return ReviewComplaintResponse.builder().id(complaint.getId()).reason(complaint.getReason())
-                .status(complaint.getStatus()).reviewId(complaint.getReview().getId())
-                .applicationId(complaint.getReview().getApplication().getId())
+        return ReviewComplaintResponse.builder()
+                .id(complaint.getId())
+                .reason(complaint.getReason())
+                .status(complaint.getStatus())
+                .reviewId(complaint.getReview().getId())
                 .tutorId(complaint.getTutor().getId())
+                .tutorName(complaint.getTutor().getFullName())
                 .adminId(complaint.getAdmin() == null ? null : complaint.getAdmin().getId())
-                .createdAt(complaint.getCreatedAt()).build();
+                .build();
     }
 }

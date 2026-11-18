@@ -9,5 +9,6 @@ import org.mapstruct.Mapping;
 public interface FeeConfigMapper {
 
     @Mapping(source = "createdByAdmin.id", target = "createdByAdminId")
+    @Mapping(source = "createdByAdmin.fullName", target = "createdByAdminName")
     FeeConfigResponse toFeeConfigResponse(MatchingFeeConfig config);
 }

@@ -178,6 +178,7 @@ public class PostServiceImpl implements PostService {
                 .and(PostSpecification.minBudgetGreaterThanOrEqual(minBudget))
                 .and(PostSpecification.hasAuthorId(authorId))
                 .and(PostSpecification.fetchSubject())
+                .and(PostSpecification.fetchApplications())
                 .and(PostSpecification.cursor(cursor));
 
         Pageable pageable = PageRequest.of(
@@ -186,7 +187,11 @@ public class PostServiceImpl implements PostService {
                 Sort.by(Sort.Order.desc("id"))
         );
 
-        List<Post> posts = postRepository.findAll(spec, pageable).getContent();
+        List<Post> posts = postRepository.findAll(spec, pageable)
+                .getContent()
+                .stream()
+                .distinct()
+                .toList();
 
         return appUtil.buildCursorResponse(
                 posts,
@@ -227,6 +232,7 @@ public class PostServiceImpl implements PostService {
                 .and(PostSpecification.maxBudgetLessThanOrEqual(maxBudget))
                 .and(PostSpecification.minBudgetGreaterThanOrEqual(minBudget))
                 .and(PostSpecification.fetchSubject())
+                .and(PostSpecification.fetchApplications())
                 .and(PostSpecification.cursor(cursor));
 
         Pageable pageable = PageRequest.of(
@@ -236,7 +242,10 @@ public class PostServiceImpl implements PostService {
         );
 
         List<Post> posts = postRepository.findAll(spec, pageable)
-                .getContent();
+                .getContent()
+                .stream()
+                .distinct()
+                .toList();
 
         return appUtil.buildCursorResponse(
                 posts,

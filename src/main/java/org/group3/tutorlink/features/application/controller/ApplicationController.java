@@ -161,4 +161,21 @@ public class ApplicationController {
                 .data(applicationRankingService.rankApplications(postId))
                 .build();
     }
+    
+    // Admin/Post Owner xem tất cả ứng tuyển của 1 bài đăng
+    @GetMapping("/post/{postId}")
+    public ApiResponse<CursorResponse<ApplicationResponse>> getApplicationsByPost(
+            @PathVariable UUID postId,
+            @RequestParam(required = false) UUID cursor,
+            @RequestParam(defaultValue = "100")
+            @Min(0)
+            @Max(100) int limit
+    ) {
+
+        return ApiResponse.<CursorResponse<ApplicationResponse>>builder()
+                .code(ApplicationResponseCode.GET_SUCCESS.getCode())
+                .message(ApplicationResponseCode.GET_SUCCESS.getMessage())
+                .data(applicationService.getApplicationsByPost(postId, cursor, limit))
+                .build();
+    }
 }

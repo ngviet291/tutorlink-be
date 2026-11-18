@@ -31,6 +31,9 @@ public class FeeConfigResponse {
 
     @Schema(description = "Quản trị viên tạo cấu hình.")
     private UUID createdByAdminId;
+    
+    @Schema(description = "Tên quản trị viên tạo cấu hình.")
+    private String createdByAdminName;
 
     @Schema(description = "Thời điểm tạo.")
     private java.time.Instant createdAt;

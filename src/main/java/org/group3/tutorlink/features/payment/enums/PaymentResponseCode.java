@@ -18,7 +18,10 @@ public enum PaymentResponseCode implements ResponseCode {
     REFUND_SUCCESS("PAYMENT_200", "Payment refunded successfully!"),
     GET_REVENUE_STATISTICS("PAYMENT_200", "Revenue statistics retrieved successfully!"),
     GET_FEE_CONFIGS("PAYMENT_200", "Fee configurations retrieved successfully!"),
-    CREATE_FEE_CONFIG("PAYMENT_201", "Fee configuration created successfully!");
+    CREATE_FEE_CONFIG("PAYMENT_201", "Fee configuration created successfully!"),
+    WITHDRAW_SUCCESS("PAYMENT_201", "Withdrawal request submitted successfully!"),
+    APPROVE_WITHDRAWAL_SUCCESS("PAYMENT_200", "Withdrawal approved successfully!"),
+    REJECT_WITHDRAWAL_SUCCESS("PAYMENT_200", "Withdrawal rejected and refunded successfully!");
 
     private final String code;
     private final String message;

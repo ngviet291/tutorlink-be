@@ -17,6 +17,7 @@ public class ReviewComplaintResponse {
     UUID reviewId;
     UUID applicationId;
     UUID tutorId;
+    String tutorName;
     UUID adminId;
     Instant createdAt;
 }

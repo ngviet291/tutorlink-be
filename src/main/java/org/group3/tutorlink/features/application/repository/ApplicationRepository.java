@@ -74,6 +74,18 @@ public interface ApplicationRepository
 
     @Query("""
             SELECT a FROM Application a
+            WHERE a.post.id = :postId
+              AND (:cursor IS NULL OR a.id < :cursor)
+            ORDER BY a.id DESC
+            """)
+    List<Application> findByPostIdAfterCursor(
+            @Param("postId") UUID postId,
+            @Param("cursor") UUID cursor,
+            Pageable pageable
+    );
+
+    @Query("""
+            SELECT a FROM Application a
             WHERE a.tutor.id = :tutorId
               AND (:cursor IS NULL OR a.id < :cursor)
             ORDER BY a.id DESC

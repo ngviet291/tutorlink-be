@@ -13,6 +13,8 @@ import java.util.UUID;
 
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
     boolean existsByApplicationId(UUID applicationId);
+    
+    long countByTutorId(UUID tutorId);
 
     @Query("""
             SELECT r FROM Review r

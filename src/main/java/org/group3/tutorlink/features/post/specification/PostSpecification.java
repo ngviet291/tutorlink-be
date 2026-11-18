@@ -215,6 +215,16 @@ public class PostSpecification {
             return null;
         };
     }
+    
+    public static Specification<Post> fetchApplications() {
+        return (root, query, cb) -> {
+            if (query.getResultType() != Long.class
+                    && query.getResultType() != long.class) {
+                root.fetch("applications", JoinType.LEFT);
+            }
+            return null;
+        };
+    }
 
     public static Specification<Post> notExpired(Instant now) {
         return (root, query, cb) -> cb.or(

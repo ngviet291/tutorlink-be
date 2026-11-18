@@ -30,6 +30,8 @@ public abstract class ApplicationMapper {
     @Mapping(target = "transactionId", source = "transaction.id")
     @Mapping(target = "transactionStatus", expression = "java(application.getTransaction() != null ? application.getTransaction().getStatus().name() : null)")
     @Mapping(target = "paidAt", expression = "java(application.getTransaction() != null && application.getTransaction().getStatus() == org.group3.tutorlink.features.payment.enums.TransactionStatus.SUCCESS ? application.getTransaction().getTransactionDate() : null)")
+    @Mapping(target = "expiresAt", ignore = true)
+    @Mapping(target = "paid", ignore = true)
     public abstract ApplicationResponse toApplicationResponse(Application application);
 
     /**
@@ -37,6 +39,8 @@ public abstract class ApplicationMapper {
      * Chỉ đơn ACCEPTED mới có hạn:
      * - Đã trả phí (transaction SUCCESS) → transactionDate + confirm-window (W2, applicant confirm)
      * - Chưa trả → selectedAt + payment-window (W1, tutor thanh toán)
+     *
+     * Đồng thời set paid = true nếu transaction.status == SUCCESS
      */
     @AfterMapping
     protected void fillExpiresAt(Application application, @MappingTarget ApplicationResponse response) {
@@ -47,6 +51,10 @@ public abstract class ApplicationMapper {
         Instant paidAt = transaction != null && transaction.getStatus() == TransactionStatus.SUCCESS
                 ? transaction.getTransactionDate()
                 : null;
+
+        // Set paid flag
+        response.setPaid(paidAt != null);
+
         if (paidAt != null) {
             response.setExpiresAt(paidAt.plus(confirmWindowMinutes, ChronoUnit.MINUTES));
         } else if (application.getSelectedAt() != null) {

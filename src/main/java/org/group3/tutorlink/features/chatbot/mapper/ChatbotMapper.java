@@ -5,8 +5,9 @@ import org.group3.tutorlink.features.chatbot.dto.response.ConversationResponse;
 import org.group3.tutorlink.features.chatbot.entity.ChatConversation;
 import org.group3.tutorlink.features.chatbot.entity.ChatMessage;
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ChatbotMapper {
 
     ConversationResponse toConversationResponse(ChatConversation conversation);

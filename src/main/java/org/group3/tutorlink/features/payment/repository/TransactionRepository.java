@@ -35,6 +35,14 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     List<Transaction> findByStatusAndIdLessThan(TransactionStatus status, UUID cursor, Pageable pageable);
 
+    List<Transaction> findByType(org.group3.tutorlink.features.payment.enums.TransactionType type, Pageable pageable);
+
+    List<Transaction> findByTypeAndIdLessThan(org.group3.tutorlink.features.payment.enums.TransactionType type, UUID cursor, Pageable pageable);
+
+    List<Transaction> findByStatusAndType(TransactionStatus status, org.group3.tutorlink.features.payment.enums.TransactionType type, Pageable pageable);
+
+    List<Transaction> findByStatusAndTypeAndIdLessThan(TransactionStatus status, org.group3.tutorlink.features.payment.enums.TransactionType type, UUID cursor, Pageable pageable);
+
     // Khóa giao dịch nạp tiền khi xử lý callback --> tránh cộng tiền 2 lần nếu cổng gọi lặp
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Transaction> findForUpdateByProviderOrderId(String providerOrderId);

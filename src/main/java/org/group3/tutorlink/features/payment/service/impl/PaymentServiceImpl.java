@@ -37,6 +37,7 @@ import org.group3.tutorlink.features.payment.repository.RevenueStatisticsRow;
 import org.group3.tutorlink.features.payment.repository.WalletRepository;
 import org.group3.tutorlink.features.payment.service.PaymentService;
 import org.group3.tutorlink.features.post.entity.Post;
+import org.group3.tutorlink.features.post.enums.BudgetUnit;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Tutor;
@@ -103,7 +104,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final org.group3.tutorlink.features.chat.service.ChatService chatService;
     private final ApplicationExpiryQueue expiryQueue;
     private final AfterCommit afterCommit;
-
     @Override
     @Transactional
     @PreAuthorize("hasAuthority('TUTOR')")
@@ -249,24 +249,9 @@ public class PaymentServiceImpl implements PaymentService {
             throw new AppException(PaymentErrorCode.NOT_APPLICATION_TUTOR);
         }
 
-        // [APPLICATION-EXPIRY] Siết điều kiện trả phí — file thuộc module payment,
-        // sửa theo yêu cầu của luồng expiry đơn ứng tuyển (module application).
-        // Chỉ đơn ACCEPTED đang chờ thanh toán/xác nhận (post PENDING) mới được trả phí.
-        // FINISHED/CONFIRMED/CANCELLED... không còn payable; đơn quá payment-window cũng chặn
-        // (scheduler có thể chưa kịp chạy nhưng đơn đã chết).
         ApplicationStatus applicationStatus = application.getApplicationStatus();
-        if (applicationStatus != ApplicationStatus.ACCEPTED) {
-            throw new AppException(PaymentErrorCode.APPLICATION_NOT_PAYABLE);
-        }
-        Post post = application.getPost();
-        if (post == null || post.getStatus() != PostStatus.PENDING) {
-            throw new AppException(PaymentErrorCode.APPLICATION_NOT_PAYABLE);
-        }
-        Transaction existing = transactionRepository.findByApplicationId(applicationId).orElse(null);
-        boolean alreadyPaid = existing != null && existing.getStatus() == TransactionStatus.SUCCESS;
-        if (!alreadyPaid && application.getSelectedAt() != null
-                && application.getSelectedAt().plus(paymentWindowMinutes, ChronoUnit.MINUTES)
-                        .isBefore(Instant.now())) {
+        if (applicationStatus != ApplicationStatus.ACCEPTED
+                && applicationStatus != ApplicationStatus.FINISHED) {
             throw new AppException(PaymentErrorCode.APPLICATION_NOT_PAYABLE);
         }
 
@@ -308,32 +293,9 @@ public class PaymentServiceImpl implements PaymentService {
         transaction.setStatus(TransactionStatus.SUCCESS);
         Transaction saved = transactionRepository.save(transaction);
 
-        scheduleConfirmExpiry(application, saved);
-
         createChatChannelForApplication(application);
 
         return transactionMapper.toTransactionResponse(saved);
-    }
-
-    /**
-     * [APPLICATION-EXPIRY] Thanh toán thành công -> hủy lịch W1 (chờ thanh toán),
-     * đặt lịch W2 (chờ applicant xác nhận) sau khi commit.
-     * Lỗi Redis không làm fail request — reconciler sẽ vớt lại.
-     */
-    private void scheduleConfirmExpiry(Application application, Transaction transaction) {
-        UUID applicationId = application.getId();
-        Instant paidAt = transaction.getTransactionDate() != null
-                ? transaction.getTransactionDate()
-                : Instant.now();
-        Instant expireAt = paidAt.plus(confirmWindowMinutes, ChronoUnit.MINUTES);
-        afterCommit.run(() -> {
-            try {
-                expiryQueue.cancel(ApplicationExpiryQueue.Stage.PAYMENT, applicationId);
-                expiryQueue.schedule(ApplicationExpiryQueue.Stage.CONFIRM, applicationId, expireAt);
-            } catch (Exception e) {
-                log.warn("Failed to schedule confirm expiry for application {}", applicationId, e);
-            }
-        });
     }
 
     @Override
@@ -359,19 +321,33 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasAuthority('ADMIN')")
-    public CursorResponse<TransactionResponse> getAllTransactions(TransactionStatus transactionStatus, UUID cursor, int limit) {
+    public CursorResponse<TransactionResponse> getAllTransactions(
+            TransactionStatus transactionStatus,
+            TransactionType transactionType,
+            UUID cursor,
+            int limit
+    ) {
         int size = normalizeLimit(limit);
         Pageable pageable = buildPageable(size);
 
         List<Transaction> transactions;
-        if (transactionStatus == null) {
+
+        if (transactionStatus == null && transactionType == null) {
             transactions = cursor == null
                     ? transactionRepository.findAllBy(pageable)
                     : transactionRepository.findByIdLessThan(cursor, pageable);
-        } else {
+        } else if (transactionStatus == null) {
+            transactions = cursor == null
+                    ? transactionRepository.findByType(transactionType, pageable)
+                    : transactionRepository.findByTypeAndIdLessThan(transactionType, cursor, pageable);
+        } else if (transactionType == null) {
             transactions = cursor == null
                     ? transactionRepository.findByStatus(transactionStatus, pageable)
                     : transactionRepository.findByStatusAndIdLessThan(transactionStatus, cursor, pageable);
+        } else {
+            transactions = cursor == null
+                    ? transactionRepository.findByStatusAndType(transactionStatus, transactionType, pageable)
+                    : transactionRepository.findByStatusAndTypeAndIdLessThan(transactionStatus, transactionType, cursor, pageable);
         }
 
         return appUtil.buildCursorResponse(
@@ -509,10 +485,12 @@ public class PaymentServiceImpl implements PaymentService {
             throw new AppException(PaymentErrorCode.NOT_APPLICATION_TUTOR);
         }
         Post post = application.getPost();
-        BigDecimal base = post.getMaxBudget() != null ? post.getMaxBudget() : post.getMinBudget();
+        BigDecimal baseBudget = post.getMaxBudget() != null ? post.getMaxBudget() : post.getMinBudget();
+        BigDecimal pricePerSession = convertToPerSession(baseBudget, post);
+
         return FeeQuoteResponse.builder()
                 .applicationId(applicationId)
-                .baseAmount(base)
+                .baseAmount(pricePerSession)
                 .feeRate(commissionRate)
                 .feeAmount(calculateCommission(post))
                 .build();
@@ -546,13 +524,47 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private BigDecimal calculateCommission(Post post) {
-        BigDecimal base = post.getMaxBudget() != null ? post.getMaxBudget() : post.getMinBudget();
+        BigDecimal baseBudget = post.getMaxBudget() != null ? post.getMaxBudget() : post.getMinBudget();
 
-        if (base == null || base.signum() <= 0) {
+        if (baseBudget == null || baseBudget.signum() <= 0) {
             throw new AppException(PaymentErrorCode.POST_BUDGET_MISSING);
         }
 
-        return base.multiply(commissionRate).setScale(COMMISSION_AMOUNT_SCALE, RoundingMode.HALF_UP);
+        BigDecimal pricePerSession = convertToPerSession(baseBudget, post);
+
+        return pricePerSession.multiply(commissionRate).setScale(COMMISSION_AMOUNT_SCALE, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal convertToPerSession(BigDecimal budget, Post post) {
+        BudgetUnit unit = post.getBudgetUnit();
+
+        if (unit == null) {
+            unit = BudgetUnit.PER_SESSION;
+        }
+
+        switch (unit) {
+            case PER_SESSION:
+                return budget;
+
+            case PER_HOUR:
+                Integer durationMinutes = post.getDurationMinutes();
+                if (durationMinutes == null || durationMinutes <= 0) {
+                    throw new AppException(PaymentErrorCode.POST_BUDGET_MISSING);
+                }
+                BigDecimal hours = BigDecimal.valueOf(durationMinutes).divide(BigDecimal.valueOf(60), 4, RoundingMode.HALF_UP);
+                return budget.multiply(hours);
+
+            case PER_MONTH:
+                Integer sessionsPerWeek = post.getSessionsPerWeek();
+                if (sessionsPerWeek == null || sessionsPerWeek <= 0) {
+                    throw new AppException(PaymentErrorCode.POST_BUDGET_MISSING);
+                }
+                BigDecimal sessionsPerMonth = BigDecimal.valueOf(sessionsPerWeek).multiply(BigDecimal.valueOf(4));
+                return budget.divide(sessionsPerMonth, COMMISSION_AMOUNT_SCALE, RoundingMode.HALF_UP);
+
+            default:
+                return budget;
+        }
     }
 
     private int normalizeLimit(int limit) {
@@ -583,5 +595,95 @@ public class PaymentServiceImpl implements PaymentService {
             log.warn("Failed to create chat channel for application {}: {}",
                     application.getId(), e.getMessage());
         }
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('TUTOR')")
+    public TransactionResponse withdrawFromWallet(
+            org.group3.tutorlink.features.payment.dto.request.WithdrawRequest request) {
+        UUID tutorId = appUtil.userIdFromAuthentication();
+
+        BigDecimal amount = request.getAmount().setScale(0, RoundingMode.HALF_UP);
+
+        if (amount.compareTo(BigDecimal.valueOf(10000)) < 0) {
+            throw new AppException(PaymentErrorCode.WITHDRAW_AMOUNT_TOO_LOW);
+        }
+
+        Wallet wallet = getOrCreateWalletForUpdate(tutorId);
+
+        if (wallet.getBalance().compareTo(amount) < 0) {
+            throw new AppException(PaymentErrorCode.INSUFFICIENT_BALANCE_FOR_WITHDRAWAL);
+        }
+
+        wallet.setBalance(wallet.getBalance().subtract(amount));
+        walletRepository.save(wallet);
+
+        Transaction transaction = Transaction.builder()
+                .id(appUtil.generateUUID())
+                .type(TransactionType.WITHDRAW)
+                .amount(amount)
+                .status(TransactionStatus.PENDING)
+                .paymentMethod(PaymentMethod.WALLET)
+                .transactionDate(Instant.now())
+                .tutor(wallet.getTutor())
+                .bankAccountNumber(request.getBankAccountNumber())
+                .bankName(request.getBankName())
+                .accountHolderName(request.getAccountHolderName())
+                .build();
+
+        Transaction saved = transactionRepository.save(transaction);
+        log.info("Withdrawal request created: transactionId={}, tutorId={}, amount={}",
+                saved.getId(), tutorId, amount);
+
+        return transactionMapper.toTransactionResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public TransactionResponse approveWithdrawal(UUID transactionId) {
+        Transaction transaction = transactionRepository.findForUpdateById(transactionId)
+                .orElseThrow(() -> new AppException(PaymentErrorCode.TRANSACTION_NOT_FOUND));
+
+        if (transaction.getType() != TransactionType.WITHDRAW
+                || transaction.getStatus() != TransactionStatus.PENDING) {
+            throw new AppException(PaymentErrorCode.WITHDRAW_NOT_PENDING);
+        }
+
+        transaction.setStatus(TransactionStatus.SUCCESS);
+        transaction.setTransactionDate(Instant.now());
+
+        Transaction saved = transactionRepository.save(transaction);
+        log.info("Withdrawal approved: transactionId={}, tutorId={}, amount={}",
+                saved.getId(), saved.getTutor().getId(), saved.getAmount());
+
+        return transactionMapper.toTransactionResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public TransactionResponse rejectWithdrawal(UUID transactionId) {
+        Transaction transaction = transactionRepository.findForUpdateById(transactionId)
+                .orElseThrow(() -> new AppException(PaymentErrorCode.TRANSACTION_NOT_FOUND));
+
+        if (transaction.getType() != TransactionType.WITHDRAW
+                || transaction.getStatus() != TransactionStatus.PENDING) {
+            throw new AppException(PaymentErrorCode.WITHDRAW_NOT_PENDING);
+        }
+
+        Wallet wallet = getOrCreateWalletForUpdate(transaction.getTutor().getId());
+        wallet.setBalance(wallet.getBalance().add(transaction.getAmount()));
+        walletRepository.save(wallet);
+
+        transaction.setStatus(TransactionStatus.FAILED);
+        transaction.setTransactionDate(Instant.now());
+
+        Transaction saved = transactionRepository.save(transaction);
+        log.info("Withdrawal rejected and refunded: transactionId={}, tutorId={}, amount={}",
+                saved.getId(), saved.getTutor().getId(), saved.getAmount());
+
+        return transactionMapper.toTransactionResponse(saved);
     }
 }

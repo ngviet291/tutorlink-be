@@ -74,17 +74,18 @@ public class PaymentController {
                 .build();
     }
 
-    // 5. Danh sách giao dịch - quản trị viên (lọc theo trạng thái)
+    // 5. Danh sách giao dịch - quản trị viên (lọc theo trạng thái và loại)
     @GetMapping
     public ApiResponse<CursorResponse<TransactionResponse>> getAllTransactions(
             @RequestParam(required = false) TransactionStatus status,
+            @RequestParam(required = false) org.group3.tutorlink.features.payment.enums.TransactionType type,
             @RequestParam(required = false) UUID cursor,
             @RequestParam(defaultValue = PaymentConstraints.DEFAULT_PAGE_SIZE_PARAMETER) int limit) {
 
         return ApiResponse.<CursorResponse<TransactionResponse>>builder()
                 .code(PaymentResponseCode.GET_PAYMENTS.getCode())
                 .message(PaymentResponseCode.GET_PAYMENTS.getMessage())
-                .data(paymentService.getAllTransactions(status, cursor, limit))
+                .data(paymentService.getAllTransactions(status, type, cursor, limit))
                 .build();
     }
 
@@ -169,6 +170,38 @@ public class PaymentController {
                 .code(PaymentResponseCode.GET_PAYMENTS.getCode())
                 .message(PaymentResponseCode.GET_PAYMENTS.getMessage())
                 .data(paymentService.getFeeQuote(id))
+                .build();
+    }
+
+    // 14. Rút tiền từ ví - Tutor
+    @PostMapping("/wallet/withdraw")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<TransactionResponse> withdrawFromWallet(
+            @RequestBody @Valid org.group3.tutorlink.features.payment.dto.request.WithdrawRequest request) {
+        return ApiResponse.<TransactionResponse>builder()
+                .code(PaymentResponseCode.WITHDRAW_SUCCESS.getCode())
+                .message(PaymentResponseCode.WITHDRAW_SUCCESS.getMessage())
+                .data(paymentService.withdrawFromWallet(request))
+                .build();
+    }
+
+    // 15. Duyệt yêu cầu rút tiền - Admin
+    @PostMapping("/{id}/approve-withdrawal")
+    public ApiResponse<TransactionResponse> approveWithdrawal(@PathVariable UUID id) {
+        return ApiResponse.<TransactionResponse>builder()
+                .code(PaymentResponseCode.APPROVE_WITHDRAWAL_SUCCESS.getCode())
+                .message(PaymentResponseCode.APPROVE_WITHDRAWAL_SUCCESS.getMessage())
+                .data(paymentService.approveWithdrawal(id))
+                .build();
+    }
+
+    // 16. Từ chối yêu cầu rút tiền - Admin
+    @PostMapping("/{id}/reject-withdrawal")
+    public ApiResponse<TransactionResponse> rejectWithdrawal(@PathVariable UUID id) {
+        return ApiResponse.<TransactionResponse>builder()
+                .code(PaymentResponseCode.REJECT_WITHDRAWAL_SUCCESS.getCode())
+                .message(PaymentResponseCode.REJECT_WITHDRAWAL_SUCCESS.getMessage())
+                .data(paymentService.rejectWithdrawal(id))
                 .build();
     }
 }

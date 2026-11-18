@@ -56,4 +56,6 @@ public class PostResponse {
     private Instant createdAt;
 
     private Instant updatedAt;
+    
+    private Integer applicationCount;
 }

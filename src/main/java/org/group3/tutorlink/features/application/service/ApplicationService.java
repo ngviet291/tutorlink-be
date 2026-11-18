@@ -64,4 +64,10 @@ public interface ApplicationService {
     ApplicationResponse cancelApplication(
             UUID applicationId
     );
+    
+    CursorResponse<ApplicationResponse> getApplicationsByPost(
+            UUID postId,
+            UUID cursor,
+            int limit
+    );
 }

@@ -599,4 +599,18 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
     }
 
+    @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Transactional(readOnly = true)
+    public CursorResponse<ApplicationResponse> getApplicationsByPost(UUID postId, UUID cursor, int limit) {
+        Pageable pageable = PageRequest.of(0, limit + 1);
+        List<Application> applications = applicationRepository.findByPostIdAfterCursor(postId, cursor, pageable);
+        
+        return appUtil.buildCursorResponse(
+                applications,
+                limit,
+                Application::getId,
+                applicationMapper::toApplicationResponse
+        );
+    }
 }
