@@ -47,4 +47,8 @@ public class ChatbotProperties {
     @NotNull
     @Valid
     private ChatbotPrompts prompts;
+
+    // Chấm điểm xếp hạng bài đăng; có giá trị mặc định nên không cần khai báo trong application.properties
+    @Valid
+    private Scoring scoring = new Scoring();
 }

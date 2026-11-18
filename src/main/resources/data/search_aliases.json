@@ -1,0 +1,40 @@
+{
+  "subjects": {
+    "mathematics": "toan",
+    "maths": "toan",
+    "math": "toan",
+    "english": "tieng anh",
+    "physics": "vat ly",
+    "chemistry": "hoa hoc",
+    "biology": "sinh hoc",
+    "literature": "ngu van",
+    "history": "lich su",
+    "geography": "dia ly",
+    "informatics": "tin hoc",
+    "computer science": "tin hoc",
+    "programming": "lap trinh",
+    "coding": "lap trinh",
+    "chinese": "tieng trung",
+    "japanese": "tieng nhat",
+    "korean": "tieng han",
+    "french": "tieng phap",
+    "german": "tieng duc",
+    "vietnamese": "tieng viet",
+    "music": "am nhac",
+    "drawing": "ve",
+    "art": "my thuat"
+  },
+  "provinces": {
+    "hanoi": "ha noi",
+    "saigon": "ho chi minh",
+    "sai gon": "ho chi minh",
+    "ho chi minh city": "ho chi minh",
+    "tphcm": "ho chi minh",
+    "tp hcm": "ho chi minh",
+    "hcmc": "ho chi minh",
+    "hcm": "ho chi minh",
+    "danang": "da nang",
+    "haiphong": "hai phong",
+    "cantho": "can tho"
+  }
+}

@@ -3,6 +3,7 @@ package org.group3.tutorlink.features.chatbot.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.utils.AppUtil;
+import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.chatbot.ai.AIClient;
 import org.group3.tutorlink.features.chatbot.ai.AssistantTurn;
@@ -23,6 +24,7 @@ import org.group3.tutorlink.features.chatbot.repository.ChatConversationReposito
 import org.group3.tutorlink.features.chatbot.repository.ChatMessageRepository;
 import org.group3.tutorlink.features.chatbot.service.ChatbotService;
 import org.group3.tutorlink.features.chatbot.service.PostSearcher;
+import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.user.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -152,11 +154,51 @@ public class ChatbotServiceImpl implements ChatbotService {
         int limit = (userId == null) ? properties.getGuestPostLimit() : properties.getMemberPostLimit();
         long startedAt = System.currentTimeMillis();
 
-        PostSearchResult result = postSearcher.search(filters, resolveLocation(request, userId), limit);
+        PostSearchFilters effective = enforcePostType(filters, userId);
+        PostSearchResult result = postSearcher.search(effective, resolveLocation(request, userId), limit);
 
         log.info("Chatbot tìm bài với {} -> {} bài (nới điều kiện: {}), mất {} ms",
-                filters, result.getPosts().size(), result.isRelaxed(), System.currentTimeMillis() - startedAt);
+                effective, result.getPosts().size(), result.isRelaxed(), System.currentTimeMillis() - startedAt);
         return result;
+    }
+
+    /**
+     * Không tin postType do AI đoán từ câu chữ, mà ép theo vai trò tài khoản:
+     * - Học viên và khách: chỉ xem bài của gia sư (FIND_STUDENT).
+     * - Gia sư: chỉ xem bài của học viên (FIND_TUTOR).
+     * - Admin: giữ nguyên theo AI.
+     */
+    private PostSearchFilters enforcePostType(PostSearchFilters filters, UUID userId) {
+        PostType forced = null;
+        if (userId == null) {
+            forced = PostType.FIND_STUDENT; // khách được coi là học viên
+        } else {
+            RoleName role = userRepository.findById(userId)
+                    .map(user -> user.getRole() == null ? null : user.getRole().getName())
+                    .orElse(null);
+            if (role == RoleName.TUTOR) {
+                forced = PostType.FIND_TUTOR;
+            } else if (role == RoleName.STUDENT) {
+                forced = PostType.FIND_STUDENT;
+            }
+        }
+        if (forced == null || forced == filters.getPostType()) {
+            return filters;
+        }
+
+        // Điều kiện về gia sư (kinh nghiệm, học phí, đánh giá) chỉ có nghĩa khi tìm bài của gia sư.
+        boolean tutorPosts = forced == PostType.FIND_STUDENT;
+        return PostSearchFilters.builder()
+                .subjectName(filters.getSubjectName())
+                .province(filters.getProvince())
+                .area(filters.getArea())
+                .educationLevel(filters.getEducationLevel())
+                .postType(forced)
+                .minExperienceYears(tutorPosts ? filters.getMinExperienceYears() : null)
+                .minRate(tutorPosts ? filters.getMinRate() : null)
+                .maxRate(tutorPosts ? filters.getMaxRate() : null)
+                .minRating(tutorPosts ? filters.getMinRating() : null)
+                .build();
     }
 
     private void saveExchange(ChatConversation conversation, String question, String answer,

@@ -4,15 +4,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.entity.Address;
 import org.group3.tutorlink.common.service.AddressService;
+import org.group3.tutorlink.common.geo.GeoPoint;
+import org.group3.tutorlink.common.geo.GeoUtils;
 import org.group3.tutorlink.common.service.LocationNormalizationService;
+import org.group3.tutorlink.common.service.WardLocationService;
 import org.group3.tutorlink.features.chatbot.ai.PostSearchFilters;
 import org.group3.tutorlink.features.chatbot.config.ChatbotProperties;
+import org.group3.tutorlink.features.chatbot.config.Scoring;
 import org.group3.tutorlink.features.chatbot.dto.request.UserLocation;
 import org.group3.tutorlink.features.chatbot.dto.response.PostSearchResult;
 import org.group3.tutorlink.features.chatbot.dto.response.PostSummaryResponse;
+import org.group3.tutorlink.features.chatbot.ranking.PostScorer;
+import org.group3.tutorlink.features.chatbot.ranking.SearchAliasService;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
+import org.group3.tutorlink.features.post.enums.TeachingMode;
 import org.group3.tutorlink.features.post.repository.PostRepository;
 import org.group3.tutorlink.features.post.specification.PostSpecification;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +31,8 @@ import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -39,50 +48,140 @@ public class PostSearcher {
     private final ChatbotProperties properties;
     private final AddressService addressService;
     private final LocationNormalizationService locationNormalizer;
+    private final WardLocationService wardLocations;
+    private final PostScorer scorer;
+    private final SearchAliasService aliases;
+
 
     /**
-     * Thứ tự ưu tiên:
-     * 1. Có bài đúng phường/xã người dùng yêu cầu -> chỉ trả các bài đó.
-     * 2. Không có -> trả bài ở các phường/xã khác trong cùng tỉnh (relaxed = true).
-     * 3. Không biết tỉnh -> không đoán bừa, trả rỗng.
+     * Tìm bài bằng chấm điểm xếp hạng thay vì so khớp chuỗi cứng:
+     * - Môn học: độ giống tên (bỏ dấu, chịu gõ sai nhẹ), loại bài lệch môn quá xa.
+     * - Vị trí: khoảng cách Haversine giữa tâm phường/xã của bài đăng và điểm tham chiếu
+     *   (phường người dùng nói tới, không nói thì phường của chính họ). Gần hơn thì điểm cao hơn.
+     * - Cấp học và độ mới cũng cộng điểm; xem {@link PostScorer}.
      *
-     * Người dùng không nói phường/xã thì lấy bài trong tỉnh, bài cùng phường/xã với vị trí của họ lên đầu.
+     * Người dùng nói rõ phường/xã:
+     * 1. Chỉ lấy bài trong bán kính; không có thì mở rộng bán kính (relaxed = true).
+     * 2. Vẫn không có thì trả bài trong cùng tỉnh (relaxed = true).
+     * 3. Không biết tỉnh -> không đoán bừa, trả rỗng.
      */
     @Transactional(readOnly = true)
     public PostSearchResult search(PostSearchFilters filters, UserLocation userLocation, int limit) {
+        Scoring scoring = properties.getScoring();
         PostType type = filters.getPostType() != null
                 ? filters.getPostType()
                 : properties.getDefaultPostType();
         String area = filters.getArea();
+        boolean explicitArea = StringUtils.hasText(area);
         String province = resolveProvince(filters, userLocation);
-        List<Post> candidates = find(filters, type, province);
-        List<Post> posts;
-        boolean relaxed = false;
-        if (StringUtils.hasText(area)) {
-            List<Post> inWard = candidates.stream()
-                    .filter(post -> isInWard(post, area))
-                    .toList();
 
-            if (!inWard.isEmpty()) {
-                posts = inWard;
-            } else if (province != null) {
-                posts = candidates;
-                relaxed = !candidates.isEmpty();
-            } else {
-                posts = List.of();
-            }
-        } else {
-            posts = sameWardFirst(candidates, wardOf(userLocation));
+        List<Post> candidates = find(filters, type, province);
+        if (StringUtils.hasText(filters.getSubjectName())) {
+            candidates = candidates.stream()
+                    .filter(post -> scorer.subjectSimilarity(post, filters) >= scoring.getMinSubjectSimilarity())
+                    .toList();
         }
 
-        log.info("Chatbot search: subject={}, province={}, area={}, type={} -> {} bài trong tỉnh, {} bài trả về, relaxed={}",
-                filters.getSubjectName(), province, area, type, candidates.size(), posts.size(), relaxed);
+        GeoPoint reference = referencePoint(explicitArea ? province : userProvince(userLocation),
+                explicitArea ? area : wardOf(userLocation));
+        Map<UUID, Double> distances = distances(candidates, reference, explicitArea ? area : null);
 
-        List<PostSummaryResponse> summaries = posts.stream()
+        List<Post> pool = candidates;
+        double radius = scoring.getRadiusKm();
+        boolean relaxed = false;
+        if (explicitArea) {
+            if (province == null) {
+                pool = List.of();
+            } else {
+                pool = within(candidates, distances, radius);
+                if (pool.isEmpty()) {
+                    radius = scoring.getExpandedRadiusKm();
+                    pool = within(candidates, distances, radius);
+                    relaxed = !pool.isEmpty();
+                }
+                if (pool.isEmpty()) {
+                    radius = scoring.getExpandedRadiusKm();
+                    pool = candidates;
+                    relaxed = !candidates.isEmpty();
+                }
+            }
+        }
+
+        Instant now = Instant.now();
+        Map<UUID, Double> scores = new HashMap<>();
+        for (Post post : pool) {
+            scores.put(post.getId(), scorer.score(post, filters, distances.get(post.getId()), radius, now));
+        }
+        List<Post> ranked = pool.stream()
+                .sorted(Comparator
+                        .comparingDouble((Post post) -> -scores.get(post.getId()))
+                        .thenComparing(Post::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .toList();
+
+        log.info("Chatbot search: subject={}, province={}, area={}, type={} -> {} ứng viên, {} bài sau lọc bán kính, "
+                        + "tham chiếu={}, bán kính={} km, relaxed={}",
+                filters.getSubjectName(), province, area, type, candidates.size(), ranked.size(),
+                reference != null, radius, relaxed);
+
+        List<PostSummaryResponse> summaries = ranked.stream()
                 .limit(limit)
-                .map(this::toSummary)
+                .map(post -> toSummary(post, distances.get(post.getId())))
                 .toList();
         return new PostSearchResult(summaries, relaxed);
+    }
+
+    // Điểm tham chiếu: tâm phường/xã; chỉ biết tỉnh thì không dùng (tâm tỉnh quá thô để tính khoảng cách).
+    private GeoPoint referencePoint(String province, String ward) {
+        if (!StringUtils.hasText(province) || !StringUtils.hasText(ward)) {
+            return null;
+        }
+        return wardLocations.findWard(province, ward).orElse(null);
+    }
+
+    private Map<UUID, Double> distances(List<Post> posts, GeoPoint reference, String textFallbackWard) {
+        Map<UUID, Double> result = new HashMap<>();
+        for (Post post : posts) {
+            Double distance = distanceTo(post, reference, textFallbackWard);
+            if (distance != null) {
+                result.put(post.getId(), distance);
+            } else if (reference != null) {
+                // Bài không xác định được vị trí: vẫn tính tiêu chí khoảng cách nhưng 0 điểm
+                result.put(post.getId(), Double.POSITIVE_INFINITY);
+            }
+        }
+        return result;
+    }
+
+    private Double distanceTo(Post post, GeoPoint reference, String textFallbackWard) {
+        Address address = post.getAddress();
+        boolean hasReference = reference != null || StringUtils.hasText(textFallbackWard);
+        // Dạy online hoặc không có địa chỉ: học ở đâu cũng được nên không phạt, không loại
+        if (hasReference && (post.getTeachingMode() == TeachingMode.ONLINE || address == null)) {
+            return Double.NaN;
+        }
+        if (reference != null) {
+            return wardLocations.findWard(address.getProvince(), address.getWard())
+                    .map(point -> GeoUtils.distanceKm(reference, point))
+                    .orElse(null);
+        }
+        // Phường/xã người dùng nói không có trong dữ liệu tọa độ: quay về so tên (cùng phường = 0 km)
+        if (StringUtils.hasText(textFallbackWard) && address != null) {
+            return locationNormalizer.isSameWard(address.getWard(), textFallbackWard) ? 0.0 : Double.POSITIVE_INFINITY;
+        }
+        return null;
+    }
+
+    private List<Post> within(List<Post> posts, Map<UUID, Double> distances, double radiusKm) {
+        return posts.stream()
+                .filter(post -> {
+                    Double d = distances.get(post.getId());
+                    return d != null && (d.isNaN() || d <= radiusKm);
+                })
+                .toList();
+    }
+
+    private String userProvince(UserLocation userLocation) {
+        return userLocation != null && userLocation.isKnown() ? userLocation.getProvince() : null;
     }
 
     /** Lấy tóm tắt các bài theo id bằng 1 query. Bài đã đóng, hết hạn hoặc bị gỡ sẽ không có trong kết quả. */
@@ -101,7 +200,7 @@ public class PostSearcher {
         );
 
         return postRepository.findAll(spec).stream()
-                .collect(Collectors.toMap(Post::getId, this::toSummary));
+                .collect(Collectors.toMap(Post::getId, post -> toSummary(post, null)));
     }
 
     private Specification<Post> idIn(Collection<UUID> postIds) {
@@ -120,7 +219,20 @@ public class PostSearcher {
             province = userLocation.getProvince();
         }
 
+        // "Hanoi", "Saigon", "Ho Chi Minh City"... -> tên tỉnh quen thuộc trước khi chuẩn hóa
+        province = aliases.province(province);
         return StringUtils.hasText(province) ? addressService.normalize(province) : null;
+    }
+
+    // Bài trong tỉnh được hỏi, cộng bài dạy online / chưa có địa chỉ (học ở đâu cũng được)
+    private Specification<Post> inProvinceOrLocationFree(String province) {
+        if (!StringUtils.hasText(province)) {
+            return null;
+        }
+        Specification<Post> locationFree = (root, query, cb) -> cb.or(
+                cb.equal(root.get("teachingMode"), TeachingMode.ONLINE),
+                cb.isNull(root.get("address").get("province")));
+        return PostSpecification.provinceContains(province).or(locationFree);
     }
 
     private List<Post> find(PostSearchFilters f, PostType type, String province) {
@@ -130,9 +242,7 @@ public class PostSearcher {
                 PostSpecification.hasStatus(PostStatus.PUBLISHED),
                 PostSpecification.notExpired(Instant.now()),
                 PostSpecification.hasType(type),
-                PostSpecification.subjectContains(f.getSubjectName()),
-                PostSpecification.provinceContains(province),
-                PostSpecification.hasEducationLevel(f.getEducationLevel()),
+                inProvinceOrLocationFree(province),
                 PostSpecification.authorTutorMatches(
                         f.getMinExperienceYears(),
                         f.getMinRate(),
@@ -143,31 +253,17 @@ public class PostSearcher {
 
         PageRequest page = PageRequest.of(
                 0,
-                properties.getCandidatePoolSize(),
+                Math.max(properties.getCandidatePoolSize(), properties.getScoring().getMinCandidatePool()),
                 Sort.by(Sort.Direction.DESC, "createdAt")
         );
         return postRepository.findAll(spec, page).getContent();
-    }
-
-    private boolean isInWard(Post post, String ward) {
-        return post.getAddress() != null && locationNormalizer.isSameWard(post.getAddress().getWard(), ward);
     }
 
     private String wardOf(UserLocation userLocation) {
         return userLocation != null && userLocation.isKnown() ? userLocation.getWard() : null;
     }
 
-    // Bài cùng phường/xã lên đầu, các bài còn lại giữ nguyên thứ tự (mới nhất trước).
-    private List<Post> sameWardFirst(List<Post> posts, String ward) {
-        if (!StringUtils.hasText(ward)) {
-            return posts;
-        }
-        Map<Boolean, List<Post>> split = posts.stream()
-                .collect(Collectors.partitioningBy(post -> isInWard(post, ward)));
-        return Stream.concat(split.get(true).stream(), split.get(false).stream()).toList();
-    }
-
-    private PostSummaryResponse toSummary(Post post) {
+    private PostSummaryResponse toSummary(Post post, Double distance) {
         return PostSummaryResponse.builder()
                 .id(post.getId())
                 .subjectName(post.getSubject().getName())
@@ -178,7 +274,16 @@ public class PostSearcher {
                 .budgetUnit(post.getBudgetUnit())
                 .authorName(post.getAuthor().getFullName())
                 .authorAvatarUrl(post.getAuthor().getAvatarUrl())
+                .distanceKm(toKm(distance))
                 .build();
+    }
+
+    // NaN (dạy online / chưa có địa chỉ) và vô cực (không xác định được vị trí) thì không có khoảng cách.
+    private Double toKm(Double distance) {
+        if (distance == null || distance.isNaN() || distance.isInfinite()) {
+            return null;
+        }
+        return Math.round(distance * 10) / 10.0;
     }
 
     private String formatAddress(Address address) {

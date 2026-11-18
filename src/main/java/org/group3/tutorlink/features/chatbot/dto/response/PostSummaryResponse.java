@@ -24,4 +24,5 @@ public class PostSummaryResponse {
     private BudgetUnit budgetUnit;
     private String authorName;
     private String authorAvatarUrl;
+    private Double distanceKm;
 }
