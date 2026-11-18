@@ -47,14 +47,21 @@ public final class GatewayHttp {
     }
 
     public static Map<String, Object> postJson(String url, Map<String, Object> body) {
+        return postJson(url, Map.of(), body);
+    }
+
+    // Như trên nhưng cho thêm header (vd Authorization); body = null thì không gửi nội dung.
+    public static Map<String, Object> postJson(String url, Map<String, String> headers, Map<String, Object> body) {
         try {
-            String response = CLIENT.post()
+            RestClient.RequestBodySpec spec = CLIENT.post()
                     .uri(url)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header("User-Agent", USER_AGENT)
-                    .body(MAPPER.writeValueAsString(body))
-                    .retrieve()
-                    .body(String.class);
+                    .header("User-Agent", USER_AGENT);
+            headers.forEach((name, value) -> spec.header(name, value));
+            if (body != null) {
+                spec.body(MAPPER.writeValueAsString(body));
+            }
+            String response = spec.retrieve().body(String.class);
             return parse(response);
         } catch (RestClientException | com.fasterxml.jackson.core.JsonProcessingException ex) {
             throw requestFailure(ex);
@@ -82,7 +89,7 @@ public final class GatewayHttp {
     public enum Failure {
         TIMEOUT, DNS, TLS, CONNECTION, TRANSPORT, HTTP_REJECTED,
         REQUEST_ENCODING, EMPTY_RESPONSE, INVALID_JSON, INVALID_RESPONSE,
-        MOMO_REJECTED, MISSING_PAYMENT_LINK
+        MOMO_REJECTED, VIETQR_REJECTED, MISSING_PAYMENT_LINK
     }
 
     // Chỉ đưa mã lỗi kiểm soát được và thông tin dạng số ra API hoặc nhật ký.

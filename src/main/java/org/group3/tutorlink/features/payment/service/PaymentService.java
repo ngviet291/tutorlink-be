@@ -40,6 +40,7 @@ public interface PaymentService {
     // IPN/callback từ MoMo (server-to-server, không có JWT, xác thực bằng chữ ký)
     void handleGatewayCallback(PaymentMethod method, String rawBody);
 
+    // TODO: Tạm không dùng
     // Hỏi lại cổng về trạng thái giao dịch nạp tiền đang PENDING (Tutor sở hữu giao dịch)
     TransactionResponse syncTopUpStatus(UUID transactionId);
     

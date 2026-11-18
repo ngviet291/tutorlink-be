@@ -1,6 +1,7 @@
 package org.group3.tutorlink.features.payment.repository;
 
 import jakarta.persistence.LockModeType;
+import org.group3.tutorlink.features.payment.dto.projection.RevenueStatisticsRow;
 import org.group3.tutorlink.features.payment.entity.Transaction;
 import org.group3.tutorlink.features.payment.enums.TransactionStatus;
 import org.springframework.data.domain.Pageable;

@@ -122,23 +122,7 @@ public class PaymentController {
                 .build();
     }
 
-    // 8. Trạng thái giao dịch nạp tiền - Tutor (FE gọi sau khi user quay về từ MoMo)
-    @GetMapping("/wallet/top-up/{id}")
-    public ApiResponse<TransactionResponse> getTopUpStatus(@PathVariable UUID id) {
-        return ApiResponse.<TransactionResponse>builder()
-                .code(PaymentResponseCode.GET_TOP_UP_STATUS.getCode())
-                .message(PaymentResponseCode.GET_TOP_UP_STATUS.getMessage())
-                .data(paymentService.syncTopUpStatus(id))
-                .build();
-    }
 
-    // 9. IPN callback từ MoMo (public endpoint, xác thực bằng chữ ký HMAC-SHA256)
-    // MoMo yêu cầu phản hồi HTTP 204 No Content
-    @PostMapping("/momo/ipn")
-    public ResponseEntity<Void> momoIpn(@RequestBody String rawBody) {
-        paymentService.handleGatewayCallback(PaymentMethod.MOMO, rawBody);
-        return ResponseEntity.noContent().build();
-    }
 
     // 10. Lịch sử cấu hình phí - Admin
     @GetMapping("/fee-configs")
@@ -182,6 +166,16 @@ public class PaymentController {
                 .code(PaymentResponseCode.WITHDRAW_SUCCESS.getCode())
                 .message(PaymentResponseCode.WITHDRAW_SUCCESS.getMessage())
                 .data(paymentService.withdrawFromWallet(request))
+                .build();
+    }
+
+    // Tạm không dùng
+    @GetMapping("/wallet/top-up/{id}")
+    public ApiResponse<TransactionResponse> getTopUpStatus(@PathVariable UUID id) {
+        return ApiResponse.<TransactionResponse>builder()
+                .code(PaymentResponseCode.GET_PAYMENT_DETAIL.getCode())
+                .message(PaymentResponseCode.GET_PAYMENT_DETAIL.getMessage())
+                .data(paymentService.syncTopUpStatus(id))
                 .build();
     }
 

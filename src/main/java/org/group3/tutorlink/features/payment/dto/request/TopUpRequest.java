@@ -1,15 +1,13 @@
 package org.group3.tutorlink.features.payment.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.group3.tutorlink.features.payment.constant.PaymentConstraints;
+import org.group3.tutorlink.features.payment.enums.PaymentMethod;
 
 import java.math.BigDecimal;
 
@@ -26,4 +24,9 @@ public class TopUpRequest {
     @Digits(integer = 17, fraction = 0, message = "Amount must be a whole number of VND!")
     @Schema(description = "Số tiền nạp từ 10.000 đến 50.000.000 VND.", example = "500000")
     private BigDecimal amount;
+
+    @NotNull
+    @NotBlank
+    @Schema(description = "Phương thức nạp: MOMO (mặc định nếu bỏ trống) hoặc VIETQR.", example = "VIETQR")
+    private PaymentMethod paymentMethod;
 }

@@ -21,8 +21,14 @@ public enum PaymentResponseCode implements ResponseCode {
     CREATE_FEE_CONFIG("PAYMENT_201", "Fee configuration created successfully!"),
     WITHDRAW_SUCCESS("PAYMENT_201", "Withdrawal request submitted successfully!"),
     APPROVE_WITHDRAWAL_SUCCESS("PAYMENT_200", "Withdrawal approved successfully!"),
-    REJECT_WITHDRAWAL_SUCCESS("PAYMENT_200", "Withdrawal rejected and refunded successfully!");
+    REJECT_WITHDRAWAL_SUCCESS("PAYMENT_200", "Withdrawal rejected and refunded successfully!"),
+    VIETQR_TOKEN_GENERATED("PAYMENT_200", "VietQR token generated successfully!"),
+    VIETQR_TRANSACTION_PROCESSED("PAYMENT_200", "VietQR transaction processed successfully!"),
+    VIETQR_IGNORED_NOT_CREDIT("PAYMENT_200", "VietQR transaction ignored: not a credit transaction!")
 
+
+
+    ;
     private final String code;
     private final String message;
 }

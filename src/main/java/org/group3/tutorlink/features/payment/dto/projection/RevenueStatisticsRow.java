@@ -1,4 +1,4 @@
-package org.group3.tutorlink.features.payment.repository;
+package org.group3.tutorlink.features.payment.dto.projection;
 
 import java.math.BigDecimal;
 

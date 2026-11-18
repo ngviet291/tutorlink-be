@@ -33,12 +33,11 @@ import org.group3.tutorlink.features.payment.mapper.TransactionMapper;
 import org.group3.tutorlink.features.payment.mapper.WalletMapper;
 import org.group3.tutorlink.features.payment.repository.MatchingFeeConfigRepository;
 import org.group3.tutorlink.features.payment.repository.TransactionRepository;
-import org.group3.tutorlink.features.payment.repository.RevenueStatisticsRow;
+import org.group3.tutorlink.features.payment.dto.projection.RevenueStatisticsRow;
 import org.group3.tutorlink.features.payment.repository.WalletRepository;
 import org.group3.tutorlink.features.payment.service.PaymentService;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.BudgetUnit;
-import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.repository.AdminRepository;
@@ -121,15 +120,14 @@ public class PaymentServiceImpl implements PaymentService {
     @PreAuthorize("hasAuthority('TUTOR')")
     public TransactionResponse topUp(TopUpRequest request) {
         UUID tutorId = appUtil.userIdFromAuthentication();
-        // Hiện chỉ hỗ trợ nạp ví qua cổng MoMo.
-        PaymentMethod method = PaymentMethod.MOMO;
-        PaymentGateway gateway = findGateway(method);
+        // Nạp ví qua MoMo (mặc định) hoặc VietQR.
+        PaymentGateway gateway = findGateway(request.getPaymentMethod());
         BigDecimal amount = request.getAmount().setScale(0, RoundingMode.HALF_UP);
 
         Wallet wallet = walletRepository.findByTutorId(tutorId)
                 .orElseGet(() -> createWallet(tutorId));
 
-        // Tạo đơn bên MoMo trước; lỗi cổng -> ném exception, không lưu giao dịch rác
+        // Tạo đơn bên cổng thanh toán trước; lỗi cổng -> ném exception, không lưu giao dịch rác
         String providerOrderId = gateway.newProviderOrderId();
         GatewayPaymentResult payment = gateway.createPayment(new GatewayPaymentRequest(
                 providerOrderId, amount, TOP_UP_DESCRIPTION, tutorId));
@@ -140,7 +138,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .type(TransactionType.TOP_UP)
                 .amount(amount)
                 .status(TransactionStatus.PENDING)
-                .paymentMethod(method)
+                .paymentMethod(request.getPaymentMethod())
                 .providerOrderId(providerOrderId)
                 .transactionDate(Instant.now())
                 .tutor(wallet.getTutor())
@@ -208,8 +206,13 @@ public class PaymentServiceImpl implements PaymentService {
             if (result.getAmount() == null || transaction.getAmount().compareTo(result.getAmount()) != 0
                     || result.getProviderTransId() == null || result.getProviderTransId().isBlank()) {
                 // Chữ ký hợp lệ nhưng số tiền lệch với đơn đã tạo -> không cộng ví, cần đối soát thủ công
-                log.error("{} amount mismatch for transaction {}: expected {}, gateway {}",
-                        method, transaction.getId(), transaction.getAmount(), result.getAmount());
+                log.error("{} amount mismatch for transaction {}: expected {}, gateway {}, providerTransId {}",
+                        method, transaction.getId(), transaction.getAmount(), result.getAmount(),
+                        result.getProviderTransId());
+                if (method == PaymentMethod.VIETQR) {
+                    // Chuyển khoản thật đã bị trừ tiền: giữ PENDING để đối soát thủ công, không đóng giao dịch.
+                    return;
+                }
                 transaction.setStatus(TransactionStatus.FAILED);
             } else {
                 Wallet wallet = getOrCreateWalletForUpdate(transaction.getTutor().getId());
@@ -226,6 +229,14 @@ public class PaymentServiceImpl implements PaymentService {
         }
         transaction.setTransactionDate(Instant.now());
         transactionRepository.save(transaction);
+    }
+
+    private PaymentMethod resolveTopUpMethod(PaymentMethod requested) {
+        PaymentMethod method = requested == null ? PaymentMethod.MOMO : requested;
+        if (method != PaymentMethod.MOMO && method != PaymentMethod.VIETQR) {
+            throw new AppException(PaymentErrorCode.UNSUPPORTED_TOP_UP_METHOD);
+        }
+        return method;
     }
 
     private PaymentGateway findGateway(PaymentMethod method) {
@@ -263,7 +274,7 @@ public class PaymentServiceImpl implements PaymentService {
         Transaction transaction = transactionRepository.findByApplicationId(applicationId).orElse(null);
 
         // Chỉ cho thanh toán lại khi lần trước bị FAILED (không đủ số dư) hoặc REFUNDED (đã hoàn tiền)
-        if (transaction != null 
+        if (transaction != null
                 && transaction.getStatus() != TransactionStatus.FAILED
                 && transaction.getStatus() != TransactionStatus.REFUNDED) {
             throw new AppException(PaymentErrorCode.APPLICATION_ALREADY_PAID);
