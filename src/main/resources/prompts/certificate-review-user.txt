@@ -1,0 +1,3 @@
+Registered tutor name: {fullName}
+
+Review the attached image and return the result.

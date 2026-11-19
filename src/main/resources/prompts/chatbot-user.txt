@@ -1,0 +1,5 @@
+Conversation history:
+{history}
+
+Current user message:
+{message}

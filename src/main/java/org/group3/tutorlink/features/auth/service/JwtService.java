@@ -71,8 +71,7 @@ public class JwtService {
         if (user.getRole() == null) {
             return "";
         }
-
-        return user.getRole().getName();
+        return user.getRole().getName().name();
     }
 
     public long getExpiration() {
@@ -131,9 +130,9 @@ public class JwtService {
 
             // Check if the token is invalidated due to password change
             Date iatTime = signedJWT.getJWTClaimsSet().getIssueTime();
-            String email = signedJWT.getJWTClaimsSet().getSubject();
-            if (changePasswordService.isTokenInvalidationTimestampExists(email)) {
-                long changePasswordDate = Long.parseLong(changePasswordService.getTokenInvalidationTimestamp(email));
+            String id = signedJWT.getJWTClaimsSet().getSubject();
+            if (changePasswordService.isTokenInvalidationTimestampExists(id)) {
+                long changePasswordDate = Long.parseLong(changePasswordService.getTokenInvalidationTimestamp(id));
                 if (changePasswordDate > iatTime.toInstant().toEpochMilli()) {
                     throw new AppException(ErrorCode.UNAUTHENTICATED);
                 }
