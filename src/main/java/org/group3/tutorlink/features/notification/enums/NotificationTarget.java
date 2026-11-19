@@ -17,6 +17,10 @@ public enum NotificationTarget {
     WALLET,
     /** Chat, targetId = channelId (nếu có) */
     CHAT,
+    /** Danh sách khiếu nại đánh giá (admin) */
+    ADMIN_COMPLAINTS,
+    /** Trang duyệt hồ sơ gia sư (admin) */
+    ADMIN_TUTORS,
     /** Không điều hướng */
     NONE
 }

@@ -6,9 +6,9 @@ import org.group3.tutorlink.features.ai.dto.CertificateSnapshot;
 import org.group3.tutorlink.features.ai.dto.TutorReviewSnapshot;
 import org.group3.tutorlink.features.ai.service.CertificateReviewAiService;
 import org.group3.tutorlink.features.auth.dto.CertificateCheck;
+import org.group3.tutorlink.features.notification.enums.NotificationMessage;
 import org.group3.tutorlink.features.notification.enums.NotificationTarget;
-import org.group3.tutorlink.features.notification.enums.NotificationType;
-import org.group3.tutorlink.features.notification.service.NotificationCreator;
+import org.group3.tutorlink.features.notification.service.NotificationHelper;
 import org.group3.tutorlink.features.subject.entity.Certificate;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
@@ -25,35 +25,28 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class TutorCertificateReviewService {
-    private static final String TITLE_PROFILE_APPROVED = "Hồ sơ gia sư đã được duyệt";
-    private static final String CONTENT_PROFILE_APPROVED = "Chứng chỉ của bạn đã được xác thực, bạn có thể bắt đầu đăng ký nhận lớp.";
-    private static final String TITLE_PROFILE_REJECTED = "Hồ sơ gia sư bị từ chối";
-    private static final String TITLE_CERT_VERIFIED = "Chứng chỉ đã được xác thực";
-    private static final String FORMAT_CERT_VERIFIED = "%d chứng chỉ của bạn đã được xác thực.";
-    private static final String TITLE_CERT_INVALID = "Chứng chỉ không hợp lệ";
-    private static final String FORMAT_CERT_INVALID = "%d chứng chỉ không hợp lệ: %s";
-    private static final String TITLE_REVIEW_FAILED = "Chưa kiểm tra được chứng chỉ";
-    private static final String CONTENT_REVIEW_FAILED = "Hệ thống chưa thể kiểm tra chứng chỉ lúc này. Chứng chỉ vẫn chờ duyệt và sẽ được kiểm tra lại ở lần tải lên tiếp theo.";
-    private static final int MAX_CONTENT_LENGTH = 500;
+    // Giới hạn độ dài lý do đưa vào nội dung thông báo
+    private static final int MAX_REASONS_LENGTH = 400;
     private final TutorRepository tutorRepository;
     private final MediaStorageService mediaStorageService;
     private final CertificateReviewAiService aiService;
     private final TransactionTemplate tx;
     private final double minConfidence;
-    private final NotificationCreator notificationCreator;
+    private final NotificationHelper notificationHelper;
 
     public TutorCertificateReviewService(
             TutorRepository tutorRepository,
             MediaStorageService mediaStorageService,
             CertificateReviewAiService aiService,
             TransactionTemplate tx,
-            @Value("${app.verification.min-confidence}") double minConfidence, NotificationCreator notificationCreator) {
+            @Value("${app.verification.min-confidence}") double minConfidence,
+            NotificationHelper notificationHelper) {
         this.tutorRepository = tutorRepository;
         this.mediaStorageService = mediaStorageService;
         this.aiService = aiService;
         this.tx = tx;
         this.minConfidence = minConfidence;
-        this.notificationCreator = notificationCreator;
+        this.notificationHelper = notificationHelper;
     }
 
     public void review(UUID tutorId) {
@@ -92,6 +85,7 @@ public class TutorCertificateReviewService {
     private boolean isAccepted(CertificateCheck check) {
         return check.isValid() && check.getConfidence() >= minConfidence;
     }
+
     private TutorReviewSnapshot loadSnapshot(UUID tutorId) {
         return tx.execute(status -> tutorRepository.findById(tutorId)
                 .filter(t -> isReviewable(t.getVerificationStatus()))
@@ -132,7 +126,7 @@ public class TutorCertificateReviewService {
                 tutor.setVerificationStatus(hasVerified ? VerificationStatus.APPROVED : VerificationStatus.REJECTED);
                 tutor.setVerificationNote(hasVerified ? null : joinReasons(reasons));
             }
-            notifyResult(tutorId, wasPending, hasVerified, accepted.size(), invalidIds.size(), reasons);
+            notifyResult(tutor, wasPending, hasVerified, accepted.size(), invalidIds.size(), reasons);
         });
     }
 
@@ -150,8 +144,9 @@ public class TutorCertificateReviewService {
         return reasons.stream().filter(Objects::nonNull).collect(Collectors.joining("; "));
     }
 
-    private static String blankToNull(String s) {
-        return (s == null || s.isBlank()) ? null : s.trim();
+    private String shortReasons(List<String> reasons) {
+        String joined = joinReasons(reasons);
+        return joined.length() > MAX_REASONS_LENGTH ? joined.substring(0, MAX_REASONS_LENGTH) : joined;
     }
 
     private static LocalDate parseDate(String s) {
@@ -164,29 +159,39 @@ public class TutorCertificateReviewService {
             return null; // AI trả sai định dạng thì bỏ trống thay vì làm hỏng cả lượt duyệt
         }
     }
-    private void notifyResult(UUID tutorId, boolean wasPending, boolean hasVerified,
+
+    private void notifyResult(Tutor tutor, boolean wasPending, boolean hasVerified,
                               int acceptedCount, int invalidCount, List<String> reasons) {
         if (acceptedCount > 0) {
             if (wasPending && hasVerified) {
-                notify(tutorId, TITLE_PROFILE_APPROVED, CONTENT_PROFILE_APPROVED);
+                notificationHelper.notify(tutor, NotificationMessage.TUTOR_APPROVED_BY_AI,
+                        NotificationTarget.TUTOR_PROFILE, null);
             } else {
-                notify(tutorId, TITLE_CERT_VERIFIED, String.format(FORMAT_CERT_VERIFIED, acceptedCount));
+                notificationHelper.notify(tutor, NotificationMessage.CERTIFICATE_VERIFIED,
+                        NotificationTarget.TUTOR_PROFILE, null, acceptedCount);
             }
         }
         if (invalidCount > 0) {
-            String title = (wasPending && !hasVerified) ? TITLE_PROFILE_REJECTED : TITLE_CERT_INVALID;
-            notify(tutorId, title, String.format(FORMAT_CERT_INVALID, invalidCount, joinReasons(reasons)));
+            NotificationMessage message = (wasPending && !hasVerified)
+                    ? NotificationMessage.TUTOR_REJECTED_BY_AI
+                    : NotificationMessage.CERTIFICATE_INVALID;
+            notificationHelper.notify(tutor, message, NotificationTarget.TUTOR_PROFILE, null,
+                    invalidCount, shortReasons(reasons));
         }
     }
 
     private void notifyReviewFailed(UUID tutorId) {
-        tx.executeWithoutResult(status -> notify(tutorId, TITLE_REVIEW_FAILED, CONTENT_REVIEW_FAILED));
-    }
-
-    private void notify(UUID tutorId, String title, String content) {
-        String safe = content.length() > MAX_CONTENT_LENGTH ? content.substring(0, MAX_CONTENT_LENGTH) : content;
-        notificationCreator.createNotification(tutorId, NotificationType.SYSTEM, title, safe,
-                NotificationTarget.TUTOR_PROFILE, null);
+        tx.executeWithoutResult(status -> {
+            Tutor tutor = tutorRepository.findById(tutorId).orElse(null);
+            if (tutor != null) {
+                notificationHelper.notify(tutor, NotificationMessage.CERTIFICATE_REVIEW_FAILED,
+                        NotificationTarget.TUTOR_PROFILE, null);
+            }
+            // Không tìm thấy tên thì dùng id để admin vẫn tra được
+            String tutorName = tutor != null ? tutor.getFullName() : tutorId.toString();
+            notificationHelper.notifyAdmins(NotificationMessage.TUTOR_REVIEW_FAILED_ADMIN,
+                    NotificationTarget.ADMIN_TUTORS, tutorName);
+        });
     }
 
     private static String firstNonBlank(String preferred, String fallback) {

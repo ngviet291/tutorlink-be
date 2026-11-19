@@ -1,4 +1,3 @@
-
 package org.group3.tutorlink.features.post.service.impl;
 
 import lombok.RequiredArgsConstructor;
@@ -6,11 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.logging.SystemLogPublisher;
 import org.group3.tutorlink.common.utils.AppUtil;
+import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
+import org.group3.tutorlink.features.application.util.ApplicationParties;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
+import org.group3.tutorlink.features.notification.enums.NotificationMessage;
 import org.group3.tutorlink.features.notification.enums.NotificationTarget;
-import org.group3.tutorlink.features.notification.enums.NotificationType;
-import org.group3.tutorlink.features.notification.service.NotificationCreator;
+import org.group3.tutorlink.features.notification.service.NotificationHelper;
 import org.group3.tutorlink.features.post.dto.request.CreatePostRequest;
 import org.group3.tutorlink.features.post.dto.request.UpdatePostRequest;
 import org.group3.tutorlink.features.post.dto.response.PostApplicationResponse;
@@ -53,8 +54,9 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-    private static final String ADMIN_REMOVE_POST = "Bài đăng bị xóa bởi ADMIN";
-    private static final String ADMIN_REMOVE_POST_REASON = "Lý do: ";
+    // Đơn đang chờ xét duyệt hoặc chờ thanh toán đều cần biết bài không còn nhận
+    private static final List<ApplicationStatus> WAITING_STATUSES =
+            List.of(ApplicationStatus.PENDING, ApplicationStatus.ACCEPTED);
     private final PostRepository postRepository;
     private final SubjectRepository subjectRepository;
     private final PostMapper postMapper;
@@ -62,9 +64,9 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final TutorRepository tutorRepository;
     private final SystemLogPublisher systemLogPublisher;
-    private final NotificationCreator notificationCreator;
     // [NEW] dùng cho visibility check post PENDING/CLOSED trong getPostById
     private final ApplicationRepository applicationRepository;
+    private final NotificationHelper notificationHelper;
 
     @Transactional
     @Override
@@ -138,6 +140,7 @@ public class PostServiceImpl implements PostService {
 
         throw new PostNotFoundException();
     }
+
     private boolean isPostParticipant(Post post, UUID userId) {
         if (post.getAuthor().getId().equals(userId)) {
             return true;
@@ -306,6 +309,7 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(PostNotFoundException::new);
 
         post.setStatus(PostStatus.CLOSED);
+        notifyWaitingApplicants(post, NotificationMessage.POST_CLOSED_APPLICANT);
     }
 
 
@@ -320,7 +324,7 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(PostNotFoundException::new);
 
         post.setStatus(PostStatus.REMOVED);
-
+        notifyWaitingApplicants(post, NotificationMessage.POST_REMOVED_BY_AUTHOR);
     }
 
     /**
@@ -447,13 +451,18 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
         post.setStatus(PostStatus.REMOVED);
         post.setRemovalReason(reason);
-        notificationCreator.createNotification(
-                post.getAuthor().getId(),
-                NotificationType.SYSTEM,
-                ADMIN_REMOVE_POST,
-                String.format("%s %s", ADMIN_REMOVE_POST_REASON, reason),
-                NotificationTarget.MY_POSTS,
-                null
-        );
+        notificationHelper.notify(post.getAuthor(), NotificationMessage.POST_REMOVED_BY_ADMIN_AUTHOR,
+                NotificationTarget.MY_POSTS, null, post.getTitle(), reason);
+        notifyWaitingApplicants(post, NotificationMessage.POST_REMOVED_BY_ADMIN);
+    }
+
+    /** Báo các ứng viên đang chờ (PENDING, ACCEPTED) rằng bài không còn nhận. */
+    private void notifyWaitingApplicants(Post post, NotificationMessage message) {
+        for (ApplicationStatus status : WAITING_STATUSES) {
+            applicationRepository.findByPostIdAndApplicationStatus(post.getId(), status, Pageable.unpaged())
+                    .forEach(application -> notificationHelper.notify(
+                            ApplicationParties.applicantOf(application), message,
+                            NotificationTarget.MY_APPLICATIONS, null, post.getTitle()));
+        }
     }
 }

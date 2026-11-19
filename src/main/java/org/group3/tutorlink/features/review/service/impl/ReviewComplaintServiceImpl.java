@@ -3,6 +3,9 @@ package org.group3.tutorlink.features.review.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
+import org.group3.tutorlink.features.notification.enums.NotificationMessage;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
+import org.group3.tutorlink.features.notification.service.NotificationHelper;
 import org.group3.tutorlink.features.review.dto.request.CreateReviewComplaintRequest;
 import org.group3.tutorlink.features.review.dto.response.ReviewComplaintResponse;
 import org.group3.tutorlink.features.review.entity.Review;
@@ -11,6 +14,7 @@ import org.group3.tutorlink.features.review.enums.ComplaintStatus;
 import org.group3.tutorlink.features.review.exception.ReviewComplaintNotFoundException;
 import org.group3.tutorlink.features.review.exception.ReviewInvalidComplaintStatusException;
 import org.group3.tutorlink.features.review.exception.ReviewNotFoundException;
+import org.group3.tutorlink.features.review.mapper.ReviewComplaintMapper;
 import org.group3.tutorlink.features.review.repository.ReviewComplaintRepository;
 import org.group3.tutorlink.features.review.repository.ReviewRepository;
 import org.group3.tutorlink.features.review.service.ReviewComplaintService;
@@ -33,6 +37,8 @@ public class ReviewComplaintServiceImpl implements ReviewComplaintService {
     private final TutorRepository tutorRepository;
     private final AdminRepository adminRepository;
     private final AppUtil appUtil;
+    private final ReviewComplaintMapper complaintMapper;
+    private final NotificationHelper notificationHelper;
 
     @Override
     @PreAuthorize("hasAuthority('TUTOR')")
@@ -51,7 +57,10 @@ public class ReviewComplaintServiceImpl implements ReviewComplaintService {
         ReviewComplaint complaint = ReviewComplaint.builder()
                 .id(appUtil.generateUUID()).reason(request.getReason().trim())
                 .status(ComplaintStatus.PENDING).review(review).tutor(tutor).build();
-        return toResponse(complaintRepository.save(complaint));
+        ReviewComplaint saved = complaintRepository.save(complaint);
+        notificationHelper.notifyAdmins(NotificationMessage.COMPLAINT_CREATED_ADMIN,
+                NotificationTarget.ADMIN_COMPLAINTS, tutor.getFullName());
+        return complaintMapper.toResponse(saved);
     }
 
     @Override
@@ -61,7 +70,7 @@ public class ReviewComplaintServiceImpl implements ReviewComplaintService {
         List<ReviewComplaint> complaints = status == null
                 ? complaintRepository.findAll()
                 : complaintRepository.findByStatus(status);
-        return complaints.stream().map(this::toResponse).toList();
+        return complaints.stream().map(complaintMapper::toResponse).toList();
     }
 
     @Override
@@ -75,20 +84,16 @@ public class ReviewComplaintServiceImpl implements ReviewComplaintService {
         Admin admin = adminRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         ReviewComplaint complaint = complaintRepository.findById(id)
                 .orElseThrow(ReviewComplaintNotFoundException::new);
+        if (complaint.getStatus() != ComplaintStatus.PENDING) {
+            throw new ReviewInvalidComplaintStatusException();
+        }
         complaint.setStatus(status);
         complaint.setAdmin(admin);
-        return toResponse(complaintRepository.save(complaint));
-    }
-
-    private ReviewComplaintResponse toResponse(ReviewComplaint complaint) {
-        return ReviewComplaintResponse.builder()
-                .id(complaint.getId())
-                .reason(complaint.getReason())
-                .status(complaint.getStatus())
-                .reviewId(complaint.getReview().getId())
-                .tutorId(complaint.getTutor().getId())
-                .tutorName(complaint.getTutor().getFullName())
-                .adminId(complaint.getAdmin() == null ? null : complaint.getAdmin().getId())
-                .build();
+        ReviewComplaint saved = complaintRepository.save(complaint);
+        NotificationMessage message = status == ComplaintStatus.APPROVED
+                ? NotificationMessage.COMPLAINT_APPROVED
+                : NotificationMessage.COMPLAINT_REJECTED;
+        notificationHelper.notify(saved.getTutor(), message, NotificationTarget.TUTOR_PROFILE, null);
+        return complaintMapper.toResponse(saved);
     }
 }

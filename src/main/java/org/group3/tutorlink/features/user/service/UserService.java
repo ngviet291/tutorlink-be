@@ -10,6 +10,9 @@ import org.group3.tutorlink.common.service.MediaStorageService;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.enums.RoleName;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
+import org.group3.tutorlink.features.notification.enums.NotificationMessage;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
+import org.group3.tutorlink.features.notification.service.NotificationHelper;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.subject.repository.SubjectRepository;
 import org.group3.tutorlink.features.user.dto.request.*;
@@ -55,6 +58,7 @@ public class UserService {
 
     private static final long MAX_AVATAR_BYTES = 5L * 1024 * 1024;
     private static final String AVATAR_FOLDER = "avatars/";
+    private final NotificationHelper notificationHelper;
 
     @Transactional(readOnly = true)
     public BaseUserResponse getMyProfile() {
@@ -171,6 +175,16 @@ public class UserService {
         tutor.setVerificationStatus(approved ? VerificationStatus.APPROVED : VerificationStatus.REJECTED);
         tutor.setVerificationNote(approved ? null : request.getReason());
         Tutor savedTutor = userRepository.save(tutor);
+        if (approved) {
+            notificationHelper.notify(savedTutor, NotificationMessage.TUTOR_APPROVED,
+                    NotificationTarget.TUTOR_PROFILE, null);
+        } else if (request.getReason() == null || request.getReason().isBlank()) {
+            notificationHelper.notify(savedTutor, NotificationMessage.TUTOR_REJECTED_NO_REASON,
+                    NotificationTarget.TUTOR_PROFILE, null);
+        } else {
+            notificationHelper.notify(savedTutor, NotificationMessage.TUTOR_REJECTED,
+                    NotificationTarget.TUTOR_PROFILE, null, request.getReason().trim());
+        }
         TutorResponse response = userMapper.toTutorResponse(savedTutor);
         return response;
     }
@@ -186,8 +200,14 @@ public class UserService {
         if (isAdmin && request.getUserStatus() == UserStatus.BANNED) {
             throw new UserValidationException(UserErrorCode.CANNOT_LOCK_ADMIN);
         }
+        UserStatus oldStatus = user.getUserStatus();
         user.setUserStatus(request.getUserStatus());
-        return userMapper.toBaseUserResponse(userRepository.save(user));
+        User saved = userRepository.save(user);
+        if (oldStatus == UserStatus.BANNED && saved.getUserStatus() == UserStatus.ACTIVE) {
+            notificationHelper.notify(saved, NotificationMessage.ACCOUNT_UNLOCKED,
+                    NotificationTarget.NONE, null);
+        }
+        return userMapper.toBaseUserResponse(saved);
     }
     @Transactional(readOnly = true)
     public CursorResponse<TutorResponse> getTutors(
