@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 @Schema(description = "Yêu cầu nạp ví qua MoMo.")
 public class TopUpRequest {
 
-    @NotNull(message = "Amount is required!")
+    @NotNull(message = "Amount is required! ")
     @DecimalMin(value = PaymentConstraints.TOP_UP_MIN_AMOUNT, message = "Amount must be at least 10,000 VND!")
     @DecimalMax(value = PaymentConstraints.TOP_UP_MAX_AMOUNT, message = "Amount must not exceed 50,000,000 VND!")
     @Digits(integer = 17, fraction = 0, message = "Amount must be a whole number of VND!")
@@ -26,7 +26,6 @@ public class TopUpRequest {
     private BigDecimal amount;
 
     @NotNull
-    @NotBlank
     @Schema(description = "Phương thức nạp: MOMO (mặc định nếu bỏ trống) hoặc VIETQR.", example = "VIETQR")
     private PaymentMethod paymentMethod;
 }

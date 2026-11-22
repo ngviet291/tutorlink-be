@@ -17,6 +17,7 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,6 +44,10 @@ public class VietQrGateway implements PaymentGateway {
 
     private static final String TOKEN_PATH = "/api/token_generate";
     private static final String GENERATE_QR_PATH = "/api/qr/generate-customer";
+    private static final String CHECK_ORDER_PATH = "/api/ecommerce-transactions/check-order";
+    // check-order: status 1 = đã thanh toán; type 0 = giao dịch VietQR (loại 6 là hoàn tiền).
+    private static final int CHECK_ORDER_STATUS_PAID = 1;
+    private static final int CHECK_ORDER_TYPE_VIETQR = 0;
 
     private static final long DEFAULT_TOKEN_TTL_SECONDS = 240;
     private static final long TOKEN_EARLY_REFRESH_SECONDS = 30;
@@ -127,12 +132,53 @@ public class VietQrGateway implements PaymentGateway {
     }
 
     /**
-     * VietQR không có API tra cứu đơn đã dùng ở đây: trạng thái chỉ đổi khi callback tới.
-     * FE polling GET /wallet/top-up/{id} sẽ đọc trạng thái trong DB do callback cập nhật.
+     * Chủ động hỏi VietQR (API check-order) khi callback chưa tới hoặc bị mất.
+     * Chỉ coi là SUCCESS khi có giao dịch ghi có đã thanh toán (status = 1) đúng orderId;
+     * mọi trường hợp khác (chưa trả, hết hạn, lỗi mạng/cấu hình) giữ PENDING để FE tiếp tục chờ.
+     * Việc đối chiếu số tiền và cộng ví một lần vẫn do PaymentServiceImpl.settleTopUp đảm nhiệm.
      */
     @Override
     public GatewayCallbackResult queryOrder(String providerOrderId) {
-        return new GatewayCallbackResult(providerOrderId, null, null, GatewayPaymentState.PENDING);
+        GatewayCallbackResult pending =
+                new GatewayCallbackResult(providerOrderId, null, null, GatewayPaymentState.PENDING);
+        try {
+            validateConfiguration();
+            Map<String, Object> body = new LinkedHashMap<>();
+            body.put("bankAccount", bankAccount);
+            body.put("type", "0"); // 0 = tra theo orderId
+            body.put("value", providerOrderId);
+            body.put("checkSum", md5Hex(bankAccount + username));
+
+            List<Map<String, Object>> transactions = GatewayHttp.postJsonArray(
+                    baseUrl() + CHECK_ORDER_PATH,
+                    Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + token()),
+                    body);
+
+            // Nhật ký tạm để đối chiếu phản hồi check-order (không chứa thông tin xác thực).
+            log.info("VietQR check-order {} -> {} record(s): {}", providerOrderId, transactions.size(), transactions);
+            for (Map<String, Object> tx : transactions) {
+                Integer status = GatewayHttp.intValue(tx, "status");
+                Integer type = GatewayHttp.intValue(tx, "type");
+                if (status == null || status != CHECK_ORDER_STATUS_PAID
+                        || (type != null && type != CHECK_ORDER_TYPE_VIETQR)
+                        || !providerOrderId.equals(field(tx, "orderId"))
+                        || (!field(tx, "transType", "transtype").isBlank() && !isCredit(tx))) {
+                    continue;
+                }
+                String transId = field(tx, "referenceNumber");
+                BigDecimal amount = toAmount(field(tx, "amount"));
+                if (transId.isBlank() || amount == null || amount.signum() <= 0) {
+                    continue;
+                }
+                return new GatewayCallbackResult(providerOrderId, transId, amount, GatewayPaymentState.SUCCESS);
+            }
+            return pending;
+        } catch (AppException ex) {
+            // Không làm hỏng polling của FE: lần sau hỏi lại (token hết hạn được xin mới ở postAuthorized/token()).
+            invalidateToken();
+            log.warn("VietQR check-order failed for {}: {}", providerOrderId, ex.getMessage());
+            return pending;
+        }
     }
 
     /** true nếu thông báo là giao dịch ghi có (tiền vào). */
@@ -195,6 +241,20 @@ public class VietQrGateway implements PaymentGateway {
         accessToken = token;
         tokenExpiresAt = Instant.now().plusSeconds(ttl);
         return accessToken;
+    }
+
+    private static String md5Hex(String value) {
+        try {
+            byte[] digest = java.security.MessageDigest.getInstance("MD5")
+                    .digest(value.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hex = new StringBuilder(digest.length * 2);
+            for (byte b : digest) {
+                hex.append(String.format("%02x", b));
+            }
+            return hex.toString();
+        } catch (java.security.NoSuchAlgorithmException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     private synchronized void invalidateToken() {

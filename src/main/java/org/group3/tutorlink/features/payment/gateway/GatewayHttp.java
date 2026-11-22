@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -63,6 +64,32 @@ public final class GatewayHttp {
             }
             String response = spec.retrieve().body(String.class);
             return parse(response);
+        } catch (RestClientException | com.fasterxml.jackson.core.JsonProcessingException ex) {
+            throw requestFailure(ex);
+        }
+    }
+
+    // Như postJson nhưng cho API trả về mảng JSON (vd VietQR check-order).
+    public static List<Map<String, Object>> postJsonArray(String url, Map<String, String> headers,
+                                                          Map<String, Object> body) {
+        try {
+            RestClient.RequestBodySpec spec = CLIENT.post()
+                    .uri(url)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("User-Agent", USER_AGENT);
+            headers.forEach((name, value) -> spec.header(name, value));
+            if (body != null) {
+                spec.body(MAPPER.writeValueAsString(body));
+            }
+            String response = spec.retrieve().body(String.class);
+            if (response == null || response.isBlank()) {
+                throw diagnostic(Failure.EMPTY_RESPONSE, null, null);
+            }
+            var root = MAPPER.readTree(response);
+            if (root == null || !root.isArray()) {
+                throw diagnostic(Failure.INVALID_JSON, null, null);
+            }
+            return MAPPER.convertValue(root, new TypeReference<List<Map<String, Object>>>() {});
         } catch (RestClientException | com.fasterxml.jackson.core.JsonProcessingException ex) {
             throw requestFailure(ex);
         }

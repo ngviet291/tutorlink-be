@@ -2,7 +2,6 @@ package org.group3.tutorlink.features.payment.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.features.payment.constant.VietQrConstants;
 import org.group3.tutorlink.features.payment.dto.response.VietQrCallbackResponse;
@@ -17,6 +16,8 @@ import org.group3.tutorlink.features.payment.gateway.vietqr.VietQrGateway;
 import org.group3.tutorlink.features.payment.service.PaymentService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -41,7 +42,7 @@ public class VietQrCallbackController {
 
     // 1. VietQR xin token: Basic auth -> JWT ngắn hạn
     @PostMapping("/api/token_generate")
-    public ApiResponse<VietQrTokenResponse> generateToken(
+    public VietQrTokenResponse generateToken(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
         if (!auth.isConfigured()) {
             throw new VietQrCallbackException(VietQrCallbackCode.CREDENTIALS_NOT_CONFIGURED);
@@ -53,17 +54,17 @@ public class VietQrCallbackController {
             throw new VietQrCallbackException(VietQrCallbackCode.INVALID_CREDENTIALS);
         }
 
-        VietQrTokenResponse token = VietQrTokenResponse.builder()
+        // VietQR đọc access_token/token_type/expires_in ở cấp cao nhất, không bọc ApiResponse.
+        return VietQrTokenResponse.builder()
                 .accessToken(auth.issueToken())
                 .tokenType(VietQrConstants.TOKEN_TYPE_BEARER)
                 .expiresIn(auth.getTokenTtlSeconds())
                 .build();
-        return success(PaymentResponseCode.VIETQR_TOKEN_GENERATED, token);
     }
 
     // 2. VietQR báo biến động số dư -> cộng ví cho giao dịch nạp tương ứng
     @PostMapping("/bank/api/transaction-sync")
-    public ApiResponse<VietQrCallbackResponse> transactionSync(
+    public VietQrCallbackResponse transactionSync(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader,
             @RequestBody String rawBody) {
         if (!auth.isBearerTokenValid(authHeader)) {
@@ -77,16 +78,14 @@ public class VietQrCallbackController {
         if (!VietQrGateway.isCredit(payload)) {
             // Tiền ra khỏi tài khoản: không liên quan nạp ví.
             log.info("Ignore non-credit VietQR notification, orderId={}", orderId);
-            return success(PaymentResponseCode.VIETQR_IGNORED_NOT_CREDIT,
-                    VietQrCallbackResponse.success(
-                            PaymentResponseCode.VIETQR_IGNORED_NOT_CREDIT.getMessage(), orderId));
+            return VietQrCallbackResponse.success(
+                    PaymentResponseCode.VIETQR_IGNORED_NOT_CREDIT.getMessage(), orderId);
         }
 
         // Luồng chung: khóa giao dịch, đối chiếu số tiền, cộng ví một lần, bỏ qua nếu đã xử lý.
         paymentService.handleGatewayCallback(PaymentMethod.VIETQR, rawBody);
-        return success(PaymentResponseCode.VIETQR_TRANSACTION_PROCESSED,
-                VietQrCallbackResponse.success(
-                        PaymentResponseCode.VIETQR_TRANSACTION_PROCESSED.getMessage(), orderId));
+        return VietQrCallbackResponse.success(
+                PaymentResponseCode.VIETQR_TRANSACTION_PROCESSED.getMessage(), orderId);
     }
 
     private Map<String, Object> parsePayload(String rawBody) {
@@ -97,11 +96,12 @@ public class VietQrCallbackController {
         }
     }
 
-    private <T> ApiResponse<T> success(PaymentResponseCode code, T data) {
-        return ApiResponse.<T>builder()
-                .code(code.getCode())
-                .message(code.getMessage())
-                .data(data)
-                .build();
+    /** Lỗi của hai API này trả đúng định dạng VietQR {error, errorReason, toastMessage, object}. */
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<VietQrCallbackResponse> handleError(AppException ex) {
+        log.warn("VietQR callback error: {}", ex.getErrorCode().getMessage());
+        return ResponseEntity.status(ex.getErrorCode().getHttpStatus())
+                .body(VietQrCallbackResponse.failure(
+                        ex.getErrorCode().getMessage(), ex.getErrorCode().getMessage()));
     }
 }
