@@ -1,0 +1,5 @@
+Hãy đánh giá từng gia sư dưới đây theo yêu cầu của học viên.
+
+{post}
+
+{candidates}

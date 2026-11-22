@@ -20,10 +20,6 @@ public class Admin extends User {
 
     private String department;
 
-    // Admin 1 -- 0..* Application (accepts / processes)
-    @OneToMany(mappedBy = "processedByAdmin")
-    private Set<Application> processedApplication;
-
     // Admin 1 -- 0..* RevenueReport
     @OneToMany(mappedBy = "generatedByAdmin")
     private Set<RevenueReport> revenueReports ;

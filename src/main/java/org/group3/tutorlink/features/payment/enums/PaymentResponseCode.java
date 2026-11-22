@@ -1,0 +1,34 @@
+package org.group3.tutorlink.features.payment.enums;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.group3.tutorlink.common.enums.ResponseCode;
+
+@Getter
+@RequiredArgsConstructor
+public enum PaymentResponseCode implements ResponseCode {
+
+    GET_WALLET_BALANCE("PAYMENT_200", "Wallet balance retrieved successfully!"),
+    TOP_UP_SUCCESS("PAYMENT_201", "Wallet topped up successfully!"),
+    GET_TOP_UP_STATUS("PAYMENT_200", "Top-up status retrieved successfully!"),
+    PAY_COMMISSION_SUCCESS("PAYMENT_201", "Commission paid successfully!"),
+    GET_PAYMENT_HISTORY("PAYMENT_200", "Payment history retrieved successfully!"),
+    GET_PAYMENTS("PAYMENT_200", "Payments retrieved successfully!"),
+    GET_PAYMENT_DETAIL("PAYMENT_200", "Payment detail retrieved successfully!"),
+    REFUND_SUCCESS("PAYMENT_200", "Payment refunded successfully!"),
+    GET_REVENUE_STATISTICS("PAYMENT_200", "Revenue statistics retrieved successfully!"),
+    GET_FEE_CONFIGS("PAYMENT_200", "Fee configurations retrieved successfully!"),
+    CREATE_FEE_CONFIG("PAYMENT_201", "Fee configuration created successfully!"),
+    WITHDRAW_SUCCESS("PAYMENT_201", "Withdrawal request submitted successfully!"),
+    APPROVE_WITHDRAWAL_SUCCESS("PAYMENT_200", "Withdrawal approved successfully!"),
+    REJECT_WITHDRAWAL_SUCCESS("PAYMENT_200", "Withdrawal rejected and refunded successfully!"),
+    VIETQR_TOKEN_GENERATED("PAYMENT_200", "VietQR token generated successfully!"),
+    VIETQR_TRANSACTION_PROCESSED("PAYMENT_200", "VietQR transaction processed successfully!"),
+    VIETQR_IGNORED_NOT_CREDIT("PAYMENT_200", "VietQR transaction ignored: not a credit transaction!")
+
+
+
+    ;
+    private final String code;
+    private final String message;
+}

@@ -3,12 +3,15 @@ package org.group3.tutorlink.features.application.entity;
 import org.group3.tutorlink.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.group3.tutorlink.common.entity.BaseEntity;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.payment.entity.Transaction;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Student;
+import org.group3.tutorlink.features.user.entity.Tutor;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -34,6 +37,9 @@ public class Application extends BaseEntity {
     @Column(nullable = false, updatable = false)
     private Instant appliedAt;
 
+    // Thời điểm chủ bài chọn đơn này (ACCEPTED), dùng để tính cửa sổ chờ thanh toán 24h
+    private Instant selectedAt;
+
     // Application n -- 1 Post
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
@@ -41,8 +47,12 @@ public class Application extends BaseEntity {
 
     // Application n -- 1 Student (applicant)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "student_id")
     private Student student;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tutor_id")
+    private Tutor tutor;
 
     // Application n -- 1 Admin (accepts / processes), optional
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,4 +62,7 @@ public class Application extends BaseEntity {
     // Application 1 -- 0..1 Transaction
     @OneToOne(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private Transaction transaction;
+
+    @Column(precision = 15, scale = 2)
+    private BigDecimal proposedFee;
 }

@@ -31,7 +31,5 @@ public class Student extends User {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Application> applications ;
 
-    // Student 1 -- 0..* ChatChannel
-    @OneToMany(mappedBy = "student")
-    private Set<ChatChannel> chatChannels;
+
 }
