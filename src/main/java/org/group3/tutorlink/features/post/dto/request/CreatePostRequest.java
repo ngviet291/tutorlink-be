@@ -12,12 +12,14 @@ import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.enums.TeachingMode;
 import org.group3.tutorlink.features.post.validation.ValidPostRequest;
+import org.group3.tutorlink.features.post.validation.annotation.ValidBudgetRange;
 import org.group3.tutorlink.features.post.validation.annotation.ValidPostStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+@ValidBudgetRange
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -109,6 +111,7 @@ public class CreatePostRequest {
             inclusive = true,
             message = "Minimum budget must be greater than or equal to 0"
     )
+    @NotNull
     @Schema(
             description = "Minimum budget per tutoring session",
             example = "100000",
@@ -126,6 +129,7 @@ public class CreatePostRequest {
             example = "150000",
             minimum = "0"
     )
+    @NotNull
     private BigDecimal maxBudget;
 
     @Min(

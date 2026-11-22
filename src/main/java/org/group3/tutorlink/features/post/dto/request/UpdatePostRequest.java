@@ -9,11 +9,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.group3.tutorlink.features.post.enums.*;
 import org.group3.tutorlink.features.post.validation.ValidPostRequest;
+import org.group3.tutorlink.features.post.validation.annotation.ValidBudgetRange;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+@ValidBudgetRange
 @ValidPostRequest
 @Data
 @NoArgsConstructor
@@ -80,12 +82,14 @@ public class UpdatePostRequest {
     )
     private AddressRequest address;
 
+    @NotNull
     @DecimalMin(
             value = "0.0",
             message = "Minimum budget must be greater than or equal to 0"
     )
     private BigDecimal minBudget;
 
+    @NotNull
     @DecimalMin(
             value = "0.0",
             message = "Maximum budget must be greater than or equal to 0"
