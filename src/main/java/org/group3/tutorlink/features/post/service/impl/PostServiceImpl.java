@@ -24,6 +24,7 @@ import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.enums.TeachingMode;
 import org.group3.tutorlink.features.post.exception.PostNotFoundException;
 import org.group3.tutorlink.features.post.exception.SubjectNotBelongToTutorException;
+import org.group3.tutorlink.features.post.exception.TutorNotVerifiedException;
 import org.group3.tutorlink.features.post.mapper.PostMapper;
 import org.group3.tutorlink.features.post.repository.PostRepository;
 import org.group3.tutorlink.features.post.specification.PostSpecification;
@@ -34,6 +35,7 @@ import org.group3.tutorlink.features.subject.repository.SubjectRepository;
 import org.group3.tutorlink.features.tracking.enums.SystemAction;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
+import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
 import org.group3.tutorlink.features.user.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
@@ -80,10 +82,15 @@ public class PostServiceImpl implements PostService {
         Subject subject = subjectRepository.findById(request.getSubjectId())
                 .orElseThrow(SubjectNotFoundException::new);
 
-        if (user instanceof Tutor tutor &&
-                !tutorRepository.existsSubject(tutor.getId(), subject.getId())) {
-            throw new SubjectNotBelongToTutorException();
+        if (user instanceof Tutor tutor) {
+            if (!tutorRepository.existsSubject(tutor.getId(), subject.getId())) {
+                throw new SubjectNotBelongToTutorException();
+            }
+            if (!tutor.getVerificationStatus().equals(VerificationStatus.APPROVED)) {
+                throw new TutorNotVerifiedException();
+            }
         }
+
 
         Post post = postMapper.toPost(appUtil.generateUUID(), user, subject, request);
         Post savedPost = postRepository.save(post);
@@ -122,7 +129,6 @@ public class PostServiceImpl implements PostService {
     //             .orElseThrow(PostNotFoundException::new);
     //     return postMapper.toPostResponse(post);
     // }
-
     @Transactional(readOnly = true)
     @Override
     public PostResponse getPostById(UUID postId) {
@@ -456,7 +462,9 @@ public class PostServiceImpl implements PostService {
         notifyWaitingApplicants(post, NotificationMessage.POST_REMOVED_BY_ADMIN);
     }
 
-    /** Báo các ứng viên đang chờ (PENDING, ACCEPTED) rằng bài không còn nhận. */
+    /**
+     * Báo các ứng viên đang chờ (PENDING, ACCEPTED) rằng bài không còn nhận.
+     */
     private void notifyWaitingApplicants(Post post, NotificationMessage message) {
         for (ApplicationStatus status : WAITING_STATUSES) {
             applicationRepository.findByPostIdAndApplicationStatus(post.getId(), status, Pageable.unpaged())
