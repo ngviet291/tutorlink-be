@@ -321,6 +321,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         application.setApplicationStatus(ApplicationStatus.CONFIRMED);
+        application.setConfirmedAt(Instant.now());
         post.setStatus(PostStatus.CLOSED);
 
         Application saved = applicationRepository.save(application);

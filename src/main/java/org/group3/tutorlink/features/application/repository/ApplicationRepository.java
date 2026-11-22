@@ -215,15 +215,21 @@ public interface ApplicationRepository
             @Param("applicationStatus") ApplicationStatus applicationStatus
     );
 
-    // Đếm số lượt ACCEPTED trong 1 khoảng thời gian
     @Query("""
         SELECT COUNT(a) FROM Application a
-        WHERE a.applicationStatus = :status
-          AND a.appliedAt >= :start AND a.appliedAt < :end
+        LEFT JOIN a.transaction t
+        WHERE a.applicationStatus IN :statuses
+          AND (
+              (a.confirmedAt >= :start AND a.confirmedAt < :end)
+              OR (a.confirmedAt IS NULL
+                  AND t.type = org.group3.tutorlink.features.payment.enums.TransactionType.COMMISSION
+                  AND t.status = org.group3.tutorlink.features.payment.enums.TransactionStatus.SUCCESS
+                  AND t.transactionDate >= :start AND t.transactionDate < :end)
+          )
         """)
-    long countByStatusBetween(@Param("status") ApplicationStatus status,
-                              @Param("start") Instant start,
-                              @Param("end") Instant end);
+    long countConfirmedBetween(@Param("statuses") Collection<ApplicationStatus> statuses,
+                               @Param("start") Instant start,
+                               @Param("end") Instant end);
 
     @Query("""
         SELECT a.tutor.id AS tutorId,
@@ -231,14 +237,21 @@ public interface ApplicationRepository
                a.tutor.averageRating AS averageRating,
                COUNT(a) AS acceptedCount
         FROM Application a
-        WHERE a.applicationStatus = :status
+        LEFT JOIN a.transaction t
+        WHERE a.applicationStatus IN :statuses
           AND a.tutor IS NOT NULL
-          AND a.appliedAt >= :start AND a.appliedAt < :end
+          AND (
+              (a.confirmedAt >= :start AND a.confirmedAt < :end)
+              OR (a.confirmedAt IS NULL
+                  AND t.type = org.group3.tutorlink.features.payment.enums.TransactionType.COMMISSION
+                  AND t.status = org.group3.tutorlink.features.payment.enums.TransactionStatus.SUCCESS
+                  AND t.transactionDate >= :start AND t.transactionDate < :end)
+          )
         GROUP BY a.tutor.id, a.tutor.fullName, a.tutor.averageRating
         ORDER BY COUNT(a) DESC
         """)
-    List<TopTutorRow> findTopTutorsByAcceptedCount(
-            @Param("status") ApplicationStatus status,
+    List<TopTutorRow> findTopTutorsByConfirmedCount(
+            @Param("statuses") Collection<ApplicationStatus> statuses,
             @Param("start") Instant start,
             @Param("end") Instant end,
             Pageable pageable);
