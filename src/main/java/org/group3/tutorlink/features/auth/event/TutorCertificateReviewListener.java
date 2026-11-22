@@ -16,6 +16,6 @@ public class TutorCertificateReviewListener {
     @Async("taskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void on(TutorCertificatesSubmittedEvent e) {
-        tutorCertificateReviewService.review(e.getTutorId());
+        tutorCertificateReviewService.review(e.getTutorId(), e.isEscalateToAdmin());
     }
 }

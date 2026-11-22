@@ -30,6 +30,7 @@ import org.group3.tutorlink.features.post.specification.PostSpecification;
 import org.group3.tutorlink.features.post.service.PostService;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.subject.exception.SubjectNotFoundException;
+import org.group3.tutorlink.features.subject.repository.CertificateRepository;
 import org.group3.tutorlink.features.subject.repository.SubjectRepository;
 import org.group3.tutorlink.features.tracking.enums.SystemAction;
 import org.group3.tutorlink.features.user.entity.Tutor;
@@ -67,6 +68,7 @@ public class PostServiceImpl implements PostService {
     // [NEW] dùng cho visibility check post PENDING/CLOSED trong getPostById
     private final ApplicationRepository applicationRepository;
     private final NotificationHelper notificationHelper;
+    private final CertificateRepository certificateRepository;
 
     @Transactional
     @Override
@@ -80,10 +82,7 @@ public class PostServiceImpl implements PostService {
         Subject subject = subjectRepository.findById(request.getSubjectId())
                 .orElseThrow(SubjectNotFoundException::new);
 
-        if (user instanceof Tutor tutor &&
-                !tutorRepository.existsSubject(tutor.getId(), subject.getId())) {
-            throw new SubjectNotBelongToTutorException();
-        }
+        checkTutorCanTeach(user, subject);
 
         Post post = postMapper.toPost(appUtil.generateUUID(), user, subject, request);
         Post savedPost = postRepository.save(post);
@@ -289,7 +288,7 @@ public class PostServiceImpl implements PostService {
         Subject subject = subjectRepository.findById(request.getSubjectId())
                 .orElseThrow(SubjectNotFoundException::new);
 
-        validateAuthor(request.getType(), post.getAuthor());
+        checkTutorCanTeach(post.getAuthor(), subject);
 
         postMapper.updatePostFromRequest(post, request);
         post.setSubject(subject);
@@ -463,6 +462,15 @@ public class PostServiceImpl implements PostService {
                     .forEach(application -> notificationHelper.notify(
                             ApplicationParties.applicantOf(application), message,
                             NotificationTarget.MY_APPLICATIONS, null, post.getTitle()));
+        }
+    }
+    /** Gia sư chỉ được đăng bài môn đã đăng ký và có chứng chỉ xác thực cho môn đó. */
+    private void checkTutorCanTeach(User user, Subject subject) {
+        if (user instanceof Tutor tutor
+                && (!tutorRepository.existsSubject(tutor.getId(), subject.getId())
+                || !certificateRepository.existsByTutor_IdAndSubject_IdAndVerifiedTrue(
+                tutor.getId(), subject.getId()))) {
+            throw new SubjectNotBelongToTutorException();
         }
     }
 }

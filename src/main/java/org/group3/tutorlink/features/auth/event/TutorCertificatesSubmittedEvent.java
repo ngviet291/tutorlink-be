@@ -10,5 +10,7 @@ import java.util.UUID;
 @Builder
 public class TutorCertificatesSubmittedEvent {
     private UUID tutorId;
+    // true khi gia sư cập nhật hồ sơ: chứng chỉ AI không duyệt được thì chuyển cho admin thay vì xóa
+    private boolean escalateToAdmin;
 
 }

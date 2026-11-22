@@ -27,5 +27,6 @@ public class UpdateTutorProfileRequest {
     private List<String> teachingAreas;
     @Valid
     private List<AvailableSlotRequest> availableSlots;
-    private List<UUID> subjectIds;
+    @Valid
+    private List<SubjectProfileRequest> subjectProfiles;
 }

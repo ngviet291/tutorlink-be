@@ -46,5 +46,7 @@ public class RegisterTutorRequest {
     private List<
             @NotNull(message = "subjectId must not be null")
                     UUID> subjectIds;
-}
 
+    // Phần tử i = môn của file chứng chỉ thứ i. Bỏ trống được nếu chỉ chọn 1 môn.
+    private List<UUID> certificateSubjectIds;
+}

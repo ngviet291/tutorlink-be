@@ -15,6 +15,7 @@ public enum UserErrorCode implements BaseErrorCode {
     CERTIFICATE_LIMIT_EXCEEDED("USER_ERR_006", "Too many certificates, please delete some before uploading more", HttpStatus.BAD_REQUEST),
     CERTIFICATE_FILE_REQUIRED("USER_ERR_007", "At least one certificate image is required", HttpStatus.BAD_REQUEST),
     AVATAR_FILE_REQUIRED("USER_ERR_008", "Avatar image is required", HttpStatus.BAD_REQUEST),
+    CERTIFICATE_NOT_PENDING_ADMIN("USER_ERR_010", "Certificate is not waiting for admin review", HttpStatus.BAD_REQUEST),
     AVATAR_FILE_INVALID("USER_ERR_009", "Avatar must be an image file of at most 5MB", HttpStatus.BAD_REQUEST),
     ;
     private final String code;

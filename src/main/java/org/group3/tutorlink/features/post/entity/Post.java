@@ -16,7 +16,11 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "posts", indexes = {
+        @Index(name = "idx_posts_status_type", columnList = "status, type"),
+        @Index(name = "idx_posts_author", columnList = "author_id"),
+        @Index(name = "idx_posts_subject", columnList = "subject_id")
+})
 @Getter
 @Setter
 @NoArgsConstructor

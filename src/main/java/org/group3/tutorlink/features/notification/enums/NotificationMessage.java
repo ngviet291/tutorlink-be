@@ -69,7 +69,11 @@ public enum NotificationMessage {
     TUTOR_REJECTED_BY_AI(NotificationType.SYSTEM),
     CERTIFICATE_VERIFIED(NotificationType.SYSTEM),
     CERTIFICATE_INVALID(NotificationType.SYSTEM),
-    CERTIFICATE_REVIEW_FAILED(NotificationType.SYSTEM);
+    CERTIFICATE_REVIEW_FAILED(NotificationType.SYSTEM),
+
+    // 2.10 Chứng chỉ AI không duyệt được, chuyển admin duyệt tay
+    CERTIFICATE_SENT_TO_ADMIN(NotificationType.SYSTEM),
+    CERTIFICATE_REVIEW_NEEDED_ADMIN(NotificationType.SYSTEM);
 
     private final NotificationType type;
 

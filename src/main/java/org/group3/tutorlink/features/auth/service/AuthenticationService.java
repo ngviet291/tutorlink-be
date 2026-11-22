@@ -121,7 +121,7 @@ public class AuthenticationService {
         tutor.setPassword(passwordEncoder.encode(req.getPassword()));
         tutor.setRole(role);
         tutor.setUserStatus(UserStatus.ACTIVE);
-        tutor.setSubjects(Set.copyOf(subjects));
+        tutor.setSubjects(new HashSet<>(subjects));
         tutor.setAverageRating(0.0);
         tutor.setVerificationStatus(VerificationStatus.PENDING);
         List<MultipartFile> files = Optional.ofNullable(certificates).orElse(List.of())
@@ -141,7 +141,25 @@ public class AuthenticationService {
                 }
             });
 
-            tutor.setCertificates(Set.copyOf(certificateMapper.toCertificates(uploaded, tutor)));
+            List<Certificate> certs = certificateMapper.toCertificates(uploaded, tutor);
+            Map<UUID, Subject> subjectById = subjects.stream()
+                    .collect(Collectors.toMap(Subject::getId, s -> s));
+            List<UUID> certSubjectIds = req.getCertificateSubjectIds();
+            for (int i = 0; i < certs.size(); i++) {
+                Subject subject;
+                if (subjects.size() == 1) {
+                    subject = subjects.get(0);
+                } else {
+                    UUID subjectId = (certSubjectIds != null && i < certSubjectIds.size())
+                            ? certSubjectIds.get(i) : null;
+                    subject = subjectId == null ? null : subjectById.get(subjectId);
+                    if (subject == null) {
+                        throw new AppException(ErrorCode.SUBJECT_NOT_FOUND);
+                    }
+                }
+                certs.get(i).setSubject(subject);
+            }
+            tutor.setCertificates(new HashSet<>(certs));
         }
 
 

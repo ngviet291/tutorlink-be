@@ -17,4 +17,9 @@ public interface CertificateRepository extends JpaRepository<Certificate, UUID> 
     List<Certificate> findAllByTutor_IdOrderByCreatedAtDesc(UUID tutorId);
     long countByTutor_Id(UUID tutorId);
     Optional<Certificate> findByIdAndTutor_Id(UUID id, UUID tutorId);
+    // Chứng chỉ AI không duyệt được, đang chờ admin (cũ nhất trước)
+    List<Certificate> findAllByPendingAdminReviewTrueAndVerifiedFalseOrderByCreatedAtAsc();
+    // Chứng chỉ bị kẹt: chưa được AI xử lý xong, cũng chưa chuyển admin
+    List<Certificate> findAllByVerifiedFalseAndPendingAdminReviewFalseAndCreatedAtBefore(java.time.Instant cutoff);
+    boolean existsByTutor_IdAndSubject_IdAndVerifiedTrue(UUID tutorId, UUID subjectId);
 }

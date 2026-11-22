@@ -28,4 +28,5 @@ public class TutorResponse extends BaseUserResponse {
     private TeachingMode teachingMode;
     private List<String> teachingAreas;
     private List<AvailableSlotResponse> availableSlots;
+    private List<SubjectProfileResponse> subjectProfiles;
 }

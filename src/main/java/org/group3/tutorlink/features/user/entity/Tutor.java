@@ -68,6 +68,8 @@ public class Tutor extends User {
     // Tutor 1 -- 1..* Certificate
     @OneToMany(mappedBy = "tutor", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Certificate> certificates;
-
+    // Tutor 1 -- 0..* thông tin giảng dạy theo môn
+    @OneToMany(mappedBy = "tutor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TutorSubjectProfile> subjectProfiles;
 
 }

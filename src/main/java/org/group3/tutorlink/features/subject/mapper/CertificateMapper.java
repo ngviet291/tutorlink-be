@@ -30,6 +30,8 @@ public abstract class CertificateMapper {
     @Mapping(target = "issuedBy", ignore = true)
     @Mapping(target = "issuedDate", ignore = true)
     @Mapping(target = "expiryDate", ignore = true)
+    @Mapping(target = "pendingAdminReview", ignore = true)
+    @Mapping(target = "reviewNote", ignore = true)
     public abstract Certificate toCertificate(UploadMediaResponse uploaded, Tutor tutor);
 
     public List<Certificate> toCertificates(List<UploadMediaResponse> uploaded, Tutor tutor) {

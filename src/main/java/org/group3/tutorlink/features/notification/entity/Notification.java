@@ -10,7 +10,9 @@ import org.group3.tutorlink.features.user.entity.User;
 import java.util.UUID;
 
 @Entity
-@Table(name = "notifications")
+@Table(name = "notifications", indexes = {
+        @Index(name = "idx_notifications_recipient", columnList = "recipient_id, id")
+})
 @Getter
 @Setter
 @NoArgsConstructor

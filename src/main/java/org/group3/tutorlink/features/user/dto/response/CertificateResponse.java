@@ -20,4 +20,8 @@ public class CertificateResponse {
     private LocalDate expiryDate;
     private String fileUrl;
     private boolean verified;
+    private boolean pendingAdminReview;
+    private String reviewNote;
+    private UUID subjectId;
+    private String subjectName;
 }

@@ -13,15 +13,20 @@ import org.group3.tutorlink.features.notification.enums.NotificationMessage;
 import org.group3.tutorlink.features.notification.enums.NotificationTarget;
 import org.group3.tutorlink.features.notification.service.NotificationHelper;
 import org.group3.tutorlink.features.subject.entity.Certificate;
+import org.group3.tutorlink.features.subject.entity.Subject;
+import org.group3.tutorlink.features.subject.exception.SubjectNotFoundException;
 import org.group3.tutorlink.features.subject.mapper.CertificateMapper;
 import org.group3.tutorlink.features.subject.repository.CertificateRepository;
+import org.group3.tutorlink.features.subject.repository.SubjectRepository;
 import org.group3.tutorlink.features.user.dto.response.CertificateResponse;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.user.exception.UserErrorCode;
+import org.group3.tutorlink.features.user.exception.UserValidationException;
 import org.group3.tutorlink.features.user.mapper.CertificateResponseMapper;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.group3.tutorlink.features.application.event.TutorProfileChangedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -30,6 +35,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,6 +55,7 @@ public class TutorCertificateService {
     private final NotificationHelper notificationHelper;
     private final int maxPerTutor;
     private final String defaultCertificateName;
+    private final SubjectRepository subjectRepository;
 
     public TutorCertificateService(
             TutorRepository tutorRepository,
@@ -60,7 +67,7 @@ public class TutorCertificateService {
             AppUtil appUtil,
             NotificationHelper notificationHelper,
             @Value("${app.certificate.max-per-tutor}") int maxPerTutor,
-            @Value("${app.certificate.default-name}") String defaultCertificateName) {
+            @Value("${app.certificate.default-name}") String defaultCertificateName, SubjectRepository subjectRepository) {
         this.tutorRepository = tutorRepository;
         this.certificateRepository = certificateRepository;
         this.certificateMapper = certificateMapper;
@@ -71,6 +78,7 @@ public class TutorCertificateService {
         this.notificationHelper = notificationHelper;
         this.maxPerTutor = maxPerTutor;
         this.defaultCertificateName = defaultCertificateName;
+        this.subjectRepository = subjectRepository;
     }
 
     @PreAuthorize("hasAuthority('TUTOR')")
@@ -83,7 +91,7 @@ public class TutorCertificateService {
 
     @PreAuthorize("hasAuthority('TUTOR')")
     @Transactional
-    public List<CertificateResponse> uploadCertificates(List<MultipartFile> files) {
+    public List<CertificateResponse> uploadCertificates(UUID subjectId, List<MultipartFile> files) {
         List<MultipartFile> images = Optional.ofNullable(files).orElse(List.of()).stream()
                 .filter(file -> !file.isEmpty())
                 .toList();
@@ -93,6 +101,9 @@ public class TutorCertificateService {
 
         Tutor tutor = tutorRepository.findById(appUtil.userIdFromAuthentication())
                 .orElseThrow(UserNotFoundException::new);
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(SubjectNotFoundException::new);
+
         if (certificateRepository.countByTutor_Id(tutor.getId()) + images.size() > maxPerTutor) {
             throw new AppException(UserErrorCode.CERTIFICATE_LIMIT_EXCEEDED);
         }
@@ -110,20 +121,31 @@ public class TutorCertificateService {
             String certificateName = extractCertificateName(filename);
 
             certificates.get(i).setName(certificateName);
+            certificates.get(i).setSubject(subject);
 
             log.info(
-                    "Certificate prepared before save: filename={}, name={}, fileUrl={}",
+                    "Certificate prepared before save: filename={}, name={}, subject={}, fileUrl={}",
                     filename,
                     certificates.get(i).getName(),
+                    subject.getName(),
                     certificates.get(i).getFileUrl()
             );
         }
 
         List<Certificate> saved = certificateRepository.saveAll(certificates);
-        resubmitIfRejected(tutor);
-        eventPublisher.publishEvent(TutorCertificatesSubmittedEvent.builder().tutorId(tutor.getId()).build());
 
-        log.info("Tutor {} uploaded {} certificates", tutor.getId(), saved.size());
+        // Môn có chứng chỉ thì thành môn của hồ sơ
+        if (tutor.getSubjects() == null) {
+            tutor.setSubjects(new HashSet<>());
+        }
+        tutor.getSubjects().add(subject);
+
+        resubmitIfRejected(tutor);
+        eventPublisher.publishEvent(TutorProfileChangedEvent.builder().tutorId(tutor.getId()).build());
+        eventPublisher.publishEvent(TutorCertificatesSubmittedEvent.builder()
+                .tutorId(tutor.getId()).escalateToAdmin(true).build());
+
+        log.info("Tutor {} uploaded {} certificates for subject {}", tutor.getId(), saved.size(), subjectId);
         return certificateResponseMapper.toResponses(saved);
     }
 
@@ -134,8 +156,25 @@ public class TutorCertificateService {
                 .findByIdAndTutor_Id(certificateId, appUtil.userIdFromAuthentication())
                 .orElseThrow(() -> new AppException(UserErrorCode.CERTIFICATE_NOT_FOUND));
 
+        Tutor tutor = certificate.getTutor();
+        Subject subject = certificate.getSubject();
         String publicId = certificate.getCloudinaryPublicId();
-        certificateRepository.delete(certificate);
+
+        // Gỡ khỏi collection của Tutor: orphanRemoval sẽ xóa dòng.
+        // Không dùng certificateRepository.delete vì entity vẫn còn trong collection cascade=ALL.
+        tutor.getCertificates().remove(certificate);
+
+        // Môn nào hết chứng chỉ thì bỏ khỏi hồ sơ (cả subjects lẫn subjectProfiles)
+        if (subject != null && tutor.getCertificates().stream().noneMatch(c ->
+                c.getSubject() != null && c.getSubject().getId().equals(subject.getId()))) {
+            UUID subjectId = subject.getId();
+            tutor.getSubjects().removeIf(s -> s.getId().equals(subjectId));
+            if (tutor.getSubjectProfiles() != null) {
+                tutor.getSubjectProfiles().removeIf(p -> p.getSubject().getId().equals(subjectId));
+            }
+        }
+
+        eventPublisher.publishEvent(TutorProfileChangedEvent.builder().tutorId(tutor.getId()).build());
         runAfterCommit(() -> mediaStorageService.delete(publicId));
     }
 

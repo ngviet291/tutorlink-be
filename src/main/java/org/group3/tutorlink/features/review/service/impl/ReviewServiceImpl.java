@@ -89,6 +89,10 @@ public class ReviewServiceImpl implements ReviewService {
                 .comment(request.getComment())
                 .build();
         Review saved = reviewRepository.save(review);
+
+        // Tính lại điểm trung bình (query tự flush review vừa lưu trước khi chạy)
+        Double avg = reviewRepository.averageRatingByTutorId(applicationTutor.getId());
+        applicationTutor.setAverageRating(avg == null ? 0.0 : Math.round(avg * 100.0) / 100.0);
         notificationHelper.notify(applicationTutor, NotificationMessage.REVIEW_RECEIVED,
                 NotificationTarget.TUTOR_PROFILE, null, student.getFullName(), request.getRating());
         return reviewMapper.toResponse(saved);

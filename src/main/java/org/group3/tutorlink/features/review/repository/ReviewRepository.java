@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
+
+    @Query("select avg(r.rating) from Review r where r.tutor.id = :tutorId")
+    Double averageRatingByTutorId(@Param("tutorId") UUID tutorId);
     boolean existsByApplicationId(UUID applicationId);
     
     long countByTutorId(UUID tutorId);

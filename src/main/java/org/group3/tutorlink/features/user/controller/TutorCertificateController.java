@@ -33,10 +33,12 @@ public class TutorCertificateController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<List<CertificateResponse>> uploadCertificates(
+            @RequestParam("subjectId") UUID subjectId,
             @RequestPart("certificates")
             @ValidImageFiles(maxFiles = 5, maxSizeBytes = 5L * 1024 * 1024)
             List<MultipartFile> certificates) {
-        return respond(UserResponseCode.CERTIFICATES_UPLOADED, certificateService.uploadCertificates(certificates));
+        return respond(UserResponseCode.CERTIFICATES_UPLOADED,
+                certificateService.uploadCertificates(subjectId, certificates));
     }
 
     // DELETE /v1/users/me/certificates/{id} — TUTOR
