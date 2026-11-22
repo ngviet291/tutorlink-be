@@ -28,6 +28,10 @@ public class RegisterTutorRequest {
     @NotBlank(message = "Password not be blank")
     @ValidPassword
     private String password;
+    @Pattern(
+            regexp = "^(0[3|5|7|8|9])[0-9]{8}$",
+            message = "Invalid Vietnamese phone number"
+    )
     private String phone;
     private Gender gender;
     private LocalDate dateOfBirth;
