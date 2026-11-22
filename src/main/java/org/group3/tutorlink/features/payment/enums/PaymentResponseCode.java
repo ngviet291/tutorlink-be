@@ -13,6 +13,7 @@ public enum PaymentResponseCode implements ResponseCode {
     GET_TOP_UP_STATUS("PAYMENT_200", "Top-up status retrieved successfully!"),
     PAY_COMMISSION_SUCCESS("PAYMENT_201", "Commission paid successfully!"),
     GET_PAYMENT_HISTORY("PAYMENT_200", "Payment history retrieved successfully!"),
+    GET_BANKS("PAYMENT_200", "Banks retrieved successfully!"),
     GET_PAYMENTS("PAYMENT_200", "Payments retrieved successfully!"),
     GET_PAYMENT_DETAIL("PAYMENT_200", "Payment detail retrieved successfully!"),
     REFUND_SUCCESS("PAYMENT_200", "Payment refunded successfully!"),

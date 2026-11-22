@@ -27,6 +27,7 @@ public enum PaymentErrorCode implements BaseErrorCode {
     GATEWAY_REDIRECT_INVALID("PAYMENT_REDIRECT_CONFIG", "MOMO_REDIRECT_URL / PAYMENT_REDIRECT_URL must use HTTPS, or HTTP on localhost for local testing.", HttpStatus.SERVICE_UNAVAILABLE),
     GATEWAY_ENDPOINT_INVALID("PAYMENT_ENDPOINT_CONFIG", "Check MOMO_BASE_URL, MOMO_ENDPOINT_CREATE and MOMO_ENDPOINT_QUERY: payment endpoints must use HTTPS.", HttpStatus.SERVICE_UNAVAILABLE),
     GATEWAY_ERROR("PAYMENT_502", "Payment gateway is unavailable or rejected the request, please try again later!", HttpStatus.BAD_GATEWAY),
+    BANK_LIST_UNAVAILABLE("PAYMENT_502", "Bank list is temporarily unavailable, please try again later!", HttpStatus.BAD_GATEWAY),
     INVALID_DATE_RANGE("PAYMENT_400", "Both 'from' and 'to' are required (yyyy-MM-dd) and 'from' must not be after 'to'!", HttpStatus.BAD_REQUEST),
     FEE_CONFIG_NOT_FOUND("PAYMENT_404", "Fee configuration not found!", HttpStatus.NOT_FOUND),
     WITHDRAW_AMOUNT_TOO_LOW("PAYMENT_400", "Minimum withdrawal amount is 10,000 VND!", HttpStatus.BAD_REQUEST),
