@@ -12,7 +12,7 @@ import org.group3.tutorlink.features.auth.validation.annotation.ValidPassword;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChangePasswordRequest {
-    @NotBlank
+    @NotBlank @ValidPassword
     private String currentPassword;
     @NotBlank @ValidPassword
     private String newPassword;

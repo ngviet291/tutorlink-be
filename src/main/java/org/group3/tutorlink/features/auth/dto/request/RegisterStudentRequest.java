@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.group3.tutorlink.features.auth.validation.annotation.ValidPassword;
 import org.group3.tutorlink.features.user.dto.request.AddressRequest;
 import org.group3.tutorlink.features.user.enums.Gender;
 
@@ -23,6 +24,7 @@ public class RegisterStudentRequest {
     @NotBlank(message = "Email not be blank")
     private String email;
     @NotBlank(message = "Password not be blank")
+    @ValidPassword
     private String password;
     private String phone;
     private Gender gender;
