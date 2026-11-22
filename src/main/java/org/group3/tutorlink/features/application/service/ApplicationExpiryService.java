@@ -6,15 +6,15 @@ import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
 import org.group3.tutorlink.features.application.scheduler.ApplicationExpiryQueue;
-import org.group3.tutorlink.features.notification.enums.NotificationType;
-import org.group3.tutorlink.features.notification.service.NotificationCreator;
+import org.group3.tutorlink.features.application.util.ApplicationParties;
+import org.group3.tutorlink.features.notification.enums.NotificationMessage;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
+import org.group3.tutorlink.features.notification.service.NotificationHelper;
 import org.group3.tutorlink.features.payment.entity.Transaction;
 import org.group3.tutorlink.features.payment.enums.TransactionStatus;
 import org.group3.tutorlink.features.payment.service.RefundService;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.PostStatus;
-import org.group3.tutorlink.features.post.enums.PostType;
-import org.group3.tutorlink.features.user.entity.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,21 +25,15 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-/**
- * Xử lý hủy đơn ứng tuyển quá hạn.
- * Redis delay queue chỉ là "gợi ý" — luôn kiểm tra lại trạng thái và
- * deadline thật trong DB trước khi hủy.
- */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ApplicationExpiryService {
-
-    private static final String NOTI_APPLICATION_EXPIRED_TITLE = "Đơn ứng tuyển đã hết hạn";
+    private final NotificationHelper notificationHelper;
 
     private final ApplicationRepository applicationRepository;
     private final RefundService refundService;
-    private final NotificationCreator notificationCreator;
 
     @Value("${application.expiry.payment-window-minutes:1440}")
     private long paymentWindowMinutes;
@@ -95,32 +89,18 @@ public class ApplicationExpiryService {
         applicationRepository.save(application);
         log.info("Application {} expired (refunded={})", application.getId(), refunded);
 
-        String content = refunded
-                ? String.format("Đơn ứng tuyển của bạn vào bài \"%s\" đã hết hạn xác nhận. Phí hoa hồng đã được hoàn lại.",
-                        post != null ? post.getTitle() : "")
-                : String.format("Đơn ứng tuyển vào bài \"%s\" đã hết hạn thanh toán.",
-                        post != null ? post.getTitle() : "");
-        notifyUser(applicantOf(application), content);
-        if (post != null && post.getAuthor() != null) {
-            notifyUser(post.getAuthor(), content);
-        }
-    }
+        String postTitle = post != null ? post.getTitle() : "";
+        NotificationTarget target = post != null ? NotificationTarget.POST : NotificationTarget.NONE;
+        UUID targetId = post != null ? post.getId() : null;
 
-    /** Người apply: FIND_TUTOR → tutor, FIND_STUDENT → student. */
-    private User applicantOf(Application application) {
-        Post post = application.getPost();
-        if (post != null && post.getType() == PostType.FIND_TUTOR) {
-            return application.getTutor();
-        }
-        return application.getStudent();
-    }
-
-    private void notifyUser(User recipient, String content) {
-        if (recipient != null) {
-            notificationCreator.createNotification(
-                    recipient.getId(), NotificationType.APPLICATION,
-                    NOTI_APPLICATION_EXPIRED_TITLE, content);
-        }
+        // Người trả phí (gia sư) và bên còn lại (học viên) cần câu khác nhau
+        NotificationMessage payerMessage = refunded
+                ? NotificationMessage.APPLICATION_EXPIRED_PAYER_REFUNDED
+                : NotificationMessage.APPLICATION_EXPIRED_PAYER_UNPAID;
+        notificationHelper.notify(ApplicationParties.payerTutorOf(application), payerMessage,
+                target, targetId, postTitle);
+        notificationHelper.notify(application.getStudent(), NotificationMessage.APPLICATION_EXPIRED_STUDENT,
+                target, targetId, postTitle);
     }
 
     private void restoreRejectedApplications(Post post) {
@@ -132,6 +112,9 @@ public class ApplicationExpiryService {
                 );
         for (Application rejected : rejectedApplications.getContent()) {
             rejected.setApplicationStatus(ApplicationStatus.PENDING);
+            notificationHelper.notify(ApplicationParties.applicantOf(rejected),
+                    NotificationMessage.APPLICATION_REOPENED,
+                    NotificationTarget.POST, post.getId(), post.getTitle());
         }
     }
 }

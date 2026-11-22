@@ -3,6 +3,7 @@ package org.group3.tutorlink.features.notification.service.impl;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.notification.dto.response.NotificationResponse;
 import org.group3.tutorlink.features.notification.entity.Notification;
 import org.group3.tutorlink.features.notification.enums.NotificationTarget;
@@ -28,6 +29,7 @@ public class NotificationCreatorImpl implements NotificationCreator {
     private final NotificationMapper notificationMapper;
     private final ApplicationEventPublisher eventPublisher;
     private final EntityManager entityManager;
+    private final AppUtil appUtil;
 
     @Transactional(propagation = Propagation.MANDATORY)
     @Override
@@ -52,7 +54,7 @@ public class NotificationCreatorImpl implements NotificationCreator {
         User recipient = entityManager.getReference(User.class, recipientId);
 
         Notification notification = Notification.builder()
-                .id(UUID.randomUUID())
+                .id(appUtil.generateUUID())
                 .recipient(recipient)
                 .notificationType(notificationType)
                 .title(title)

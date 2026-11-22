@@ -7,6 +7,9 @@ import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
+import org.group3.tutorlink.features.notification.enums.NotificationMessage;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
+import org.group3.tutorlink.features.notification.service.NotificationHelper;
 import org.group3.tutorlink.features.review.dto.request.CreateReviewRequest;
 import org.group3.tutorlink.features.review.dto.response.ReviewResponse;
 import org.group3.tutorlink.features.review.entity.Review;
@@ -42,6 +45,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final StudentRepository studentRepository;
     private final AppUtil appUtil;
     private final ReviewMapper reviewMapper;
+    private final NotificationHelper notificationHelper;
 
     @Override
     @PreAuthorize("hasAuthority('STUDENT')")
@@ -84,7 +88,10 @@ public class ReviewServiceImpl implements ReviewService {
                 .rating(request.getRating())
                 .comment(request.getComment())
                 .build();
-        return reviewMapper.toResponse(reviewRepository.save(review));
+        Review saved = reviewRepository.save(review);
+        notificationHelper.notify(applicationTutor, NotificationMessage.REVIEW_RECEIVED,
+                NotificationTarget.TUTOR_PROFILE, null, student.getFullName(), request.getRating());
+        return reviewMapper.toResponse(saved);
     }
 
     @Override

@@ -9,6 +9,9 @@ import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.auth.event.TutorCertificatesSubmittedEvent;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.auth.service.AuthenticationService;
+import org.group3.tutorlink.features.notification.enums.NotificationMessage;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
+import org.group3.tutorlink.features.notification.service.NotificationHelper;
 import org.group3.tutorlink.features.subject.entity.Certificate;
 import org.group3.tutorlink.features.subject.mapper.CertificateMapper;
 import org.group3.tutorlink.features.subject.repository.CertificateRepository;
@@ -16,6 +19,7 @@ import org.group3.tutorlink.features.user.dto.response.CertificateResponse;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.user.exception.UserErrorCode;
+import org.group3.tutorlink.features.user.mapper.CertificateResponseMapper;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -38,36 +42,45 @@ public class TutorCertificateService {
     private final TutorRepository tutorRepository;
     private final CertificateRepository certificateRepository;
     private final CertificateMapper certificateMapper;
+    private final CertificateResponseMapper certificateResponseMapper;
     private final MediaStorageService mediaStorageService;
     private final ApplicationEventPublisher eventPublisher;
     private final AppUtil appUtil;
+    private final NotificationHelper notificationHelper;
     private final int maxPerTutor;
+    private final String defaultCertificateName;
 
     public TutorCertificateService(
             TutorRepository tutorRepository,
             CertificateRepository certificateRepository,
             CertificateMapper certificateMapper,
+            CertificateResponseMapper certificateResponseMapper,
             MediaStorageService mediaStorageService,
             ApplicationEventPublisher eventPublisher,
             AppUtil appUtil,
-            @Value("${app.certificate.max-per-tutor}") int maxPerTutor) {
+            NotificationHelper notificationHelper,
+            @Value("${app.certificate.max-per-tutor}") int maxPerTutor,
+            @Value("${app.certificate.default-name}") String defaultCertificateName) {
         this.tutorRepository = tutorRepository;
         this.certificateRepository = certificateRepository;
         this.certificateMapper = certificateMapper;
+        this.certificateResponseMapper = certificateResponseMapper;
         this.mediaStorageService = mediaStorageService;
         this.eventPublisher = eventPublisher;
         this.appUtil = appUtil;
+        this.notificationHelper = notificationHelper;
         this.maxPerTutor = maxPerTutor;
+        this.defaultCertificateName = defaultCertificateName;
     }
 
     @PreAuthorize("hasAuthority('TUTOR')")
     @Transactional(readOnly = true)
     public List<CertificateResponse> getMyCertificates() {
         UUID tutorId = appUtil.userIdFromAuthentication();
-        return certificateRepository.findAllByTutor_IdOrderByCreatedAtDesc(tutorId).stream()
-                .map(this::toResponse)
-                .toList();
+        return certificateResponseMapper.toResponses(
+                certificateRepository.findAllByTutor_IdOrderByCreatedAtDesc(tutorId));
     }
+
     @PreAuthorize("hasAuthority('TUTOR')")
     @Transactional
     public List<CertificateResponse> uploadCertificates(List<MultipartFile> files) {
@@ -111,7 +124,7 @@ public class TutorCertificateService {
         eventPublisher.publishEvent(TutorCertificatesSubmittedEvent.builder().tutorId(tutor.getId()).build());
 
         log.info("Tutor {} uploaded {} certificates", tutor.getId(), saved.size());
-        return saved.stream().map(this::toResponse).toList();
+        return certificateResponseMapper.toResponses(saved);
     }
 
     @PreAuthorize("hasAuthority('TUTOR')")
@@ -130,8 +143,11 @@ public class TutorCertificateService {
         if (tutor.getVerificationStatus() == VerificationStatus.REJECTED) {
             tutor.setVerificationStatus(VerificationStatus.PENDING);
             tutor.setVerificationNote(null);
+            notificationHelper.notifyAdmins(NotificationMessage.TUTOR_RESUBMITTED_ADMIN,
+                    NotificationTarget.ADMIN_TUTORS, tutor.getFullName());
         }
     }
+
     private void deleteUploadedFilesIfRolledBack(List<UploadMediaResponse> uploaded) {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
@@ -152,20 +168,9 @@ public class TutorCertificateService {
         });
     }
 
-    private CertificateResponse toResponse(Certificate certificate) {
-        return CertificateResponse.builder()
-                .id(certificate.getId())
-                .name(certificate.getName())
-                .issuedBy(certificate.getIssuedBy())
-                .issuedDate(certificate.getIssuedDate())
-                .expiryDate(certificate.getExpiryDate())
-                .fileUrl(certificate.getFileUrl())
-                .verified(certificate.isVerified())
-                .build();
-    }
     private String extractCertificateName(String filename) {
         if (filename == null || filename.isBlank()) {
-            return "Chứng chỉ";
+            return defaultCertificateName;
         }
         String name = filename.trim();
         int slashIndex = Math.max(
@@ -179,6 +184,6 @@ public class TutorCertificateService {
         if (dotIndex > 0) {
             name = name.substring(0, dotIndex);
         }
-        return name.isBlank() ? "Chứng chỉ" : name;
+        return name.isBlank() ? defaultCertificateName : name;
     }
 }

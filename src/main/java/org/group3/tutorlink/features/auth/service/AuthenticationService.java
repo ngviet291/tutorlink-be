@@ -16,6 +16,9 @@ import org.group3.tutorlink.features.auth.dto.response.AuthenticateResponse;
 import org.group3.tutorlink.features.auth.dto.response.IntrospectResponse;
 import org.group3.tutorlink.features.auth.event.TutorCertificatesSubmittedEvent;
 import org.group3.tutorlink.features.auth.exception.ErrorCodeAuth;
+import org.group3.tutorlink.features.notification.enums.NotificationMessage;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
+import org.group3.tutorlink.features.notification.service.NotificationHelper;
 import org.group3.tutorlink.features.subject.entity.Certificate;
 import org.group3.tutorlink.features.subject.mapper.CertificateMapper;
 import org.group3.tutorlink.features.subject.mapper.SubjectMapper;
@@ -79,6 +82,7 @@ public class AuthenticationService {
     private final MediaStorageService mediaStorageService;
     private final ApplicationEventPublisher eventPublisher;
     private final CertificateMapper certificateMapper;
+    private final NotificationHelper notificationHelper;
 
     @Transactional
     public AuthenticateResponse registerStudent(RegisterStudentRequest req) {
@@ -308,6 +312,7 @@ public class AuthenticationService {
         changePasswordService.saveTokenInvalidationTimestamp(user.getId().toString(), changedPasswordDate);
         refreshTokenService.revokeAllRefreshTokens(user.getId().toString());
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        notificationHelper.notify(user, NotificationMessage.PASSWORD_RESET, NotificationTarget.NONE, null);
         systemLogPublisher.success(user.getId(), SystemAction.PASSWORD_RESET,
                 User.class.getSimpleName(), user.getId(), null);
     }
@@ -343,5 +348,6 @@ public class AuthenticationService {
         changePasswordService.saveTokenInvalidationTimestamp(
                 user.getId().toString(), String.valueOf(Instant.now().toEpochMilli()));
         refreshTokenService.revokeAllRefreshTokens(user.getId().toString());
+        notificationHelper.notify(user, NotificationMessage.PASSWORD_CHANGED, NotificationTarget.NONE, null);
     }
 }

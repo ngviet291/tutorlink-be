@@ -10,6 +10,10 @@ import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
 import org.group3.tutorlink.features.application.scheduler.ApplicationExpiryQueue;
+import org.group3.tutorlink.features.application.util.ApplicationParties;
+import org.group3.tutorlink.features.notification.enums.NotificationMessage;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
+import org.group3.tutorlink.features.notification.service.NotificationHelper;
 import org.group3.tutorlink.features.payment.dto.request.CreateFeeConfigRequest;
 import org.group3.tutorlink.features.payment.dto.request.TopUpRequest;
 import org.group3.tutorlink.features.payment.dto.response.*;
@@ -43,6 +47,7 @@ import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.repository.AdminRepository;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -66,7 +71,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private static final int COMMISSION_AMOUNT_SCALE = 2;
     private static final int FEE_CONFIG_LOOKAHEAD_YEARS = 100;
-    private static final String TOP_UP_DESCRIPTION = "Nap tien vao vi TutorLink";
+    private static final String TOP_UP_DESCRIPTION = "Nap tiền vào ví";
 
     @Value("${payment.pagination.default-limit:10}")
     private int defaultLimit;
@@ -103,6 +108,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final org.group3.tutorlink.features.chat.service.ChatService chatService;
     private final ApplicationExpiryQueue expiryQueue;
     private final AfterCommit afterCommit;
+    private final NotificationHelper notificationHelper;
+
     @Override
     @Transactional
     @PreAuthorize("hasAuthority('TUTOR')")
@@ -214,14 +221,22 @@ public class PaymentServiceImpl implements PaymentService {
                     return;
                 }
                 transaction.setStatus(TransactionStatus.FAILED);
+                notificationHelper.notify(transaction.getTutor(), NotificationMessage.TOP_UP_MISMATCH,
+                        NotificationTarget.WALLET, null, notificationHelper.money(transaction.getAmount()));
+                notificationHelper.notifyAdmins(NotificationMessage.TOP_UP_MISMATCH_ADMIN,
+                        NotificationTarget.NONE, transaction.getId(), transaction.getTutor().getFullName());
             } else {
                 Wallet wallet = getOrCreateWalletForUpdate(transaction.getTutor().getId());
                 wallet.setBalance(wallet.getBalance().add(transaction.getAmount()));
                 walletRepository.save(wallet);
                 transaction.setStatus(TransactionStatus.SUCCESS);
+                notificationHelper.notify(transaction.getTutor(), NotificationMessage.TOP_UP_SUCCESS,
+                        NotificationTarget.WALLET, null, notificationHelper.money(transaction.getAmount()));
             }
         } else {
             transaction.setStatus(TransactionStatus.FAILED);
+            notificationHelper.notify(transaction.getTutor(), NotificationMessage.TOP_UP_FAILED,
+                    NotificationTarget.WALLET, null, notificationHelper.money(transaction.getAmount()));
         }
 
         if (result.getProviderTransId() != null && !result.getProviderTransId().isBlank()) {
@@ -295,6 +310,9 @@ public class PaymentServiceImpl implements PaymentService {
         if (wallet.getBalance().compareTo(amount) < 0) {
             transaction.setStatus(TransactionStatus.FAILED);
             transactionRepository.save(transaction);
+            notificationHelper.notify(wallet.getTutor(), NotificationMessage.BALANCE_LOW,
+                    NotificationTarget.WALLET, null,
+                    notificationHelper.money(amount), notificationHelper.money(wallet.getBalance()));
             throw new PaymentInsufficientBalanceException();
         }
 
@@ -303,10 +321,39 @@ public class PaymentServiceImpl implements PaymentService {
 
         transaction.setStatus(TransactionStatus.SUCCESS);
         Transaction saved = transactionRepository.save(transaction);
-
+        String postTitle = application.getPost().getTitle();
+        notificationHelper.notify(wallet.getTutor(), NotificationMessage.FEE_PAID_TUTOR,
+                NotificationTarget.WALLET, null, notificationHelper.money(amount), postTitle);
+        // Học viên của đơn: kênh chat vừa được mở
+        notificationHelper.notify(application.getStudent(), NotificationMessage.FEE_PAID_STUDENT,
+                NotificationTarget.CHAT, null, postTitle);
+        // Người ứng tuyển cần xác nhận lớp
+        notificationHelper.notify(ApplicationParties.applicantOf(application),
+                NotificationMessage.APPLICATION_CONFIRM_REQUIRED,
+                NotificationTarget.MY_APPLICATIONS, null, postTitle);
+        // Gia sư được chọn đã trả phí -> lúc này các ứng viên còn lại mới bị loại
+        if (applicationStatus == ApplicationStatus.ACCEPTED) {
+            rejectOtherPendingApplications(application);
+        }
         createChatChannelForApplication(application);
 
         return transactionMapper.toTransactionResponse(saved);
+    }
+
+    // Chỉ khi gia sư được chọn đã trả phí thì các đơn còn lại mới bị loại
+    private void rejectOtherPendingApplications(Application paid) {
+        Post post = paid.getPost();
+        Page<Application> pending = applicationRepository.findByPostIdAndApplicationStatus(
+                post.getId(), ApplicationStatus.PENDING, Pageable.unpaged());
+        for (Application other : pending.getContent()) {
+            if (other.getId().equals(paid.getId())) {
+                continue;
+            }
+            other.setApplicationStatus(ApplicationStatus.REJECTED);
+            notificationHelper.notify(ApplicationParties.applicantOf(other),
+                    NotificationMessage.APPLICATION_REJECTED_OTHER_CHOSEN,
+                    NotificationTarget.POST, post.getId(), post.getTitle());
+        }
     }
 
     @Override
@@ -386,8 +433,10 @@ public class PaymentServiceImpl implements PaymentService {
         walletRepository.save(wallet);
 
         transaction.setStatus(TransactionStatus.REFUNDED);
-
-        return transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
+        Transaction saved = transactionRepository.save(transaction);
+        notificationHelper.notify(saved.getTutor(), NotificationMessage.FEE_REFUNDED,
+                NotificationTarget.WALLET, null, notificationHelper.money(saved.getAmount()));
+        return transactionMapper.toTransactionResponse(saved);
     }
 
     @Override
@@ -485,6 +534,7 @@ public class PaymentServiceImpl implements PaymentService {
                 feeConfigRepository.save(config)
         );
     }
+
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasAuthority('TUTOR')")
