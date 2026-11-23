@@ -45,6 +45,9 @@ public class RegisterTutorRequest {
     @Min(value = 0, message = "experienceYears must be greater than or equal to 0")
     private int experienceYears;
     private String education;
+    // Cấp học nhận dạy: bắt buộc khi đăng ký; các thông tin còn lại bổ sung sau khi hồ sơ được duyệt.
+    @NotEmpty(message = "teachingLevels must not be empty")
+    private java.util.Set<org.group3.tutorlink.features.post.enums.EducationLevel> teachingLevels;
     @NotEmpty(message = "subjectIds must not be empty")
     private List<
             @NotNull(message = "subjectId must not be null")

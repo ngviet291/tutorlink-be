@@ -477,6 +477,9 @@ public class PostServiceImpl implements PostService {
     }
     /** Gia sư chỉ được đăng bài môn đã đăng ký và có chứng chỉ xác thực cho môn đó. */
     private void checkTutorCanTeach(User user, Subject subject) {
+        if (user instanceof Tutor t && !t.hasCompleteProfile()) {
+            throw new org.group3.tutorlink.features.post.exception.TutorProfileIncompleteException();
+        }
         if (user instanceof Tutor tutor
                 && (!tutorRepository.existsSubject(tutor.getId(), subject.getId())
                 || !certificateRepository.existsByTutor_IdAndSubject_IdAndVerifiedTrue(

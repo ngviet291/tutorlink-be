@@ -56,7 +56,6 @@ public interface UserMapper {
     @Mapping(target = "receivedChannels", ignore = true)
     @Mapping(target = "bio", ignore = true)
     @Mapping(target = "hourlyRate", ignore = true)
-    @Mapping(target = "teachingLevels", ignore = true)
     @Mapping(target = "teachingMode", ignore = true)
     @Mapping(target = "availableSlots", ignore = true)
     @Mapping(target = "teachingAreas", ignore = true)

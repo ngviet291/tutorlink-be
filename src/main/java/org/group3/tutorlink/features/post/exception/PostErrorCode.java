@@ -20,7 +20,12 @@ public enum PostErrorCode implements BaseErrorCode {
     SUBJECT_NOT_BELONG_TO_TUTOR(
             "POST_003",
             "Subject does not belong to the tutor", HttpStatus.BAD_REQUEST
-    ), TUTOR_NOT_VERIFIED("POST_004", "Tutor has not been verified", HttpStatus.FORBIDDEN);
+    ), TUTOR_NOT_VERIFIED("POST_004", "Tutor has not been verified", HttpStatus.FORBIDDEN),
+    TUTOR_PROFILE_INCOMPLETE(
+            "POST_005",
+            "Tutor profile is incomplete: bio, teaching levels, teaching areas and available slots are required",
+            HttpStatus.FORBIDDEN
+    );
     private final String code;
     private final String message;
     private final HttpStatus httpStatus;

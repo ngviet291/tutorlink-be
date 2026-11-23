@@ -72,4 +72,15 @@ public class Tutor extends User {
     @OneToMany(mappedBy = "tutor", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TutorSubjectProfile> subjectProfiles;
 
+    /**
+     * Hồ sơ đầy đủ để dùng bình thường: giới thiệu, cấp học, khu vực nhận dạy và lịch rảnh.
+     * Chỉ cấp học là bắt buộc lúc đăng ký; phần còn lại bổ sung sau khi được duyệt.
+     */
+    public boolean hasCompleteProfile() {
+        return bio != null && !bio.isBlank()
+                && teachingLevels != null && !teachingLevels.isEmpty()
+                && teachingAreas != null && !teachingAreas.isEmpty()
+                && availableSlots != null && !availableSlots.isEmpty();
+    }
+
 }

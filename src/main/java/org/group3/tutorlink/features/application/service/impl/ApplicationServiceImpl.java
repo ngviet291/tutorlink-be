@@ -31,6 +31,7 @@ import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.exception.SubjectNotBelongToTutorException;
 import org.group3.tutorlink.features.post.exception.TutorNotVerifiedException;
+import org.group3.tutorlink.features.post.exception.TutorProfileIncompleteException;
 import org.group3.tutorlink.features.post.repository.PostRepository;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.subject.repository.CertificateRepository;
@@ -129,6 +130,9 @@ public class ApplicationServiceImpl implements ApplicationService {
             // Gia sư phải được duyệt hồ sơ và có chứng chỉ đã xác thực cho môn của bài mới được ứng tuyển.
             if (tutor.getVerificationStatus() != VerificationStatus.APPROVED) {
                 throw new TutorNotVerifiedException();
+            }
+            if (!tutor.hasCompleteProfile()) {
+                throw new TutorProfileIncompleteException();
             }
             UUID subjectId = post.getSubject().getId();
             if (!tutorRepository.existsSubject(tutor.getId(), subjectId)
