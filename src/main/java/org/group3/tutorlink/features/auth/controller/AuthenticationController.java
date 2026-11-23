@@ -8,6 +8,7 @@ import org.group3.tutorlink.features.auth.dto.response.AuthenticateResponse;
 import org.group3.tutorlink.features.auth.dto.response.IntrospectResponse;
 import org.group3.tutorlink.features.auth.enums.AuthResponseCode;
 import org.group3.tutorlink.features.auth.service.AuthenticationService;
+import org.group3.tutorlink.features.auth.service.EmailVerificationService;
 import org.group3.tutorlink.features.auth.validation.annotation.ValidImageFiles;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +25,7 @@ import java.util.List;
 public class AuthenticationController {
 
     private final AuthenticationService authService;
+    private final EmailVerificationService emailVerificationService;
 
     // POST /v1/auth/login
     @PostMapping("/login")
@@ -37,6 +39,13 @@ public class AuthenticationController {
                 .message(AuthResponseCode.LOGIN_SUCCESS.getMessage())
                 .data(response)
                 .build();
+    }
+
+    // POST /v1/auth/register/verification-code — gửi mã xác minh email (công khai)
+    @PostMapping("/register/verification-code")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void sendVerificationCode(@Valid @RequestBody SendVerificationCodeRequest req) {
+        emailVerificationService.sendCode(req.getEmail());
     }
 
     // POST /v1/auth/register/student

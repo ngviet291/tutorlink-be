@@ -18,6 +18,7 @@ import org.group3.tutorlink.features.post.dto.response.PostApplicationResponse;
 import org.group3.tutorlink.features.post.dto.response.PostResponse;
 import org.group3.tutorlink.features.post.dto.response.PostStatisticsByStatus;
 import org.group3.tutorlink.features.post.entity.Post;
+import org.group3.tutorlink.features.post.enums.BudgetUnit;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
@@ -164,6 +165,7 @@ public class PostServiceImpl implements PostService {
             EducationLevel educationLevel,
             BigDecimal maxBudget,
             BigDecimal minBudget,
+            BudgetUnit budgetUnit,
             UUID authorId,
             UUID cursor,
             int limit
@@ -180,6 +182,7 @@ public class PostServiceImpl implements PostService {
                 .and(PostSpecification.hasEducationLevel(educationLevel))
                 .and(PostSpecification.maxBudgetLessThanOrEqual(maxBudget))
                 .and(PostSpecification.minBudgetGreaterThanOrEqual(minBudget))
+                .and(PostSpecification.hasBudgetUnit(budgetUnit))
                 .and(PostSpecification.hasAuthorId(authorId))
                 .and(PostSpecification.fetchSubject())
                 .and(PostSpecification.fetchApplications())
@@ -221,6 +224,7 @@ public class PostServiceImpl implements PostService {
             EducationLevel educationLevel,
             BigDecimal maxBudget,
             BigDecimal minBudget,
+            BudgetUnit budgetUnit,
             UUID cursor,
             int limit
     ) {
@@ -235,6 +239,7 @@ public class PostServiceImpl implements PostService {
                 .and(PostSpecification.hasEducationLevel(educationLevel))
                 .and(PostSpecification.maxBudgetLessThanOrEqual(maxBudget))
                 .and(PostSpecification.minBudgetGreaterThanOrEqual(minBudget))
+                .and(PostSpecification.hasBudgetUnit(budgetUnit))
                 .and(PostSpecification.fetchSubject())
                 .and(PostSpecification.fetchApplications())
                 .and(PostSpecification.cursor(cursor));
@@ -344,6 +349,7 @@ public class PostServiceImpl implements PostService {
             EducationLevel educationLevel,
             BigDecimal maxBudget,
             BigDecimal minBudget,
+            BudgetUnit budgetUnit,
             UUID cursor,
             PostStatus postStatus,
             int limit
@@ -374,6 +380,7 @@ public class PostServiceImpl implements PostService {
                 .and(PostSpecification.hasEducationLevel(educationLevel))
                 .and(PostSpecification.maxBudgetLessThanOrEqual(maxBudget))
                 .and(PostSpecification.minBudgetGreaterThanOrEqual(minBudget))
+                .and(PostSpecification.hasBudgetUnit(budgetUnit))
                 .and(PostSpecification.fetchSubject())
                 .and(PostSpecification.cursor(cursor))
                 .and(PostSpecification.hasAuthorId(currentUserId));

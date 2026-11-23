@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Yêu cầu nạp ví qua MoMo.")
+@Schema(description = "Yêu cầu nạp ví qua VietQR.")
 public class TopUpRequest {
 
     @NotNull(message = "Amount is required! ")
@@ -26,6 +26,6 @@ public class TopUpRequest {
     private BigDecimal amount;
 
     @NotNull
-    @Schema(description = "Phương thức nạp: MOMO (mặc định nếu bỏ trống) hoặc VIETQR.", example = "VIETQR")
+    @Schema(description = "Phương thức nạp: VIETQR.", example = "VIETQR")
     private PaymentMethod paymentMethod;
 }

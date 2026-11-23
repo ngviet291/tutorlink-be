@@ -23,18 +23,21 @@ public class EmailService {
     private final String resetPasswordTemplate;
     private final String notificationSubjectFormat;
     private final String notificationTemplate;
+    private final String verificationSubject;
 
     public EmailService(
             JavaMailSender mailSender,
             @Value("${app.mail.reset-password.subject}") String resetPasswordSubject,
             @Value("${app.mail.reset-password.template}") String resetPasswordTemplate,
             @Value("${app.mail.notification.subject-format}") String notificationSubjectFormat,
-            @Value("${app.mail.notification.template}") String notificationTemplate) {
+            @Value("${app.mail.notification.template}") String notificationTemplate,
+            @Value("${app.mail.verify-email.subject:Mã xác minh email TutorLink}") String verificationSubject) {
         this.mailSender = mailSender;
         this.resetPasswordSubject = resetPasswordSubject;
         this.resetPasswordTemplate = resetPasswordTemplate;
         this.notificationSubjectFormat = notificationSubjectFormat;
         this.notificationTemplate = notificationTemplate;
+        this.verificationSubject = verificationSubject;
     }
 
     public void sendResetPasswordEmail(String to, String newPassword) {
@@ -55,6 +58,25 @@ public class EmailService {
             sendHtml(to, String.format(notificationSubjectFormat, title), html);
         } catch (IOException | MessagingException e) {
             throw new IllegalStateException("Failed to send notification email", e);
+        }
+    }
+
+    /** Gửi mã xác minh email khi đăng ký — dùng chung template với email thông báo. */
+    public void sendVerificationEmail(String to, String code, int ttlMinutes) {
+        String content = "<span style=\"display:block\">Mã xác minh email của bạn là:</span>"
+                + "<span style=\"display:block;margin:16px 0;font-size:32px;font-weight:700;"
+                + "letter-spacing:8px;color:#f26b21\">" + escapeHtml(code) + "</span>"
+                + "<span style=\"display:block\">Mã có hiệu lực trong " + ttlMinutes
+                + " phút. Vui lòng không chia sẻ mã này với bất kỳ ai.</span>"
+                + "<span style=\"display:block;margin-top:12px;color:#6b7280;font-size:13px\">"
+                + "Nếu bạn không yêu cầu đăng ký, hãy bỏ qua email này.</span>";
+        try {
+            String html = readTemplate(notificationTemplate)
+                    .replace(TITLE_PLACEHOLDER, escapeHtml("Xác minh email"))
+                    .replace(CONTENT_PLACEHOLDER, content);
+            sendHtml(to, verificationSubject, html);
+        } catch (IOException | MessagingException e) {
+            throw new IllegalStateException("Failed to send verification email", e);
         }
     }
 

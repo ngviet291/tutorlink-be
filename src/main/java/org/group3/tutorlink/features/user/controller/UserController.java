@@ -88,6 +88,7 @@ public class UserController {
     // GET /v1/users/tutors?subjectName=&province=&minRate=&maxRate=&minRating=&minExperience=&cursor= — public
     @GetMapping("/tutors/search")
     public ApiResponse<CursorResponse<TutorResponse>> getTutors(
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) String subjectName,
             @RequestParam(required = false) String province,
             @RequestParam(required = false) Double minRate,
@@ -99,7 +100,7 @@ public class UserController {
         return ApiResponse.<CursorResponse<TutorResponse>>builder()
                 .code(UserResponseCode.GET_USERS.getCode())
                 .message(UserResponseCode.GET_USERS.getMessage())
-                .data(userService.getTutors(subjectName, province, minRate, maxRate, minRating, minExperience, cursor,limit))
+                .data(userService.getTutors(name, subjectName, province, minRate, maxRate, minRating, minExperience, cursor, limit))
                 .build();
     }
 

@@ -231,6 +231,7 @@ public class UserService {
     }
     @Transactional(readOnly = true)
     public CursorResponse<TutorResponse> getTutors(
+            String name,
             String subjectName,
             String province,
             Double minRate,
@@ -241,9 +242,10 @@ public class UserService {
             int limit
     ) {
         Pageable pageable = PageRequest.of(0, limit + 1, Sort.by(Sort.Order.desc("id")));
-
+        String nameKeyword = (name == null || name.isBlank()) ? null : name.trim();
         List<Tutor> tutors = tutorRepository.findApprovedTutors(
                 VerificationStatus.APPROVED,
+                nameKeyword,
                 subjectName,
                 province,
                 minRate,

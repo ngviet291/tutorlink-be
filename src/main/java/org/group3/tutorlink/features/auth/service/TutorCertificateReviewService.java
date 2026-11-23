@@ -97,7 +97,7 @@ public class TutorCertificateReviewService {
         Set<UUID> invalidIds = new HashSet<>();
         Map<UUID, String> escalated = new LinkedHashMap<>();
         List<String> reasons = new ArrayList<>();
-
+        boolean aiUnavailable = false;
         for (CertificateSnapshot cert : snapshot.getCertificates()) {
             CertificateCheck check;
             try {
@@ -105,21 +105,20 @@ public class TutorCertificateReviewService {
                 log.info("Certificate AI check result for tutor {}: cert={} valid={} confidence={} reason={}", tutorId, cert.getId(), check.isValid(), check.getConfidence(), check.getReason());
             } catch (Exception e) {
                 log.error("Certificate AI check failed. tutor={} escalate={}", tutorId, escalateToAdmin, e);
-                if (escalateToAdmin) {
-                    // AI lỗi thì cũng chuyển admin, không để chứng chỉ treo vô thời hạn
-                    Set<UUID> ids = snapshot.getCertificates().stream()
-                            .map(CertificateSnapshot::getId).collect(Collectors.toSet());
-                    sendToAdmin(tutorId, ids, AI_UNAVAILABLE_NOTE);
-                } else {
+                if (!escalateToAdmin) {
                     notifyReviewFailed(tutorId);
+                    return;
                 }
-                return;
+                // AI không chạy được (hết token, lỗi, quá thời gian): chứng chỉ này và các chứng chỉ
+                // còn lại chuyển admin; những chứng chỉ AI đã kết luận trước đó vẫn được áp dụng
+                aiUnavailable = true;
+                escalated.put(cert.getId(), AI_UNAVAILABLE_NOTE);
+                continue;
             }
             if (isAccepted(check)) {
                 accepted.put(cert.getId(), check);
-            } else if (escalateToAdmin) {
-                escalated.put(cert.getId(), notBlank(check.getReason(), AI_UNSURE_NOTE));
             } else {
+                // AI đã kết luận (vd tên không khớp, ảnh không phải chứng chỉ): để AI tự từ chối
                 invalidIds.add(cert.getId());
                 reasons.add(check.getReason());
             }

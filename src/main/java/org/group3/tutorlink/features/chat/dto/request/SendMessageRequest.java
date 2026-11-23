@@ -22,6 +22,7 @@ public class SendMessageRequest {
     private UUID receiverId;
 
     @Schema(description = "The content of the message. Can be empty if media is provided.", example = "Hello, how are you?")
+    @jakarta.validation.constraints.Size(max = 5000, message = "Message content must not exceed 5000 characters")
     private String content; // có thể rỗng nếu có media
 
     @Schema(description = "List of media attached to the message. Maximum 10 items.", example = "[{\"publicId\": \"media1\", \"url\": \"http://example.com/media1.jpg\", \"mediaType\": \"IMAGE\"}]")

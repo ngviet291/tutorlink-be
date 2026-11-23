@@ -17,7 +17,9 @@ public interface TutorRepository extends JpaRepository<Tutor, UUID> {
             SELECT t FROM Tutor t
             WHERE t.verificationStatus = :status
               AND t.userStatus = org.group3.tutorlink.features.user.enums.UserStatus.ACTIVE
-
+              AND (CAST(:name AS string) IS NULL OR
+                   LOWER(t.fullName) LIKE
+                   LOWER(CONCAT('%', CAST(:name AS string), '%')))
               AND (
                   CAST(:subjectName AS string) IS NULL
                   OR EXISTS (
@@ -44,6 +46,7 @@ public interface TutorRepository extends JpaRepository<Tutor, UUID> {
             """)
     List<Tutor> findApprovedTutors(
             @Param("status") VerificationStatus status,
+            @Param("name") String name,
             @Param("subjectName") String subjectName,
             @Param("province") String province,
             @Param("minRate") Double minRate,

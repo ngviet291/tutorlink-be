@@ -29,7 +29,12 @@ import org.group3.tutorlink.features.payment.enums.TransactionStatus;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
+import org.group3.tutorlink.features.post.exception.SubjectNotBelongToTutorException;
+import org.group3.tutorlink.features.post.exception.TutorNotVerifiedException;
 import org.group3.tutorlink.features.post.repository.PostRepository;
+import org.group3.tutorlink.features.user.enums.VerificationStatus;
+import org.group3.tutorlink.features.subject.repository.CertificateRepository;
+import org.group3.tutorlink.features.user.repository.TutorRepository;
 import org.group3.tutorlink.features.tracking.enums.SystemAction;
 import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Student;
@@ -45,6 +50,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -67,6 +73,8 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationExpiryQueue expiryQueue;
     private final AfterCommit afterCommit;
     private final NotificationHelper notificationHelper;
+    private final TutorRepository tutorRepository;
+    private final CertificateRepository certificateRepository;
 
     @Value("${application.expiry.payment-window-minutes:1440}")
     private long paymentWindowMinutes;
@@ -93,6 +101,13 @@ public class ApplicationServiceImpl implements ApplicationService {
                         Instant.now()
                 )
                 .orElseThrow(() -> new AppException(ErrorCodeApplication.POST_NOT_FOUND));
+        // Mức phí đề xuất phải nằm trong khoảng ngân sách của bài.
+        BigDecimal fee = request.getProposedFee();
+        if (fee != null
+                && ((post.getMinBudget() != null && fee.compareTo(post.getMinBudget()) < 0)
+                || (post.getMaxBudget() != null && fee.compareTo(post.getMaxBudget()) > 0))) {
+            throw new AppException(ErrorCodeApplication.PROPOSED_FEE_OUT_OF_RANGE);
+        }
         Application application = Application.builder()
                 .id(appUtil.generateUUID())
                 .post(post)
@@ -109,6 +124,16 @@ public class ApplicationServiceImpl implements ApplicationService {
             }
             if (!(post.getAuthor() instanceof Student student)) {
                 throw new AppException(ErrorCodeApplication.POST_NOT_AVAILABLE);
+            }
+
+            // Gia sư phải được duyệt hồ sơ và có chứng chỉ đã xác thực cho môn của bài mới được ứng tuyển.
+            if (tutor.getVerificationStatus() != VerificationStatus.APPROVED) {
+                throw new TutorNotVerifiedException();
+            }
+            UUID subjectId = post.getSubject().getId();
+            if (!tutorRepository.existsSubject(tutor.getId(), subjectId)
+                    || !certificateRepository.existsByTutor_IdAndSubject_IdAndVerifiedTrue(tutor.getId(), subjectId)) {
+                throw new SubjectNotBelongToTutorException();
             }
 
             if (applicationRepository.existsByPostIdAndTutorId(post.getId(), tutor.getId(), LIVE_STATUSES)) {

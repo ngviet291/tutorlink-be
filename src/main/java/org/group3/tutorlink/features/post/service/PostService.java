@@ -7,6 +7,7 @@ import org.group3.tutorlink.features.post.dto.request.UpdatePostRequest;
 import org.group3.tutorlink.features.post.dto.response.PostApplicationResponse;
 import org.group3.tutorlink.features.post.dto.response.PostResponse;
 import org.group3.tutorlink.features.post.dto.response.PostStatisticsByStatus;
+import org.group3.tutorlink.features.post.enums.BudgetUnit;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
@@ -60,6 +61,7 @@ public interface PostService {
             EducationLevel educationLevel,
             BigDecimal maxBudget,
             BigDecimal minBudget,
+            BudgetUnit budgetUnit,
             UUID authorId,
             UUID cursor,
             int limit
@@ -75,6 +77,7 @@ public interface PostService {
             EducationLevel educationLevel,
             BigDecimal maxBudget,
             BigDecimal minBudget,
+            BudgetUnit budgetUnit,
             UUID cursor,
             int limit
     );
@@ -101,6 +104,7 @@ public interface PostService {
             EducationLevel educationLevel,
             BigDecimal maxBudget,
             BigDecimal minBudget,
+            BudgetUnit budgetUnit,
             UUID cursor,
             PostStatus postStatus,
             int limit

@@ -16,6 +16,7 @@ public enum UserResponseCode {
     CERTIFICATE_DELETED("USER_009", "Delete certificate successfully"),
     PENDING_CERTIFICATES_FOUND("USER_010", "Get certificates waiting for admin review successfully"),
     CERTIFICATE_REVIEWED("USER_011", "Review certificate successfully"),
+    TUTOR_CERTIFICATES_FOUND("USER_012", "Get tutor certificates successfully"),
     ;
 
     private final String code;

@@ -67,6 +67,7 @@ public class PostController {
             @RequestParam(required = false) UUID cursor,
             @RequestParam(required = false) EducationLevel educationLevel,
             @RequestParam(required = false) BigDecimal minBudget,
+            @RequestParam(required = false) BudgetUnit budgetUnit,
             @RequestParam(required = false) BigDecimal maxBudget,
             @RequestParam(defaultValue = "10") int limit
     ) {
@@ -84,6 +85,7 @@ public class PostController {
                         educationLevel,
                         maxBudget,
                         minBudget,
+                        budgetUnit,
                         authorId,
                         cursor,
                         limit)
@@ -101,6 +103,7 @@ public class PostController {
             @RequestParam(required = false) UUID cursor,
             @RequestParam(required = false) EducationLevel educationLevel,
             @RequestParam(required = false) BigDecimal minBudget,
+            @RequestParam(required = false) BudgetUnit budgetUnit,
             @RequestParam(required = false) BigDecimal maxBudget,
             @RequestParam(defaultValue = "10") int limit
     ) {
@@ -116,6 +119,7 @@ public class PostController {
                         educationLevel,
                         maxBudget,
                         minBudget,
+                        budgetUnit,
                         cursor,
                         limit)
                 )
@@ -169,6 +173,7 @@ public class PostController {
             @RequestParam(required = false) UUID cursor,
             @RequestParam(required = false) EducationLevel educationLevel,
             @RequestParam(required = false) BigDecimal minBudget,
+            @RequestParam(required = false) BudgetUnit budgetUnit,
             @RequestParam(required = false) BigDecimal maxBudget,
             @RequestParam(required = false) PostStatus postStatus,
             @RequestParam(defaultValue = "10") int limit
@@ -184,6 +189,7 @@ public class PostController {
                         educationLevel,
                         maxBudget,
                         minBudget,
+                        budgetUnit,
                         cursor,
                         postStatus,
                         limit)

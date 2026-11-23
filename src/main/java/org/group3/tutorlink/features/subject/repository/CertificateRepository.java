@@ -22,4 +22,7 @@ public interface CertificateRepository extends JpaRepository<Certificate, UUID> 
     // Chứng chỉ bị kẹt: chưa được AI xử lý xong, cũng chưa chuyển admin
     List<Certificate> findAllByVerifiedFalseAndPendingAdminReviewFalseAndCreatedAtBefore(java.time.Instant cutoff);
     boolean existsByTutor_IdAndSubject_IdAndVerifiedTrue(UUID tutorId, UUID subjectId);
+    // Chỉ gia sư đã được duyệt (đang cập nhật hồ sơ); hồ sơ đăng ký thì admin xem trong modal hồ sơ
+    List<Certificate> findAllByPendingAdminReviewTrueAndVerifiedFalseAndTutor_VerificationStatusOrderByCreatedAtAsc(
+            org.group3.tutorlink.features.user.enums.VerificationStatus status);
 }

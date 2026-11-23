@@ -83,6 +83,12 @@ public enum ErrorCodeApplication implements BaseErrorCode {
             "APPLICATION_013",
             "Payment is required before confirmation",
             HttpStatus.BAD_REQUEST
+    ),
+
+    PROPOSED_FEE_OUT_OF_RANGE(
+            "APPLICATION_014",
+            "Proposed fee must be within the post's budget range",
+            HttpStatus.BAD_REQUEST
     );
 
     private final String code;

@@ -33,6 +33,9 @@ public class RegisterTutorRequest {
             message = "Invalid Vietnamese phone number"
     )
     private String phone;
+    @NotBlank(message = "Verification code must not be blank")
+    @Pattern(regexp = "^\\d{6}$", message = "Verification code must be 6 digits")
+    private String verificationCode;
     private Gender gender;
     private LocalDate dateOfBirth;
     @NotNull(message = "Address must not be null")

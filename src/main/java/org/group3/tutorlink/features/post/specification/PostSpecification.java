@@ -2,6 +2,7 @@ package org.group3.tutorlink.features.post.specification;
 
 import jakarta.persistence.criteria.JoinType;
 import org.group3.tutorlink.features.post.entity.Post;
+import org.group3.tutorlink.features.post.enums.BudgetUnit;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
@@ -164,6 +165,12 @@ public class PostSpecification {
             );
         };
     }
+    /** Lọc theo đơn vị học phí (mỗi buổi/tháng/giờ) để khoảng giá so sánh cùng đơn vị. */
+    public static Specification<Post> hasBudgetUnit(BudgetUnit budgetUnit) {
+        return (root, query, cb) ->
+                budgetUnit == null ? null : cb.equal(root.get("budgetUnit"), budgetUnit);
+    }
+
     public static Specification<Post> maxBudgetLessThanOrEqual(
             BigDecimal maxBudget) {
 

@@ -1,6 +1,8 @@
 package org.group3.tutorlink.features.payment.dto.request;
 
+import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -18,6 +20,8 @@ public class WithdrawRequest {
 
     @NotNull(message = "Amount is required")
     @DecimalMin(value = "10000", message = "Minimum withdrawal amount is 10,000 VND")
+    @DecimalMax(value = "50000000", message = "Maximum withdrawal amount is 50,000,000 VND")
+    @Digits(integer = 17, fraction = 0, message = "Amount must be a whole number of VND")
     private BigDecimal amount;
 
     @NotBlank(message = "Bank account number is required")

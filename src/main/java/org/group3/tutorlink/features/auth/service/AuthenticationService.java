@@ -83,10 +83,12 @@ public class AuthenticationService {
     private final ApplicationEventPublisher eventPublisher;
     private final CertificateMapper certificateMapper;
     private final NotificationHelper notificationHelper;
+    private final EmailVerificationService emailVerificationService;
 
     @Transactional
     public AuthenticateResponse registerStudent(RegisterStudentRequest req) {
         assertEmailNotTaken(req.getEmail());
+        emailVerificationService.verify(req.getEmail(), req.getVerificationCode());
 
         Role role = getRoleOrThrow(RoleName.STUDENT);
 
@@ -97,6 +99,7 @@ public class AuthenticationService {
         student.setUserStatus(UserStatus.ACTIVE);
 
         studentRepository.save(student);
+        emailVerificationService.invalidate(req.getEmail());
         systemLogPublisher.success(student.getId(), SystemAction.REGISTER,
                 User.class.getSimpleName(), student.getId(),
                 Map.of("role", RoleName.STUDENT.name()));
@@ -108,6 +111,7 @@ public class AuthenticationService {
     @Transactional
     public AuthenticateResponse registerTutor(RegisterTutorRequest req, List<MultipartFile> certificates) {
         assertEmailNotTaken(req.getEmail());
+        emailVerificationService.verify(req.getEmail(), req.getVerificationCode());
 
         Role role = getRoleOrThrow(RoleName.TUTOR);
 
@@ -164,6 +168,7 @@ public class AuthenticationService {
 
 
         tutorRepository.save(tutor);
+        emailVerificationService.invalidate(req.getEmail());
         systemLogPublisher.success(tutor.getId(), SystemAction.REGISTER,
                 User.class.getSimpleName(), tutor.getId(),
                 Map.of("role", RoleName.TUTOR.name(),
@@ -171,7 +176,7 @@ public class AuthenticationService {
 
         log.info("Registered new tutor account: {}", tutor.getId());
         if (!files.isEmpty()) {
-            eventPublisher.publishEvent(TutorCertificatesSubmittedEvent.builder().tutorId(tutor.getId()).build());
+            eventPublisher.publishEvent(TutorCertificatesSubmittedEvent.builder().tutorId(tutor.getId()).escalateToAdmin(true).build());
         }
         return buildAuthResponse(tutor);
     }

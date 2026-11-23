@@ -13,7 +13,11 @@ import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.subject.repository.CertificateRepository;
 import org.group3.tutorlink.features.user.dto.request.ApproveTutorRequest;
 import org.group3.tutorlink.features.user.dto.response.AdminCertificateResponse;
+import org.group3.tutorlink.features.user.dto.response.CertificateResponse;
+import org.group3.tutorlink.features.user.mapper.AdminCertificateMapper;
+import org.group3.tutorlink.features.user.mapper.CertificateResponseMapper;
 import org.group3.tutorlink.features.user.entity.Tutor;
+import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.user.exception.UserErrorCode;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,14 +39,22 @@ public class AdminCertificateService {
     private final MediaStorageService mediaStorageService;
     private final NotificationHelper notificationHelper;
     private final ApplicationEventPublisher eventPublisher;
+    private final CertificateResponseMapper certificateResponseMapper;
+    private final AdminCertificateMapper adminCertificateMapper;
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @Transactional(readOnly = true)
     public List<AdminCertificateResponse> getPending() {
-        return certificateRepository.findAllByPendingAdminReviewTrueAndVerifiedFalseOrderByCreatedAtAsc()
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        return adminCertificateMapper.toResponses(certificateRepository
+                .findAllByPendingAdminReviewTrueAndVerifiedFalseAndTutor_VerificationStatusOrderByCreatedAtAsc(
+                        VerificationStatus.APPROVED));
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Transactional(readOnly = true)
+    public List<CertificateResponse> getByTutor(UUID tutorId) {
+        return certificateResponseMapper.toResponses(
+                certificateRepository.findAllByTutor_IdOrderByCreatedAtDesc(tutorId));
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -96,22 +108,6 @@ public class AdminCertificateService {
         if (publicId != null) {
             runAfterCommit(() -> mediaStorageService.delete(publicId));
         }
-    }
-
-    private AdminCertificateResponse toResponse(Certificate c) {
-        Tutor tutor = c.getTutor();
-        Subject subject = c.getSubject();
-        return AdminCertificateResponse.builder()
-                .id(c.getId())
-                .tutorId(tutor.getId())
-                .tutorName(tutor.getFullName())
-                .subjectId(subject != null ? subject.getId() : null)
-                .subjectName(subject != null ? subject.getName() : null)
-                .name(c.getName())
-                .fileUrl(c.getFileUrl())
-                .reviewNote(c.getReviewNote())
-                .submittedAt(c.getCreatedAt())
-                .build();
     }
 
     private void runAfterCommit(Runnable action) {

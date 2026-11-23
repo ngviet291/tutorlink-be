@@ -13,8 +13,7 @@ package org.group3.tutorlink.features.application.dto.request;
  * @date: 29/09/2026 14:56
  */
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -48,6 +47,9 @@ public class CreateApplicationRequest {
             description = "Proposed fee for the tutoring sessions (tutor applicants only)",
             example = "500000.00"
     )
+    @DecimalMin(value = "0.0", message = "Proposed fee must not be negative")
+    @DecimalMax(value = "100000000", message = "Proposed fee is too large")
+    @Digits(integer = 12, fraction = 2, message = "Proposed fee has an invalid format")
     private BigDecimal proposedFee;
 
 }
