@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ChatbotErrorCode implements BaseErrorCode {
     CONVERSATION_NOT_FOUND("CHAT_404", "Conversation not found", HttpStatus.NOT_FOUND),
+    AI_QUOTA_EXCEEDED("CHAT_429", "Xin lỗi bạn, trợ lý TutorLink hiện đã đạt giới hạn sử dụng nên chưa thể tiếp tục hỗ trợ. Bạn vui lòng quay lại sau nhé! Cảm ơn bạn đã thông cảm.", HttpStatus.TOO_MANY_REQUESTS),
     AI_OVERLOADED("CHAT_503", "Máy chủ AI đang quá tải, vui lòng thử lại sau ít phút", HttpStatus.SERVICE_UNAVAILABLE),
     AI_UNAVAILABLE("CHAT_502", "Trợ lý AI tạm thời không khả dụng, vui lòng thử lại sau", HttpStatus.BAD_GATEWAY);
 

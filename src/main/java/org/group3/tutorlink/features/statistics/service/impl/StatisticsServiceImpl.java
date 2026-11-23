@@ -40,6 +40,8 @@ public class StatisticsServiceImpl implements StatisticsService {
     private static final int DEFAULT_TOP_TUTORS_LIMIT = 10;
     private static final int MAX_TOP_TUTORS_LIMIT = 50;
     private static final long MAX_DAYS_FOR_DAILY = 366;
+    private static final List<ApplicationStatus> CONFIRMED_CLASS_STATUSES =
+            List.of(ApplicationStatus.CONFIRMED, ApplicationStatus.FINISHED);
 
     private final TransactionRepository transactionRepository;
     private final RevenueReportRepository revenueReportRepository;
@@ -76,8 +78,8 @@ public class StatisticsServiceImpl implements StatisticsService {
         List<AcceptedPointResponse> result = new ArrayList<>();
 
         for (Period period : splitPeriods(from, to, timeDetail)) {
-            long totalAccepted = applicationRepository.countByStatusBetween(
-                    ApplicationStatus.ACCEPTED,
+            long totalAccepted = applicationRepository.countConfirmedBetween(
+                    CONFIRMED_CLASS_STATUSES,
                     toStartInstant(period.getStartDate()),
                     toEndInstant(period.getEndDate()));
 
@@ -103,8 +105,8 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         Pageable pageable = PageRequest.of(0, normalizeLimit(limit));
 
-        List<TopTutorRow> rows = applicationRepository.findTopTutorsByAcceptedCount(
-                ApplicationStatus.ACCEPTED, start, end, pageable);
+        List<TopTutorRow> rows = applicationRepository.findTopTutorsByConfirmedCount(
+                CONFIRMED_CLASS_STATUSES, start, end, pageable);
 
         return rows.stream()
                 .map(row -> TopTutorResponse.builder()

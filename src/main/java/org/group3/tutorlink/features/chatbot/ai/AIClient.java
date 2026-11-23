@@ -6,6 +6,7 @@ import org.group3.tutorlink.common.config.PromptLoader;
 import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.features.chatbot.config.ChatbotProperties;
 import org.group3.tutorlink.features.chatbot.exception.AiOverloadedException;
+import org.group3.tutorlink.features.chatbot.exception.AiQuotaExceededException;
 import org.group3.tutorlink.features.chatbot.exception.AiUnavailableException;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.http.HttpStatus;
@@ -23,8 +24,7 @@ public class AIClient {
 
     // Hai mã này đều có nghĩa "thử lại sau": 503 máy chủ quá tải, 429 hết quota
     private static final Set<Integer> OVERLOADED_STATUS_CODES = Set.of(
-            HttpStatus.SERVICE_UNAVAILABLE.value(),
-            HttpStatus.TOO_MANY_REQUESTS.value());
+            HttpStatus.SERVICE_UNAVAILABLE.value());
 
     private final ChatClient chatClient;
     private final SubjectCatalog subjectCatalog;
@@ -75,6 +75,10 @@ public class AIClient {
     // Quá tải / hết quota -> "thử lại sau", lỗi khác -> "AI không khả dụng"
     private AppException translate(Exception error, long startedAt) {
         Optional<ApiException> apiError = findApiException(error);
+        if (apiError.isPresent() && apiError.get().code() == HttpStatus.TOO_MANY_REQUESTS.value()) {
+            log.warn("AI quota exceeded (HTTP {}) after {} ms", apiError.get().code(), elapsedSince(startedAt));
+            return new AiQuotaExceededException();
+        }
         if (apiError.isPresent() && OVERLOADED_STATUS_CODES.contains(apiError.get().code())) {
             log.warn("AI quá tải hoặc hết quota (HTTP {}) sau {} ms", apiError.get().code(), elapsedSince(startedAt));
             return new AiOverloadedException();
