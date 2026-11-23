@@ -180,6 +180,17 @@ public class PaymentController {
     }
 
     // 15. Duyệt yêu cầu rút tiền - Admin
+    @PatchMapping("/wallet/withdraw/{id}")
+    public ApiResponse<TransactionResponse> updateWithdrawal(
+            @PathVariable UUID id,
+            @RequestBody @Valid org.group3.tutorlink.features.payment.dto.request.UpdateWithdrawalRequest request) {
+        return ApiResponse.<TransactionResponse>builder()
+                .code(PaymentResponseCode.UPDATE_WITHDRAWAL_SUCCESS.getCode())
+                .message(PaymentResponseCode.UPDATE_WITHDRAWAL_SUCCESS.getMessage())
+                .data(paymentService.updateWithdrawal(id, request))
+                .build();
+    }
+
     @PostMapping("/{id}/approve-withdrawal")
     public ApiResponse<TransactionResponse> approveWithdrawal(@PathVariable UUID id) {
         return ApiResponse.<TransactionResponse>builder()

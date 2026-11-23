@@ -702,6 +702,29 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAuthority('TUTOR')")
+    public TransactionResponse updateWithdrawal(UUID transactionId,
+            org.group3.tutorlink.features.payment.dto.request.UpdateWithdrawalRequest request) {
+        Transaction transaction = transactionRepository.findForUpdateById(transactionId)
+                .orElseThrow(() -> new AppException(PaymentErrorCode.TRANSACTION_NOT_FOUND));
+
+        UUID tutorId = appUtil.userIdFromAuthentication();
+        if (!transaction.getTutor().getId().equals(tutorId)) {
+            throw new AppException(PaymentErrorCode.NOT_TRANSACTION_OWNER);
+        }
+        if (transaction.getType() != TransactionType.WITHDRAW
+                || transaction.getStatus() != TransactionStatus.PENDING) {
+            throw new AppException(PaymentErrorCode.WITHDRAW_NOT_PENDING);
+        }
+
+        transaction.setBankAccountNumber(request.getBankAccountNumber());
+        transaction.setBankName(request.getBankName().trim());
+        transaction.setAccountHolderName(request.getAccountHolderName().trim());
+        return transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
+    }
+
+    @Override
+    @Transactional
     @PreAuthorize("hasAuthority('ADMIN')")
     public TransactionResponse approveWithdrawal(UUID transactionId) {
         Transaction transaction = transactionRepository.findForUpdateById(transactionId)

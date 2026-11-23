@@ -49,6 +49,8 @@ public interface PaymentService {
     // Rút tiền từ ví
     TransactionResponse withdrawFromWallet(org.group3.tutorlink.features.payment.dto.request.WithdrawRequest request);
 
+    TransactionResponse updateWithdrawal(UUID transactionId, org.group3.tutorlink.features.payment.dto.request.UpdateWithdrawalRequest request);
+
     // Admin duyệt rút tiền
     TransactionResponse approveWithdrawal(UUID transactionId);
 
