@@ -62,6 +62,9 @@ public class MatchingProperties {
     @Valid
     private Semantic semantic = new Semantic();
 
+    @Valid
+    private Area area = new Area();
+
     /** Trọng số của một tín hiệu; chưa cấu hình thì coi như 0 (tín hiệu không đóng góp). */
     public double weightOf(String signalKey) {
         return weights.getOrDefault(signalKey, 0.0);
@@ -123,5 +126,22 @@ public class MatchingProperties {
         public boolean isRangeValid() {
             return ceiling > floor;
         }
+    }
+
+    /** Khu vực nhận dạy của gia sư so với địa chỉ bài đăng, tính theo khoảng cách như chatbot. */
+    @Getter
+    @Setter
+    public static class Area {
+        /** Bán kính (km): gần hơn thì điểm cao hơn, từ bán kính trở ra là 0 điểm. */
+        @DecimalMin("1.0")
+        private double radiusKm = 10;
+
+        /** Xa hơn ngần này (km) hoặc khác tỉnh thì bị coi là AREA_MISMATCH. */
+        @DecimalMin("1.0")
+        private double farKm = 30;
+
+        /** Điểm (0..1) khi gia sư khai cả tỉnh/thành và bài nằm trong tỉnh đó. */
+        @DecimalMin("0.0")
+        private double sameProvinceScore = 0.6;
     }
 }

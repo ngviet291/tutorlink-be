@@ -300,7 +300,7 @@ Các điểm sau được viết dựa trên suy đoán vì chưa xem file gốc
 
 ### 8.3. Hạng mục chưa làm
 
-- **Tín hiệu khu vực theo bậc** (cùng phường, cùng tỉnh, khác tỉnh) chưa có. Hiện khu vực chỉ tác động qua cảnh báo `AREA_MISMATCH`. Có thể thêm bằng một `MatchSignal` mới mà không sửa code cũ.
+- ~~Tín hiệu khu vực theo bậc~~ **Đã làm**: `AreaSignal` (key `area`) chấm theo khoảng cách Haversine giống chatbot (`ProximityScorer`, `WardLocationService`). Mỗi mục `teachingAreas` được hiểu là phường/xã hoặc tỉnh/thành, lấy mục điểm cao nhất; khai cả tỉnh và bài nằm trong tỉnh đó được `matching.area.same-province-score`. `AREA_MISMATCH` chỉ còn khi mọi khu vực nhận ra được đều xa hơn `matching.area.far-km` hoặc khác tỉnh. Mục không nhận ra (ví dụ tên quận cũ) bị bỏ qua, không phạt.
 - **Test tự động**: nên có `WeightedScorerTest` (tín hiệu vắng mặt thì chuẩn hóa đúng), `VectorStoreSemanticMatcherTest` (mock `VectorStore`, kiểm tra co giãn điểm) và một test tích hợp dùng Testcontainers pgvector để kiểm tra "math" và "toán" ra cùng gia sư.
 - **Dọn dẹp**: xóa hẳn `TutorMatchingAiService` và bản cài đặt, `KeywordMatcher`, `SynonymNormalizer`, `SynonymProperties`, `MatchBreakdown`, khóa `ai-weights` trong cấu hình và các test liên quan tới AI cũ.
 - **Frontend**: cập nhật type `breakdown` và giao diện hiển thị lý do xếp hạng.
