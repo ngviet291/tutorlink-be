@@ -11,7 +11,6 @@ import org.group3.tutorlink.features.post.enums.EducationLevel;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.enums.TeachingMode;
-import org.group3.tutorlink.features.post.validation.ValidPostRequest;
 import org.group3.tutorlink.features.post.validation.annotation.ValidBudgetRange;
 import org.group3.tutorlink.features.post.validation.annotation.ValidPostStatus;
 
@@ -30,7 +29,6 @@ import java.util.UUID;
  * Validate address: address is required if teachingMode is OFFLINE or BOTH.
  *
  */
-@ValidPostRequest
 public class CreatePostRequest {
 
     @NotBlank(message = "Title must not be blank")
@@ -109,9 +107,9 @@ public class CreatePostRequest {
     @DecimalMin(
             value = "0.0",
             inclusive = true,
-            message = "Minimum budget must be greater than or equal to 0"
+            message = "Minimum budget must be greater than 10,000 VND"
     )
-    @NotNull
+    @NotNull(message = "Minimum budget is required")
     @Schema(
             description = "Minimum budget per tutoring session",
             example = "100000",
@@ -122,14 +120,14 @@ public class CreatePostRequest {
     @DecimalMin(
             value = "0.0",
             inclusive = true,
-            message = "Maximum budget must be greater than or equal to 0"
+            message = "Maximum budget must be greater than 10,000 and not exceed 5,000,000 VND"
     )
     @Schema(
             description = "Maximum budget per tutoring session",
             example = "150000",
             minimum = "0"
     )
-    @NotNull
+    @NotNull(message = "Maximum budget is required")
     private BigDecimal maxBudget;
 
     @Min(

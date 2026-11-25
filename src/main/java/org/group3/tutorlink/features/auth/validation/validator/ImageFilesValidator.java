@@ -27,14 +27,14 @@ public class ImageFilesValidator implements ConstraintValidator<ValidImageFiles,
         List<MultipartFile> actual = files.stream().filter(f -> f != null && !f.isEmpty()).toList();
 
         if (actual.size() > maxFiles) {
-            return fail(ctx, "Tối đa " + maxFiles + " ảnh");
+            return fail(ctx, "At most " + maxFiles + " images are allowed");
         }
         for (MultipartFile f : actual) {
             if (f.getSize() > maxSizeBytes) {
-                return fail(ctx, "Mỗi ảnh tối đa " + (maxSizeBytes / 1024 / 1024) + "MB");
+                return fail(ctx, "Each image must not exceed " + (maxSizeBytes / 1024 / 1024) + "MB");
             }
             if (!isSupportedImage(f)) {
-                return fail(ctx, "Chỉ nhận ảnh JPG, PNG hoặc WEBP");
+                return fail(ctx, "Only JPG, PNG or WEBP images are accepted");
             }
         }
         return true;

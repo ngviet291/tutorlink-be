@@ -16,38 +16,66 @@ public class BudgetRangeValidator
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
-        if (value == null) return true;
+        if (value == null) {
+            return true;
+        }
 
         try {
             BeanWrapper wrapper = new BeanWrapperImpl(value);
-
             BigDecimal minBudget = toBigDecimal(wrapper.getPropertyValue("minBudget"));
             BigDecimal maxBudget = toBigDecimal(wrapper.getPropertyValue("maxBudget"));
+            if (minBudget == null || maxBudget == null) {
+                return true;
+            }
 
-            if (minBudget == null || maxBudget == null) return true;
+            boolean minValid = minBudget.compareTo(MIN) > 0;
 
-            boolean valid = minBudget.compareTo(MIN) > 0
-                    && maxBudget.compareTo(MIN) > 0
-                    && maxBudget.compareTo(MAX) <= 0
-                    && maxBudget.compareTo(minBudget) > 0;
+            boolean maxValid = maxBudget.compareTo(MIN) > 0 && maxBudget.compareTo(MAX) <= 0;
 
-            return valid;
+            boolean rangeValid = maxBudget.compareTo(minBudget) > 0;
+            if (minValid && maxValid && rangeValid) {
+                return true;
+            }
+
+            context.disableDefaultConstraintViolation();
+
+            if (!minValid) {
+                context.buildConstraintViolationWithTemplate("Minimum budget must be greater than 10,000 VND")
+                        .addPropertyNode("minBudget")
+                        .addConstraintViolation();
+            }
+
+            if (!maxValid) {
+                context.buildConstraintViolationWithTemplate("Maximum budget must be greater than 10,000 and not exceed 5,000,000 VND")
+                        .addPropertyNode("maxBudget")
+                        .addConstraintViolation();
+            }
+
+            if (minValid && maxValid && !rangeValid) {
+                context.buildConstraintViolationWithTemplate("Maximum budget must be greater than minimum budget")
+                        .addPropertyNode("maxBudget")
+                        .addConstraintViolation();
+            }
+
+            return false;
 
         } catch (Exception ex) {
-            throw new IllegalArgumentException(
-                    "Class must contain minBudget and maxBudget fields", ex
-            );
+            throw new IllegalArgumentException("Class must contain minBudget and maxBudget fields", ex);
         }
     }
 
     private BigDecimal toBigDecimal(Object value) {
-        if (value == null) return null;
-        if (value instanceof BigDecimal decimal) return decimal;
+        if (value == null) {
+            return null;
+        }
+
+        if (value instanceof BigDecimal decimal) {
+            return decimal;
+        }
+
         if (value instanceof Number number) {
             return new BigDecimal(number.toString());
         }
         return null;
     }
-
-
 }

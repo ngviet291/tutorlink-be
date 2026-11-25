@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class AddressRequest {
-    @NotBlank(message = "Street not be blank")
+    @NotBlank(message = "Street must not be blank")
     private String street;
     private String ward;
-    @NotBlank(message = "Province not be blank")
+    @NotBlank(message = "Province must not be blank")
     private String province;
 }

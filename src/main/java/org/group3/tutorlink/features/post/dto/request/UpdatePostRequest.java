@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.group3.tutorlink.features.post.enums.*;
-import org.group3.tutorlink.features.post.validation.ValidPostRequest;
 import org.group3.tutorlink.features.post.validation.annotation.ValidBudgetRange;
 
 import java.math.BigDecimal;
@@ -16,7 +15,6 @@ import java.time.Instant;
 import java.util.UUID;
 
 @ValidBudgetRange
-@ValidPostRequest
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -85,14 +83,14 @@ public class UpdatePostRequest {
     @NotNull
     @DecimalMin(
             value = "0.0",
-            message = "Minimum budget must be greater than or equal to 0"
+            message = "Minimum budget must be greater than 10,000 VND"
     )
     private BigDecimal minBudget;
 
     @NotNull
     @DecimalMin(
             value = "0.0",
-            message = "Maximum budget must be greater than or equal to 0"
+            message = "Maximum budget must be greater than 10,000 and not exceed 5,000,000 VND"
     )
     private BigDecimal maxBudget;
 

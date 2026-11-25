@@ -259,7 +259,8 @@ public class AuthenticationService {
     private void assertEmailNotTaken(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new AppException(
-                    ErrorCode.EMAIL_ALREADY_EXISTS
+                    ErrorCode.EMAIL_ALREADY_EXISTS,
+                    "email"
             );
         }
     }
@@ -366,7 +367,7 @@ public class AuthenticationService {
         User user = userRepository.findById(appUtil.userIdFromAuthentication())
                 .orElseThrow(UserNotFoundException::new);
         if (!passwordEncoder.matches(req.getCurrentPassword(), user.getPassword()))
-            throw new AppException(ErrorCodeAuth.WRONG_CURRENT_PASSWORD);
+            throw new AppException(ErrorCodeAuth.WRONG_CURRENT_PASSWORD, "currentPassword");
         user.setPassword(passwordEncoder.encode(req.getNewPassword()));
         changePasswordService.saveTokenInvalidationTimestamp(
                 user.getId().toString(), String.valueOf(Instant.now().toEpochMilli()));

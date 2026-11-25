@@ -59,14 +59,14 @@ public class EmailVerificationService {
     /** Tạo mã, lưu Redis rồi gửi về email. Không gửi nếu email đã có tài khoản. */
     public void sendCode(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
+            throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS, "email");
         }
         String key = normalize(email);
 
         // setIfAbsent là thao tác nguyên tử nên bấm gửi liên tục cũng chỉ qua được 1 lần
         Boolean acquired = redis.opsForValue().setIfAbsent(COOLDOWN_PREFIX + key, "1", resendCooldown);
         if (!Boolean.TRUE.equals(acquired)) {
-            throw new AppException(ErrorCodeAuth.VERIFICATION_RESEND_TOO_SOON);
+            throw new AppException(ErrorCodeAuth.VERIFICATION_RESEND_TOO_SOON, "email");
         }
 
         String code = String.format("%06d", random.nextInt(1_000_000));
@@ -88,7 +88,7 @@ public class EmailVerificationService {
         String key = normalize(email);
         String stored = redis.opsForValue().get(CODE_PREFIX + key);
         if (stored == null) {
-            throw new AppException(ErrorCodeAuth.VERIFICATION_CODE_EXPIRED);
+            throw new AppException(ErrorCodeAuth.VERIFICATION_CODE_EXPIRED, "verificationCode");
         }
 
         Long attempts = redis.opsForValue().increment(ATTEMPTS_PREFIX + key);
@@ -97,14 +97,14 @@ public class EmailVerificationService {
         }
         if (attempts != null && attempts > maxAttempts) {
             redis.delete(List.of(CODE_PREFIX + key, ATTEMPTS_PREFIX + key));
-            throw new AppException(ErrorCodeAuth.VERIFICATION_TOO_MANY_ATTEMPTS);
+            throw new AppException(ErrorCodeAuth.VERIFICATION_TOO_MANY_ATTEMPTS, "verificationCode");
         }
 
         boolean match = code != null && MessageDigest.isEqual(
                 stored.getBytes(StandardCharsets.UTF_8),
                 code.trim().getBytes(StandardCharsets.UTF_8));
         if (!match) {
-            throw new AppException(ErrorCodeAuth.VERIFICATION_CODE_INVALID);
+            throw new AppException(ErrorCodeAuth.VERIFICATION_CODE_INVALID, "verificationCode");
         }
     }
 
