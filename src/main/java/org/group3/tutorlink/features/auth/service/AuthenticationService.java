@@ -2,7 +2,6 @@ package org.group3.tutorlink.features.auth.service;
 
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.UploadMediaResponse;
 import org.group3.tutorlink.common.enums.MediaType;
@@ -11,6 +10,7 @@ import org.group3.tutorlink.common.exception.ErrorCode;
 import org.group3.tutorlink.common.logging.SystemLogPublisher;
 import org.group3.tutorlink.common.service.MediaStorageService;
 import org.group3.tutorlink.common.utils.AppUtil;
+import org.group3.tutorlink.features.application.matching.semantic.student.StudentProfileChangedEvent;
 import org.group3.tutorlink.features.auth.dto.request.*;
 import org.group3.tutorlink.features.auth.dto.response.AuthenticateResponse;
 import org.group3.tutorlink.features.auth.dto.response.IntrospectResponse;
@@ -99,6 +99,7 @@ public class AuthenticationService {
         student.setUserStatus(UserStatus.ACTIVE);
 
         studentRepository.save(student);
+        eventPublisher.publishEvent(StudentProfileChangedEvent.builder().studentId(student.getId()).build());
         emailVerificationService.invalidate(req.getEmail());
         systemLogPublisher.success(student.getId(), SystemAction.REGISTER,
                 User.class.getSimpleName(), student.getId(),

@@ -1,6 +1,7 @@
 package org.group3.tutorlink.features.chatbot.ranking;
 
 import lombok.RequiredArgsConstructor;
+import org.group3.tutorlink.common.geo.ProximityScorer;
 import org.group3.tutorlink.features.chatbot.ai.PostSearchFilters;
 import org.group3.tutorlink.features.chatbot.config.ChatbotProperties;
 import org.group3.tutorlink.features.chatbot.config.Scoring;
@@ -53,7 +54,7 @@ public class PostScorer {
 
         if (distanceKm != null) {
             // NaN = bài không phụ thuộc vị trí (dạy online / chưa có địa chỉ): được nửa điểm, không bị loại
-            double distanceScore = distanceKm.isNaN() ? w.getLocationFreeScore() : Math.max(0, 1 - distanceKm / radiusKm);
+            double distanceScore = distanceKm.isNaN() ? w.getLocationFreeScore() : ProximityScorer.score(distanceKm, radiusKm);
             total += w.getDistanceWeight() * distanceScore;
             weights += w.getDistanceWeight();
         }

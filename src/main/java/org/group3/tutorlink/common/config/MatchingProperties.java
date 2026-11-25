@@ -62,6 +62,15 @@ public class MatchingProperties {
     @Valid
     private Semantic semantic = new Semantic();
 
+    @Valid
+    private Area area = new Area();
+
+    @Valid
+    private TutorFeed tutorFeed = new TutorFeed();
+
+    @Valid
+    private StudentApplicant studentApplicant = new StudentApplicant();
+
     /** Trọng số của một tín hiệu; chưa cấu hình thì coi như 0 (tín hiệu không đóng góp). */
     public double weightOf(String signalKey) {
         return weights.getOrDefault(signalKey, 0.0);
@@ -123,5 +132,68 @@ public class MatchingProperties {
         public boolean isRangeValid() {
             return ceiling > floor;
         }
+    }
+
+    /** Khu vực nhận dạy của gia sư so với địa chỉ bài đăng, tính theo khoảng cách như chatbot. */
+    @Getter
+    @Setter
+    public static class Area {
+        /** Bán kính (km): gần hơn thì điểm cao hơn, từ bán kính trở ra là 0 điểm. */
+        @DecimalMin("1.0")
+        private double radiusKm = 10;
+
+        /** Xa hơn ngần này (km) hoặc khác tỉnh thì bị coi là AREA_MISMATCH. */
+        @DecimalMin("1.0")
+        private double farKm = 30;
+
+        /** Điểm (0..1) khi gia sư khai cả tỉnh/thành và bài nằm trong tỉnh đó. */
+        @DecimalMin("0.0")
+        private double sameProvinceScore = 0.6;
+    }
+
+    /** Gợi ý bài đăng FIND_STUDENT cho gia sư, xếp theo mức phù hợp với hồ sơ của họ. */
+    @Getter
+    @Setter
+    public static class TutorFeed {
+        /** Trọng số các tiêu chí (môn, cấp học, hình thức, lịch rảnh là hệ số phạt như phía học viên). */
+        @DecimalMin("0.0")
+        private double areaWeight = 40;
+        @DecimalMin("0.0")
+        private double priceWeight = 30;
+        @DecimalMin("0.0")
+        private double recencyWeight = 30;
+
+        /** Lấy bấy nhiêu bài mới nhất làm ứng viên trước khi chấm điểm. */
+        @Min(1)
+        private int candidatePoolSize = 200;
+
+        /** Điểm độ mới giảm một nửa sau bấy nhiêu ngày. */
+        @DecimalMin("0.1")
+        private double recencyHalfLifeDays = 14;
+
+        /** Số bài tối đa trả về mỗi lần. */
+        @Min(1)
+        private int maxLimit = 50;
+    }
+
+    /** Xếp hạng học viên ứng tuyển vào bài FIND_STUDENT của gia sư. */
+    @Getter
+    @Setter
+    public static class StudentApplicant {
+        @DecimalMin("0.0")
+        private double areaWeight = 30;
+        @DecimalMin("0.0")
+        private double levelWeight = 20;
+        @DecimalMin("0.0")
+        private double trustWeight = 20;
+        @DecimalMin("0.0")
+        private double profileWeight = 10;
+        /** Độ hợp ngữ nghĩa giữa bài đăng và hồ sơ học viên (vector). */
+        @DecimalMin("0.0")
+        private double semanticWeight = 20;
+
+        /** Số lớp đã theo đến cùng để đạt điểm tin cậy tối đa. */
+        @Min(1)
+        private int completedCap = 5;
     }
 }

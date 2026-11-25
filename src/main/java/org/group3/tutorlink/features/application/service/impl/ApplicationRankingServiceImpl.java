@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.config.MatchingProperties;
 import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.common.utils.AppUtil;
+import org.group3.tutorlink.features.application.dto.projection.StudentCountRow;
 import org.group3.tutorlink.features.application.dto.response.RankedApplicationsResponse;
 import org.group3.tutorlink.features.application.dto.response.ScoredApplicationResponse;
 import org.group3.tutorlink.features.application.entity.Application;
@@ -13,6 +14,7 @@ import org.group3.tutorlink.features.application.enums.MatchWarning;
 import org.group3.tutorlink.features.application.exception.ErrorCodeApplication;
 import org.group3.tutorlink.features.application.mapper.ApplicationMapper;
 import org.group3.tutorlink.features.application.matching.scoring.*;
+import org.group3.tutorlink.features.application.matching.semantic.student.StudentSemanticMatcher;
 import org.group3.tutorlink.features.application.matching.signal.MatchContext;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
 import org.group3.tutorlink.features.application.service.ApplicationRankingService;
@@ -26,7 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -45,29 +49,35 @@ public class ApplicationRankingServiceImpl implements ApplicationRankingService 
     private final WeightedScorer weightedScorer;
     private final MismatchPenaltyPolicy penaltyPolicy;
     private final AppUtil appUtil;
+    private final StudentApplicantScorer studentScorer;
+    private final StudentSemanticMatcher studentSemanticMatcher;
 
 
+    // Học viên xếp gia sư ứng tuyển bài FIND_TUTOR; gia sư xếp học viên ứng tuyển bài FIND_STUDENT
     @Override
-    @PreAuthorize("hasAuthority('STUDENT')")
+    @PreAuthorize("hasAnyAuthority('STUDENT','TUTOR')")
     public RankedApplicationsResponse rankApplications(UUID postId) {
 
         Post post = loadPostOwnedByCurrentUser(postId);
+        boolean findStudent = post.getType() == PostType.FIND_STUDENT;
 
-        List<Application> applications = applicationRepository
-                .findWithTutorByPostIdAndStatus(postId, ApplicationStatus.PENDING);
+        List<Application> applications = findStudent
+                ? applicationRepository.findWithStudentByPostIdAndStatus(postId, ApplicationStatus.PENDING)
+                : applicationRepository.findWithTutorByPostIdAndStatus(postId, ApplicationStatus.PENDING);
 
         if (applications.size() <= properties.getTopN()) {
             return buildUnranked(applications);
         }
-        return buildRanked(post, applications);
+        return findStudent ? buildRankedStudents(post, applications) : buildRanked(post, applications);
     }
 
+    // Chỉ chủ bài mới xem: bài FIND_TUTOR của học viên, bài FIND_STUDENT của gia sư
     private Post loadPostOwnedByCurrentUser(UUID postId) {
         UUID userId = appUtil.userIdFromAuthentication();
         Post post = postRepository.findById(postId)
                 .orElseThrow(PostNotFoundException::new);
 
-        if (post.getType() != PostType.FIND_TUTOR) {
+        if (post.getType() != PostType.FIND_TUTOR && post.getType() != PostType.FIND_STUDENT) {
             log.error("User {} tried to rank applications for post {} of type {}", userId, postId, post.getType());
             throw new AppException(ErrorCodeApplication.POST_NOT_AVAILABLE);
         }
@@ -103,6 +113,38 @@ public class ApplicationRankingServiceImpl implements ApplicationRankingService 
                 .top(sorted.subList(0, topN))
                 .others(sorted.subList(topN, sorted.size()))
                 .build();
+    }
+
+    private RankedApplicationsResponse buildRankedStudents(Post post, List<Application> applications) {
+        int topN = properties.getTopN();
+        List<UUID> studentIds = applications.stream().map(a -> a.getStudent().getId()).distinct().toList();
+        Map<UUID, Long> completed = applicationRepository
+                .countByStudentIdsAndStatuses(studentIds, List.of(ApplicationStatus.CONFIRMED, ApplicationStatus.FINISHED))
+                .stream()
+                .collect(Collectors.toMap(StudentCountRow::getStudentId, StudentCountRow::getCnt, Long::sum));
+
+        Map<UUID, Double> semantic = scoreSemantically(post, studentIds);
+
+        List<ScoredApplicationResponse> sorted = applications.stream()
+                .map(application -> studentScorer.score(post, application, completed, semantic))
+                .sorted(BY_SCORE_DESC_THEN_APPLIED_AT)
+                .map(this::toResponse)
+                .toList();
+
+        return RankedApplicationsResponse.builder()
+                .ranked(true)
+                .top(sorted.subList(0, topN))
+                .others(sorted.subList(topN, sorted.size()))
+                .build();
+    }
+
+    private Map<UUID, Double> scoreSemantically(Post post, List<UUID> studentIds) {
+        try {
+            return studentSemanticMatcher.score(post, studentIds);
+        } catch (RuntimeException e) {
+            log.warn("Student semantic matching unavailable, fallback to rule-based ranking: {}", e.getMessage());
+            return Map.of();
+        }
     }
 
     private ScoredCandidate evaluate(MatchContext context, Application application) {

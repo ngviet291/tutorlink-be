@@ -7,7 +7,8 @@ import java.util.UUID;
 public interface ApplicationRankingService {
 
     /**
-     * Xếp hạng các gia sư đang ứng tuyển (PENDING) vào bài đăng FIND_TUTOR.
+     * Xếp hạng các đơn đang chờ (PENDING) vào bài đăng của người gọi:
+     * gia sư ứng tuyển bài FIND_TUTOR (học viên xem) hoặc học viên ứng tuyển bài FIND_STUDENT (gia sư xem).
      * Chỉ tác giả bài đăng được gọi.
      */
     RankedApplicationsResponse rankApplications(UUID postId);
