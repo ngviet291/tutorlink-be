@@ -12,6 +12,7 @@ package org.group3.tutorlink.features.application.repository;
  * @version:     1.0
  * @date: 29/09/2026 14:57
  */
+import org.group3.tutorlink.features.application.dto.projection.StudentCountRow;
 import org.group3.tutorlink.features.application.dto.projection.TutorAcceptedRow;
 import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
@@ -316,4 +317,30 @@ public interface ApplicationRepository
             WHERE a.applicationStatus = :status
             """)
     List<Application> findAllByApplicationStatus(@Param("status") ApplicationStatus status);
+
+    // Các bài gia sư đã ứng tuyển (mọi trạng thái), để không gợi ý lại
+    @Query("SELECT a.post.id FROM Application a WHERE a.tutor.id = :tutorId")
+    List<UUID> findPostIdsByTutorId(@Param("tutorId") UUID tutorId);
+
+    // Học viên ứng tuyển vào bài FIND_STUDENT của gia sư
+    @Query("""
+            SELECT a FROM Application a
+            JOIN FETCH a.student s
+            WHERE a.post.id = :postId
+              AND a.applicationStatus = :status
+            """)
+    List<Application> findWithStudentByPostIdAndStatus(
+            @Param("postId") UUID postId,
+            @Param("status") ApplicationStatus status);
+
+    // Số lớp học viên đã theo đến cùng (đã xác nhận hoặc hoàn tất), dùng làm điểm tin cậy
+    @Query("""
+            SELECT a.student.id AS studentId, COUNT(a) AS cnt
+            FROM Application a
+            WHERE a.student.id IN :studentIds
+              AND a.applicationStatus IN :statuses
+            GROUP BY a.student.id
+            """)
+    List<StudentCountRow> countByStudentIdsAndStatuses(@Param("studentIds") Collection<UUID> studentIds,
+                                                       @Param("statuses") Collection<ApplicationStatus> statuses);
 }

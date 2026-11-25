@@ -38,8 +38,6 @@ public interface UserMapper {
     @Mapping(target = "receivedChannels", ignore = true)
     @Mapping(target = "reviews", ignore = true)
     @Mapping(target = "applications", ignore = true)
-    @Mapping(target = "learningGoal", ignore = true)
-    @Mapping(target = "grade", ignore = true)
     Student toStudent(RegisterStudentRequest request);
 
     @Mapping(target = "id", ignore = true)

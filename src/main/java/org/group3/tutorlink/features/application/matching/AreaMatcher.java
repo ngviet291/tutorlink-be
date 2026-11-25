@@ -97,6 +97,33 @@ public class AreaMatcher {
         return Optional.empty();
     }
 
+    /**
+     * Khoảng cách từ một địa chỉ (ví dụ nhà học viên) tới nơi học của bài đăng, cùng công thức với khu vực gia sư.
+     * Chỉ xét bài học trực tiếp; thiếu dữ liệu hoặc không tra được vị trí thì rỗng (trung tính).
+     */
+    public Optional<AreaFit> evaluate(Address from, Post post) {
+        Address to = post.getAddress();
+        if (post.getTeachingMode() != TeachingMode.OFFLINE || from == null || to == null
+                || !StringUtils.hasText(from.getProvince()) || !StringUtils.hasText(to.getProvince())) {
+            return Optional.empty();
+        }
+        MatchingProperties.Area config = properties.getArea();
+        GeoPoint a = wardLocations.findWard(from.getProvince(), from.getWard()).orElse(null);
+        GeoPoint b = wardLocations.findWard(to.getProvince(), to.getWard()).orElse(null);
+        if (a != null && b != null) {
+            double km = GeoUtils.distanceKm(a, b);
+            return Optional.of(new AreaFit(ProximityScorer.score(km, config.getRadiusKm()), km > config.getFarKm()));
+        }
+        GeoPoint fromProvince = wardLocations.findProvince(aliases.province(from.getProvince())).orElse(null);
+        GeoPoint toProvince = wardLocations.findProvince(aliases.province(to.getProvince())).orElse(null);
+        if (fromProvince == null || toProvince == null) {
+            return Optional.empty();
+        }
+        boolean same = fromProvince.getLatitude() == toProvince.getLatitude()
+                && fromProvince.getLongitude() == toProvince.getLongitude();
+        return Optional.of(same ? new AreaFit(config.getSameProvinceScore(), false) : new AreaFit(0.0, true));
+    }
+
     private boolean sameProvince(GeoPoint areaProvince, String postProvince) {
         return wardLocations.findProvince(aliases.province(postProvince))
                 .map(p -> p.getLatitude() == areaProvince.getLatitude()

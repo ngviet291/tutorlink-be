@@ -83,8 +83,10 @@ import java.util.UUID;
  * Tài khoản demo:
  * ADMIN   : admin@gmail.com                              / Admin@123
  * STUDENT : student@gmail.com, student2..9@gmail.com     / Student@123
- *           match.student1..2@gmail.com (dữ liệu test xếp hạng) / Student@123
+ *           match.student1..20@gmail.com (dữ liệu test xếp hạng) / Student@123
  * TUTOR   : tutor@gmail.com,   tutor2..11@gmail.com      / Tutor@123
+ *           (tutor@gmail.com là chủ bài FIND_STUDENT có 12 học viên ứng tuyển, dùng test gia sư xếp hạng học viên;
+ *            match.tutor14 và match.tutor19 cũng có bài, xem _meta.matchingTest.tutorSide)
  *           match.tutor1..20@gmail.com (dữ liệu test xếp hạng)  / Tutor@123
  * <p>
  * Lưu ý: createdAt/updatedAt dùng @CreationTimestamp/@UpdateTimestamp nên Hibernate sẽ ghi đè
