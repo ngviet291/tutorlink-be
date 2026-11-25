@@ -23,10 +23,11 @@ public class ExpectedFeeResolver {
         if (application.getProposedFee() != null) {
             return Optional.of(application.getProposedFee());
         }
-        return convertHourlyRate(application.getTutor().getHourlyRate(), post);
+        return fromHourlyRate(application.getTutor().getHourlyRate(), post);
     }
 
-    private Optional<BigDecimal> convertHourlyRate(BigDecimal hourlyRate, Post post) {
+    /** Quy phí theo giờ về đơn vị học phí của bài đăng; thiếu dữ liệu để quy đổi thì rỗng. */
+    public Optional<BigDecimal> fromHourlyRate(BigDecimal hourlyRate, Post post) {
         if (hourlyRate == null) return Optional.empty();
 
         BudgetUnit unit = post.getBudgetUnit();

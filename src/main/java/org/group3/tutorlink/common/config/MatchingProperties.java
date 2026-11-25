@@ -66,7 +66,7 @@ public class MatchingProperties {
     private Area area = new Area();
 
     @Valid
-    private TutorFeed tutorFeed = new TutorFeed();
+    private PostFeed postFeed = new PostFeed();
 
     @Valid
     private StudentApplicant studentApplicant = new StudentApplicant();
@@ -151,18 +151,13 @@ public class MatchingProperties {
         private double sameProvinceScore = 0.6;
     }
 
-    /** Gợi ý bài đăng FIND_STUDENT cho gia sư, xếp theo mức phù hợp với hồ sơ của họ. */
+    /**
+     * Gợi ý bài đăng phù hợp nhất cho người dùng hiện tại (GET /v1/posts/me/recommended):
+     * gia sư nhận bài FIND_TUTOR, học viên nhận bài FIND_STUDENT.
+     */
     @Getter
     @Setter
-    public static class TutorFeed {
-        /** Trọng số các tiêu chí (môn, cấp học, hình thức, lịch rảnh là hệ số phạt như phía học viên). */
-        @DecimalMin("0.0")
-        private double areaWeight = 40;
-        @DecimalMin("0.0")
-        private double priceWeight = 30;
-        @DecimalMin("0.0")
-        private double recencyWeight = 30;
-
+    public static class PostFeed {
         /** Lấy bấy nhiêu bài mới nhất làm ứng viên trước khi chấm điểm. */
         @Min(1)
         private int candidatePoolSize = 200;
@@ -171,9 +166,53 @@ public class MatchingProperties {
         @DecimalMin("0.1")
         private double recencyHalfLifeDays = 14;
 
+        /** Số bài trả về khi người dùng không truyền limit. */
+        @Min(1)
+        private int defaultLimit = 10;
+
         /** Số bài tối đa trả về mỗi lần. */
         @Min(1)
         private int maxLimit = 50;
+
+        @Valid
+        private TutorWeights tutor = new TutorWeights();
+
+        @Valid
+        private StudentWeights student = new StudentWeights();
+    }
+
+    /** Trọng số chấm bài FIND_TUTOR cho gia sư (cấp học, hình thức, lịch rảnh là hệ số phạt). */
+    @Getter
+    @Setter
+    public static class TutorWeights {
+        @DecimalMin("0.0")
+        private double semanticWeight = 30;
+        @DecimalMin("0.0")
+        private double areaWeight = 25;
+        @DecimalMin("0.0")
+        private double priceWeight = 25;
+        @DecimalMin("0.0")
+        private double recencyWeight = 20;
+    }
+
+    /** Trọng số chấm bài FIND_STUDENT cho học viên (cấp học và khu vực xa còn là hệ số phạt). */
+    @Getter
+    @Setter
+    public static class StudentWeights {
+        @DecimalMin("0.0")
+        private double semanticWeight = 25;
+        @DecimalMin("0.0")
+        private double areaWeight = 20;
+        @DecimalMin("0.0")
+        private double levelWeight = 20;
+        /** Bài thuộc môn học viên từng đăng tìm gia sư. */
+        @DecimalMin("0.0")
+        private double subjectWeight = 15;
+        /** Rating Bayesian của gia sư đăng bài. */
+        @DecimalMin("0.0")
+        private double ratingWeight = 10;
+        @DecimalMin("0.0")
+        private double recencyWeight = 10;
     }
 
     /** Xếp hạng học viên ứng tuyển vào bài FIND_STUDENT của gia sư. */

@@ -16,7 +16,8 @@ public enum PostResponseCode implements ResponseCode {
     GET_POSTS_BY_STATUS("POST_200", "Posts by status retrieved successfully"),
     GET_STATISTICS_BY_STATUS("POST_200", "Statistics by status retrieved successfully"),
     GET_POST_ADMIN("POST_200", "Post retrieved successfully for admin"),
-    GET_POST_APPLICATIONS("POST_200", "Post applications retrieved successfully");
+    GET_POST_APPLICATIONS("POST_200", "Post applications retrieved successfully"),
+    GET_RECOMMENDED_POSTS("POST_200", "Recommended posts retrieved successfully");
     private final String code;
     private final String message;
 

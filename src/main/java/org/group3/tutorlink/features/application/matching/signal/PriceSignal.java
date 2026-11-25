@@ -34,7 +34,8 @@ public class PriceSignal implements MatchSignal {
         return OptionalDouble.of(fit(fee.get().doubleValue(), post.getMinBudget(), post.getMaxBudget(), cfg));
     }
 
-    private double fit(double fee, BigDecimal min, BigDecimal max, MatchingProperties.Price cfg) {
+    /** Độ khớp giữa mức phí và khoảng ngân sách (0..1); dùng chung cho xếp hạng ứng viên và gợi ý bài đăng. */
+    public static double fit(double fee, BigDecimal min, BigDecimal max, MatchingProperties.Price cfg) {
         double lo = min != null ? min.doubleValue() : 0;
         double hi = max != null ? max.doubleValue() : Double.MAX_VALUE;
 
