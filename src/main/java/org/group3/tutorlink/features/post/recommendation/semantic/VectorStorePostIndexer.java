@@ -21,7 +21,7 @@ public class VectorStorePostIndexer implements PostVectorIndexer {
     private final PostQueryTextBuilder textBuilder;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public void index(UUID postId) {
         // findByIdForVisibilityCheck bỏ qua bài REMOVED nên bài đã gỡ sẽ rơi vào nhánh xóa
         postRepository.findByIdForVisibilityCheck(postId)
