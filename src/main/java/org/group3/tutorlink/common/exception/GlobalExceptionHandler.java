@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -42,7 +44,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex, HttpServletRequest request) {
-
+        log.error("Unhandled exception at [{} {}]", request.getMethod(), request.getRequestURI(), ex);
         ErrorResponse response = ErrorResponse.builder()
                 .status(ErrorCode.UNCATEGORIZED_EXCEPTION.getHttpStatus().value())
                 .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
@@ -319,5 +321,33 @@ public class GlobalExceptionHandler {
 
 
         return ResponseEntity.status(errorCode.getHttpStatus()).body(response);
+    }
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotSupported(
+            HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
+        log.warn("Method {} not supported at [{}], supported: {}",
+                ex.getMethod(), request.getRequestURI(), ex.getSupportedHttpMethods());
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(Instant.now())
+                .status(HttpStatus.METHOD_NOT_ALLOWED.value())
+                .error(HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase())
+                .message("Method " + ex.getMethod() + " is not supported. Supported: "
+                        + ex.getSupportedHttpMethods())
+                .path(request.getRequestURI())
+                .build();
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResource(
+            NoResourceFoundException ex, HttpServletRequest request) {
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(Instant.now())
+                .status(HttpStatus.NOT_FOUND.value())
+                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
+                .message("Endpoint not found")
+                .path(request.getRequestURI())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 }

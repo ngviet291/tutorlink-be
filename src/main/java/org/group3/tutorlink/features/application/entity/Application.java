@@ -59,7 +59,6 @@ public class Application extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tutor_id")
     private Tutor tutor;
-
     // Application n -- 1 Admin (accepts / processes), optional
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "processed_by_admin_id")

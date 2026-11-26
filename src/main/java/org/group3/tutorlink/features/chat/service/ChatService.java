@@ -20,6 +20,7 @@ import org.group3.tutorlink.features.chat.exception.ChatErrorCode;
 import org.group3.tutorlink.features.chat.mapper.ChatMapper;
 import org.group3.tutorlink.features.chat.repository.ChatChannelRepository;
 import org.group3.tutorlink.features.chat.repository.MessageRepository;
+import org.group3.tutorlink.features.notification.service.NotificationHelper;
 import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
@@ -30,6 +31,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.group3.tutorlink.features.notification.enums.NotificationMessage;
+import org.group3.tutorlink.features.notification.enums.NotificationTarget;
 
 import java.time.Instant;
 import java.util.*;
@@ -46,6 +49,7 @@ public class ChatService {
     private final ChatMapper chatMapper;
     private static final int MAX_PAGE_SIZE = 50;
     private final ApplicationEventPublisher eventPublisher;
+    private final NotificationHelper notificationHelper;
 
     @Transactional
     public MessageResponse sendMessage(SendMessageRequest req) {
@@ -86,10 +90,18 @@ public class ChatService {
                 message.getMediaList().add(media);
             });
         }
-
+        boolean receiverHadUnread = messageRepository
+                .countUnreadByChannels(List.of(channel.getId()), receiver.getId())
+                .stream()
+                .anyMatch(v -> v.getTotal() > 0);
         messageRepository.save(message);
 
         channel.setLastMessageAt(now);
+        if (!receiverHadUnread) {
+            notificationHelper.notify(receiver, NotificationMessage.NEW_MESSAGE,
+                    NotificationTarget.CHAT, channel.getId(),
+                    sender.getFullName(), previewOf(req));
+        }
         chatChannelRepository.save(channel);
 
         MessageResponse response = chatMapper.toMessageResponse(message);
@@ -262,5 +274,13 @@ public class ChatService {
 
     private int normalizeSize(int size) {
         return Math.clamp(size, 1, MAX_PAGE_SIZE);
+    }
+    private String previewOf(SendMessageRequest req) {
+        String content = req.getContent();
+        if (content == null || content.isBlank()) {
+            return "[Tệp đính kèm]";
+        }
+        content = content.strip();
+        return content.length() > 80 ? content.substring(0, 80) + "…" : content;
     }
 }

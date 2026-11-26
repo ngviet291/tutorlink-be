@@ -42,6 +42,8 @@ import org.group3.tutorlink.features.payment.repository.WalletRepository;
 import org.group3.tutorlink.features.payment.service.PaymentService;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.BudgetUnit;
+import org.group3.tutorlink.features.post.enums.PostStatus;
+import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.user.entity.Admin;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.repository.AdminRepository;
@@ -71,7 +73,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private static final int COMMISSION_AMOUNT_SCALE = 2;
     private static final int FEE_CONFIG_LOOKAHEAD_YEARS = 100;
-    private static final String TOP_UP_DESCRIPTION = "Nap tiền vào ví";
+    private static final String TOP_UP_DESCRIPTION = "Nạp tiền vào ví";
 
     @Value("${payment.pagination.default-limit:10}")
     private int defaultLimit;
@@ -281,7 +283,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new AppException(PaymentErrorCode.APPLICATION_NOT_PAYABLE);
         }
 
-        BigDecimal amount = calculateCommission(application.getPost());
+        BigDecimal amount = calculateCommission(application);
 
         // Khóa ví trước để các lần thanh toán của cùng 1 tutor được xử lý tuần tự
         Wallet wallet = getOrCreateWalletForUpdate(tutorId);
@@ -327,10 +329,33 @@ public class PaymentServiceImpl implements PaymentService {
         // Học viên của đơn: kênh chat vừa được mở
         notificationHelper.notify(application.getStudent(), NotificationMessage.FEE_PAID_STUDENT,
                 NotificationTarget.CHAT, null, postTitle);
-        // Người ứng tuyển cần xác nhận lớp
-        notificationHelper.notify(ApplicationParties.applicantOf(application),
-                NotificationMessage.APPLICATION_CONFIRM_REQUIRED,
-                NotificationTarget.MY_APPLICATIONS, null, postTitle);
+        boolean autoConfirm = applicationStatus == ApplicationStatus.ACCEPTED
+                && application.getPost().getType() == PostType.FIND_TUTOR;
+        if (autoConfirm) {
+            application.setApplicationStatus(ApplicationStatus.CONFIRMED);
+            application.setConfirmedAt(Instant.now());
+            application.getPost().setStatus(PostStatus.CLOSED);
+            applicationRepository.save(application);
+            UUID appId = application.getId();
+            afterCommit.run(() -> {
+                try {
+                    expiryQueue.cancel(ApplicationExpiryQueue.Stage.PAYMENT, appId);
+                    expiryQueue.cancel(ApplicationExpiryQueue.Stage.CONFIRM, appId);
+                } catch (Exception e) {
+                    log.warn("Failed to cancel expiry for application {}", appId, e);
+                }
+            });
+            // Chủ bài (học viên) biết lớp đã được chốt
+            notificationHelper.notify(application.getPost().getAuthor(),
+                    NotificationMessage.APPLICATION_CONFIRMED,
+                    NotificationTarget.POST, application.getPost().getId(),
+                    wallet.getTutor().getFullName(), postTitle);
+        } else {
+            // Người ứng tuyển cần xác nhận lớp
+            notificationHelper.notify(ApplicationParties.applicantOf(application),
+                    NotificationMessage.APPLICATION_CONFIRM_REQUIRED,
+                    NotificationTarget.MY_APPLICATIONS, null, postTitle);
+        }
         // Gia sư được chọn đã trả phí -> lúc này các ứng viên còn lại mới bị loại
         if (applicationStatus == ApplicationStatus.ACCEPTED) {
             rejectOtherPendingApplications(application);
@@ -546,14 +571,16 @@ public class PaymentServiceImpl implements PaymentService {
             throw new AppException(PaymentErrorCode.NOT_APPLICATION_TUTOR);
         }
         Post post = application.getPost();
-        BigDecimal baseBudget = post.getMaxBudget() != null ? post.getMaxBudget() : post.getMinBudget();
-        BigDecimal pricePerSession = convertToPerSession(baseBudget, post);
+        BigDecimal pricePerSession =
+                convertToPerSession(resolveBaseAmount(application), post);
+        BigDecimal rate = currentFeeRate();
 
         return FeeQuoteResponse.builder()
                 .applicationId(applicationId)
                 .baseAmount(pricePerSession)
-                .feeRate(commissionRate)
-                .feeAmount(calculateCommission(post))
+                .feeRate(rate)
+                .feeAmount(pricePerSession.multiply(rate)
+                        .setScale(COMMISSION_AMOUNT_SCALE, RoundingMode.HALF_UP))
                 .build();
     }
 
@@ -584,16 +611,38 @@ public class PaymentServiceImpl implements PaymentService {
         return application.getPost().getAuthor().getId();
     }
 
-    private BigDecimal calculateCommission(Post post) {
-        BigDecimal baseBudget = post.getMaxBudget() != null ? post.getMaxBudget() : post.getMinBudget();
+    private BigDecimal calculateCommission(Application application) {
+        BigDecimal pricePerSession =
+                convertToPerSession(resolveBaseAmount(application), application.getPost());
+        return pricePerSession.multiply(currentFeeRate())
+                .setScale(COMMISSION_AMOUNT_SCALE, RoundingMode.HALF_UP);
+    }
 
-        if (baseBudget == null || baseBudget.signum() <= 0) {
+    // Ưu tiên mức đề xuất của ứng viên; không có thì mới lấy ngân sách bài đăng
+    private BigDecimal resolveBaseAmount(Application application) {
+        BigDecimal proposed = application.getProposedFee();
+        if (proposed != null && proposed.signum() > 0) {
+            return proposed;
+        }
+        Post post = application.getPost();
+        BigDecimal budget = post.getMaxBudget() != null ? post.getMaxBudget() : post.getMinBudget();
+        if (budget == null || budget.signum() <= 0) {
             throw new AppException(PaymentErrorCode.POST_BUDGET_MISSING);
         }
+        return budget;
+    }
 
-        BigDecimal pricePerSession = convertToPerSession(baseBudget, post);
-
-        return pricePerSession.multiply(commissionRate).setScale(COMMISSION_AMOUNT_SCALE, RoundingMode.HALF_UP);
+    // Tỉ lệ đang hiệu lực trong bảng cấu hình; chưa có cấu hình nào thì dùng giá trị mặc định trong properties
+    private BigDecimal currentFeeRate() {
+        List<MatchingFeeConfig> latest =
+                feeConfigRepository.findLatestEffective(Instant.now(), PageRequest.of(0, 1));
+        if (latest.isEmpty()) {
+            return commissionRate;
+        }
+        BigDecimal rate = BigDecimal.valueOf(latest.get(0).getFeePercentage());
+        return rate.compareTo(BigDecimal.ONE) > 0
+                ? rate.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP)
+                : rate;
     }
 
     private BigDecimal convertToPerSession(BigDecimal budget, Post post) {
@@ -704,7 +753,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     @PreAuthorize("hasAuthority('TUTOR')")
     public TransactionResponse updateWithdrawal(UUID transactionId,
-            org.group3.tutorlink.features.payment.dto.request.UpdateWithdrawalRequest request) {
+                                                org.group3.tutorlink.features.payment.dto.request.UpdateWithdrawalRequest request) {
         Transaction transaction = transactionRepository.findForUpdateById(transactionId)
                 .orElseThrow(() -> new AppException(PaymentErrorCode.TRANSACTION_NOT_FOUND));
 

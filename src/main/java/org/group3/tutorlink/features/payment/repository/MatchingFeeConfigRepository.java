@@ -38,4 +38,11 @@ public interface MatchingFeeConfigRepository extends JpaRepository<MatchingFeeCo
     List<MatchingFeeConfig> findOverlappingConfigs(
             @Param("startDate") Instant startDate,
             @Param("endDate") Instant endDate);
+    // Cấu hình mới nhất đã tới ngày hiệu lực. Không lọc effectiveTo để tránh khoảng trống giữa hai cấu hình.
+    @Query("""
+            SELECT fc FROM MatchingFeeConfig fc
+            WHERE fc.effectiveFrom <= :now
+            ORDER BY fc.effectiveFrom DESC
+            """)
+    List<MatchingFeeConfig> findLatestEffective(@Param("now") Instant now, Pageable pageable);
 }

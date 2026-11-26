@@ -9,7 +9,8 @@ import org.group3.tutorlink.common.enums.ResponseCode;
 public enum ReviewResponseCode implements ResponseCode {
     REVIEW_CREATED("REVIEW_201", "Review created successfully"),
     REVIEWS_RETRIEVED("REVIEW_200", "Reviews retrieved successfully"),
-    REVIEW_FOUND("REVIEW_200", "Review retrieved successfully");
+    REVIEW_FOUND("REVIEW_200", "Review retrieved successfully"),
+    REVIEW_UPDATED("REVIEW_200", "Review updated successfully");;
 
     private final String code;
     private final String message;

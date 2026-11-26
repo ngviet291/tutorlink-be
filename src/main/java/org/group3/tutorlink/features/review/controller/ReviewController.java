@@ -9,6 +9,7 @@ import org.group3.tutorlink.common.dto.response.CursorResponse;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.features.review.dto.request.CreateReviewRequest;
 import org.group3.tutorlink.features.review.dto.request.CreateReviewComplaintRequest;
+import org.group3.tutorlink.features.review.dto.request.UpdateReviewRequest;
 import org.group3.tutorlink.features.review.dto.response.ReviewComplaintResponse;
 import org.group3.tutorlink.features.review.service.ReviewComplaintService;
 import org.group3.tutorlink.features.review.dto.response.ReviewResponse;
@@ -17,14 +18,7 @@ import org.group3.tutorlink.features.review.enums.ReviewResponseCode;
 import org.group3.tutorlink.features.review.service.ReviewService;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -57,7 +51,16 @@ public class ReviewController {
                 .data(reviewService.createReview(request))
                 .build();
     }
-
+    @PutMapping("/{reviewId}")
+    public ApiResponse<ReviewResponse> updateReview(
+            @PathVariable UUID reviewId,
+            @Valid @RequestBody UpdateReviewRequest request) {
+        return ApiResponse.<ReviewResponse>builder()
+                .code(ReviewResponseCode.REVIEW_FOUND.getCode())
+                .message(ReviewResponseCode.REVIEW_FOUND.getMessage())
+                .data(reviewService.updateReview(reviewId, request))
+                .build();
+    }
     @GetMapping
     public ApiResponse<CursorResponse<ReviewResponse>> getReviews(
             @RequestParam @NotNull UUID tutorId,

@@ -73,8 +73,12 @@ public enum NotificationMessage {
 
     // 2.10 Chứng chỉ AI không duyệt được, chuyển admin duyệt tay
     CERTIFICATE_SENT_TO_ADMIN(NotificationType.SYSTEM),
-    CERTIFICATE_REVIEW_NEEDED_ADMIN(NotificationType.SYSTEM);
+    CERTIFICATE_REVIEW_NEEDED_ADMIN(NotificationType.SYSTEM),
+    // 2.11 Chat
+    NEW_MESSAGE(NotificationType.SYSTEM),
+    REVIEW_UPDATED(NotificationType.SYSTEM)
 
+    ;
     private final NotificationType type;
 
     /** Khóa trong messages.properties: TOP_UP_SUCCESS -> top-up-success */

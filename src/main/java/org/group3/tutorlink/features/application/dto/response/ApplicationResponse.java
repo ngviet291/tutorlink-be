@@ -43,7 +43,6 @@ public class ApplicationResponse {
 
     // Thời điểm chủ bài chọn đơn này (ACCEPTED); null nếu chưa select hoặc đã revert
     private Instant selectedAt;
-
     // Hạn cuối của bước đang chờ, để FE đếm ngược:
     // - ACCEPTED + đã trả phí (transaction SUCCESS) -> transactionDate + confirm-window (W2, chờ applicant confirm)
     // - ACCEPTED + chưa trả -> selectedAt + payment-window (W1, chờ tutor thanh toán)

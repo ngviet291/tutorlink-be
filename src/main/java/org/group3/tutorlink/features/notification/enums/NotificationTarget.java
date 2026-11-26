@@ -21,6 +21,8 @@ public enum NotificationTarget {
     ADMIN_COMPLAINTS,
     /** Trang duyệt hồ sơ gia sư (admin) */
     ADMIN_TUTORS,
+    /** Đánh giá */
+    REVIEW,
     /** Không điều hướng */
     NONE
 }

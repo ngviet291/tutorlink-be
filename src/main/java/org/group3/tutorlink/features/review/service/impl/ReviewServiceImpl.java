@@ -2,6 +2,8 @@ package org.group3.tutorlink.features.review.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
+import org.group3.tutorlink.common.exception.AccessDeniedException;
+import org.group3.tutorlink.common.exception.AppException;
 import org.group3.tutorlink.common.utils.AppUtil;
 import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.application.enums.ApplicationStatus;
@@ -11,13 +13,11 @@ import org.group3.tutorlink.features.notification.enums.NotificationMessage;
 import org.group3.tutorlink.features.notification.enums.NotificationTarget;
 import org.group3.tutorlink.features.notification.service.NotificationHelper;
 import org.group3.tutorlink.features.review.dto.request.CreateReviewRequest;
+import org.group3.tutorlink.features.review.dto.request.UpdateReviewRequest;
 import org.group3.tutorlink.features.review.dto.response.ReviewResponse;
 import org.group3.tutorlink.features.review.entity.Review;
-import org.group3.tutorlink.features.review.exception.ReviewAccessDeniedException;
-import org.group3.tutorlink.features.review.exception.ReviewAlreadyExistsException;
-import org.group3.tutorlink.features.review.exception.ReviewApplicationNotFoundException;
-import org.group3.tutorlink.features.review.exception.ReviewInvalidApplicationException;
-import org.group3.tutorlink.features.review.exception.ReviewNotFoundException;
+import org.group3.tutorlink.features.review.enums.ComplaintStatus;
+import org.group3.tutorlink.features.review.exception.*;
 import org.group3.tutorlink.features.review.mapper.ReviewMapper;
 import org.group3.tutorlink.features.review.repository.ReviewComplaintRepository;
 import org.group3.tutorlink.features.review.repository.ReviewRepository;
@@ -90,11 +90,35 @@ public class ReviewServiceImpl implements ReviewService {
                 .build();
         Review saved = reviewRepository.save(review);
 
-        // Tính lại điểm trung bình (query tự flush review vừa lưu trước khi chạy)
-        Double avg = reviewRepository.averageRatingByTutorId(applicationTutor.getId());
-        applicationTutor.setAverageRating(avg == null ? 0.0 : Math.round(avg * 100.0) / 100.0);
+        updateTutorAverageRating(applicationTutor);
         notificationHelper.notify(applicationTutor, NotificationMessage.REVIEW_RECEIVED,
-                NotificationTarget.TUTOR_PROFILE, null, student.getFullName(), request.getRating());
+                NotificationTarget.REVIEW, saved.getId(),
+                student.getFullName(), request.getRating());
+        return reviewMapper.toResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public ReviewResponse updateReview(UUID reviewId, UpdateReviewRequest req) {
+        UUID userId = appUtil.userIdFromAuthentication();
+
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(ReviewNotFoundException::new);
+
+        if (!review.getStudent().getId().equals(userId)) {
+            throw new AccessDeniedException(ReviewErrorCode.NOT_REVIEW_OWNER);
+        }
+        if (complaintRepository.existsByReview_Id(reviewId)) {
+            throw new AppException(ReviewErrorCode.REVIEW_LOCKED);
+        }
+
+        review.setRating(req.getRating());
+        review.setComment(req.getComment());
+        Review saved = reviewRepository.save(review);
+        updateTutorAverageRating(saved.getTutor());
+        notificationHelper.notify(saved.getTutor(), NotificationMessage.REVIEW_UPDATED,
+                NotificationTarget.REVIEW, saved.getId(),
+                saved.getStudent().getFullName(), saved.getRating());
         return reviewMapper.toResponse(saved);
     }
 
@@ -130,9 +154,14 @@ public class ReviewServiceImpl implements ReviewService {
                 .map(reviewMapper::toResponse)
                 .orElseThrow(ReviewNotFoundException::new);
     }
+
     @Override
     @Transactional(readOnly = true)
     public boolean existsByApplicationId(UUID applicationId) {
         return reviewRepository.existsByApplicationId(applicationId);
+    }
+    private void updateTutorAverageRating(Tutor tutor) {
+        Double avg = reviewRepository.averageRatingByTutorId(tutor.getId());
+        tutor.setAverageRating(avg == null ? 0.0 : Math.round(avg * 100.0) / 100.0);
     }
 }
