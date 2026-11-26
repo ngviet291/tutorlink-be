@@ -20,17 +20,17 @@ import java.util.UUID;
 @Data
 @Builder
 public class RegisterTutorRequest {
-    @NotBlank(message = "FullName not be blank")
+    @NotBlank(message = "Full name must not be blank")
     private String fullName;
     @Email(message = "Email is not valid")
-    @NotBlank(message = "Email not be blank")
+    @NotBlank(message = "Email must not be blank")
     private String email;
-    @NotBlank(message = "Password not be blank")
+    @NotBlank(message = "Password must not be blank")
     @ValidPassword
     private String password;
     @Pattern(
-            regexp = "^(0[3|5|7|8|9])[0-9]{8}$",
-            message = "Invalid Vietnamese phone number"
+            regexp = "^0[35789][0-9]{8}$",
+            message = "Phone number must have 10 digits and start with 03, 05, 07, 08 or 09"
     )
     private String phone;
     @NotBlank(message = "Verification code must not be blank")
@@ -38,19 +38,19 @@ public class RegisterTutorRequest {
     private String verificationCode;
     private Gender gender;
     private LocalDate dateOfBirth;
-    @NotNull(message = "Address must not be null")
+    @NotNull(message = "Address is required")
     @Valid
     private AddressRequest address;
 
-    @Min(value = 0, message = "experienceYears must be greater than or equal to 0")
+    @Min(value = 0, message = "Years of experience must not be negative")
     private int experienceYears;
     private String education;
     // Cấp học nhận dạy: bắt buộc khi đăng ký; các thông tin còn lại bổ sung sau khi hồ sơ được duyệt.
-    @NotEmpty(message = "teachingLevels must not be empty")
+    @NotEmpty(message = "Select at least one teaching level")
     private java.util.Set<org.group3.tutorlink.features.post.enums.EducationLevel> teachingLevels;
-    @NotEmpty(message = "subjectIds must not be empty")
+    @NotEmpty(message = "Select at least one subject")
     private List<
-            @NotNull(message = "subjectId must not be null")
+            @NotNull(message = "Invalid subject")
                     UUID> subjectIds;
 
     // Phần tử i = môn của file chứng chỉ thứ i. Bỏ trống được nếu chỉ chọn 1 môn.

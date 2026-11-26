@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ImageFilesValidator.class)
 public @interface ValidImageFiles {
-    String message() default "Danh sách ảnh không hợp lệ";
+    String message() default "Invalid image list";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
