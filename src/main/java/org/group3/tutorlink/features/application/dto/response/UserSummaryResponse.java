@@ -13,8 +13,9 @@ public class UserSummaryResponse {
     private UUID id;
     private String fullName;
     private String avatarUrl;
-    
+
     // Thông tin thêm cho Tutor (null nếu là Student)
+    private int experienceYears;
     private Double averageRating;
     private Long totalReviews;
 }
