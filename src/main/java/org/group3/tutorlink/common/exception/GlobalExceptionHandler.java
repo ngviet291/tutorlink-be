@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
         ex.getBindingResult()
                 .getFieldErrors()
                 .forEach(error ->
-                        errors.put(
+                        errors.putIfAbsent(
                                 error.getField(),
                                 error.getDefaultMessage()
                         ));
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
         ex.getBindingResult()
                 .getGlobalErrors()
                 .forEach(error ->
-                        errors.put(
+                        errors.putIfAbsent(
                                 error.getObjectName(),
                                 error.getDefaultMessage()
                         ));
@@ -99,15 +99,30 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ErrorResponse> handleAppException(AppException ex, HttpServletRequest request) {
-        ErrorResponse response = ErrorResponse.builder()
-                .status(ex.getErrorCode().getHttpStatus().value())
-                .message(ex.getErrorCode().getMessage())
-                .error(HttpStatus.valueOf(ex.getErrorCode().getHttpStatus().value()).getReasonPhrase())
-                .timestamp(Instant.now())
-                .path(request.getRequestURI())
-                .build();
 
-        log.info("AppException at [{}]: {}", request.getRequestURI(), ex.getErrorCode().getMessage());
+        Map<String, String> errors = new HashMap<>();
+
+        if (ex.getField() != null && !ex.getField().isBlank()) {
+            errors.put(
+                    ex.getField(),
+                    ex.getErrorCode().getMessage()
+            );
+        }
+
+        ErrorResponse response = new ErrorResponse(
+                Instant.now(),
+                ex.getErrorCode().getHttpStatus().value(),
+                HttpStatus.valueOf(ex.getErrorCode().getHttpStatus().value()).getReasonPhrase(),
+                ex.getErrorCode().getMessage(),
+                request.getRequestURI(),
+                errors.isEmpty() ? null : errors
+        );
+
+        log.info("AppException at [{}]: field={}, message={}",
+                request.getRequestURI(),
+                ex.getField(),
+                ex.getErrorCode().getMessage());
+
         return ResponseEntity
                 .status(ex.getErrorCode().getHttpStatus()).body(response);
     }
@@ -287,7 +302,7 @@ public class GlobalExceptionHandler {
                     .collect(Collectors.joining(", "));
 
             message = mapAttributes(
-                    "Invalid value ''{value}'' for field ''{field}''. Accepted values: {accepted}",
+                    "Invalid value '{value}' for field '{field}'. Accepted values: {accepted}",
                     Map.of("field", fieldName, "value", ife.getValue(), "accepted", accepted)
             );
         } else {

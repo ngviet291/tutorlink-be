@@ -18,7 +18,7 @@ public class ResetPasswordRequest {
     @NotBlank(message = "Token must not be blank")
     private String token;
     @NotBlank(message = "New password must not be blank")
-    @ValidPassword(message = "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one digit, and one special character")
+    @ValidPassword(message = "Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a digit, a special character and no spaces")
     @Schema(description = "New password for the user", example = "newSecurePassword123!")
     private String newPassword;
 }

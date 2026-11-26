@@ -19,17 +19,17 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class RegisterStudentRequest {
-    @NotBlank(message = "FullName not be blank")
+    @NotBlank(message = "Full name must not be blank")
     private String fullName;
-    @Email(message = "Email not valid")
-    @NotBlank(message = "Email not be blank")
+    @Email(message = "Email is not valid")
+    @NotBlank(message = "Email must not be blank")
     private String email;
-    @NotBlank(message = "Password not be blank")
+    @NotBlank(message = "Password must not be blank")
     @ValidPassword
     private String password;
     @Pattern(
-            regexp = "^(0[3|5|7|8|9])[0-9]{8}$",
-            message = "Invalid Vietnamese phone number"
+            regexp = "^0[35789][0-9]{8}$",
+            message = "Phone number must have 10 digits and start with 03, 05, 07, 08 or 09"
     )
     private String phone;
 
@@ -38,7 +38,7 @@ public class RegisterStudentRequest {
     private String verificationCode;
     private Gender gender;
     private LocalDate dateOfBirth;
-    @NotNull(message = "Address must not be null")
+    @NotNull(message = "Address is required")
     @Valid
     private AddressRequest address;
 
