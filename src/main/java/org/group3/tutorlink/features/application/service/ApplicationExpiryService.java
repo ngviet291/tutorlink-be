@@ -16,8 +16,6 @@ import org.group3.tutorlink.features.payment.service.RefundService;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +32,7 @@ public class ApplicationExpiryService {
 
     private final ApplicationRepository applicationRepository;
     private final RefundService refundService;
-
+    private final ApplicationRestoreService applicationRestoreService;
     @Value("${application.expiry.payment-window-minutes:1440}")
     private long paymentWindowMinutes;
 
@@ -83,7 +81,7 @@ public class ApplicationExpiryService {
         // Post CLOSED/REMOVED không được hồi sinh về PUBLISHED.
         if (post != null && post.getStatus() == PostStatus.PENDING) {
             post.setStatus(PostStatus.PUBLISHED);
-            restoreRejectedApplications(post);
+            applicationRestoreService.restoreRejectedApplications(post);
         }
 
         applicationRepository.save(application);
@@ -101,20 +99,5 @@ public class ApplicationExpiryService {
                 target, targetId, postTitle);
         notificationHelper.notify(application.getStudent(), NotificationMessage.APPLICATION_EXPIRED_STUDENT,
                 target, targetId, postTitle);
-    }
-
-    private void restoreRejectedApplications(Post post) {
-        Page<Application> rejectedApplications = applicationRepository
-                .findByPostIdAndApplicationStatus(
-                        post.getId(),
-                        ApplicationStatus.REJECTED,
-                        Pageable.unpaged()
-                );
-        for (Application rejected : rejectedApplications.getContent()) {
-            rejected.setApplicationStatus(ApplicationStatus.PENDING);
-            notificationHelper.notify(ApplicationParties.applicantOf(rejected),
-                    NotificationMessage.APPLICATION_REOPENED,
-                    NotificationTarget.POST, post.getId(), post.getTitle());
-        }
     }
 }

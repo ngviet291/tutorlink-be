@@ -19,6 +19,7 @@ import org.group3.tutorlink.features.application.exception.ErrorCodeApplication;
 import org.group3.tutorlink.features.application.mapper.ApplicationMapper;
 import org.group3.tutorlink.features.application.repository.ApplicationRepository;
 import org.group3.tutorlink.features.application.scheduler.ApplicationExpiryQueue;
+import org.group3.tutorlink.features.application.service.ApplicationRestoreService;
 import org.group3.tutorlink.features.application.service.ApplicationService;
 import org.group3.tutorlink.features.application.util.ApplicationParties;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
@@ -44,7 +45,6 @@ import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -76,6 +76,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final NotificationHelper notificationHelper;
     private final TutorRepository tutorRepository;
     private final CertificateRepository certificateRepository;
+    private final ApplicationRestoreService applicationRestoreService;
 
     @Value("${application.expiry.payment-window-minutes:1440}")
     private long paymentWindowMinutes;
@@ -283,12 +284,12 @@ public class ApplicationServiceImpl implements ApplicationService {
         User applicant = ApplicationParties.applicantOf(saved);
         if (post.getType() == PostType.FIND_TUTOR) {
             notificationHelper.notify(applicant, NotificationMessage.APPLICATION_SELECTED_TUTOR,
-                    NotificationTarget.MY_APPLICATIONS, null, post.getTitle());
+                    NotificationTarget.MY_APPLICATIONS, saved.getId(), post.getTitle());
         } else {
             notificationHelper.notify(applicant, NotificationMessage.APPLICATION_SELECTED_STUDENT,
-                    NotificationTarget.MY_APPLICATIONS, null, post.getTitle());
+                    NotificationTarget.MY_APPLICATIONS, saved.getId(), post.getTitle());
             notificationHelper.notify(post.getAuthor(), NotificationMessage.APPLICATION_PAY_FEE,
-                    NotificationTarget.MY_APPLICATIONS, null, applicantName(saved), post.getTitle());
+                    NotificationTarget.MY_APPLICATIONS, saved.getId(), applicantName(saved), post.getTitle());
         }
         return applicationMapper.toApplicationResponse(saved);
     }
@@ -388,7 +389,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.setApplicationStatus(ApplicationStatus.PENDING);
         application.setSelectedAt(null);
         post.setStatus(PostStatus.PUBLISHED);
-        restoreRejectedApplications(post);
+        applicationRestoreService.restoreRejectedApplications(post);
 
         Application saved = applicationRepository.save(application);
         cancelExpiry(saved);
@@ -431,7 +432,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                 : finishedPost != null ? finishedPost.getAuthor() : null;
         // Người nhận là applicant → xem đơn của tôi; người nhận là chủ bài → xem chi tiết bài
         NotificationTarget finishedTarget = finisherIsAuthor ? NotificationTarget.MY_APPLICATIONS : NotificationTarget.POST;
-        UUID finishedTargetId = finisherIsAuthor || finishedPost == null ? null : finishedPost.getId();
+        UUID finishedTargetId = finisherIsAuthor ? saved.getId() : finishedPost != null ? finishedPost.getId() : null;
         notificationHelper.notify(other, NotificationMessage.APPLICATION_FINISHED,
                 finishedTarget, finishedTargetId, finishedPost != null ? finishedPost.getTitle() : "");
         return applicationMapper.toApplicationResponse(saved);
@@ -483,7 +484,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         if (currentStatus == ApplicationStatus.ACCEPTED) {
             application.setSelectedAt(null);
             post.setStatus(PostStatus.PUBLISHED);
-            restoreRejectedApplications(post);
+            applicationRestoreService.restoreRejectedApplications(post);
         }
 
         Application saved = applicationRepository.save(application);
@@ -535,22 +536,6 @@ public class ApplicationServiceImpl implements ApplicationService {
         User applicant = ApplicationParties.applicantOf(application);
         return applicant != null ? applicant.getFullName() : "";
     }
-
-    private void restoreRejectedApplications(Post post) {
-        Page<Application> rejectedApplications = applicationRepository
-                .findByPostIdAndApplicationStatus(
-                        post.getId(),
-                        ApplicationStatus.REJECTED,
-                        Pageable.unpaged()
-                );
-        for (Application rejected : rejectedApplications.getContent()) {
-            rejected.setApplicationStatus(ApplicationStatus.PENDING);
-            notificationHelper.notify(ApplicationParties.applicantOf(rejected),
-                    NotificationMessage.APPLICATION_REOPENED,
-                    NotificationTarget.POST, post.getId(), post.getTitle());
-        }
-    }
-
     private User getUserOrThrow(UUID userId) {
         return userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
