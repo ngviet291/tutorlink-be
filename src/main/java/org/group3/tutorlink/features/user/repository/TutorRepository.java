@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+
 public interface TutorRepository extends JpaRepository<Tutor, UUID> {
 
     @Query("""
@@ -31,17 +32,17 @@ public interface TutorRepository extends JpaRepository<Tutor, UUID> {
                             LOWER(CONCAT('%', CAST(:subjectName AS string), '%'))
                   )
               )
-
+            
               AND (CAST(:province AS string) IS NULL OR
                    LOWER(t.address.province) LIKE
                    LOWER(CONCAT('%', CAST(:province AS string), '%')))
-
+            
               AND (:minRate IS NULL OR t.hourlyRate >= :minRate)
               AND (:maxRate IS NULL OR t.hourlyRate <= :maxRate)
               AND (:minRating IS NULL OR t.averageRating >= :minRating)
               AND (:minExperience IS NULL OR t.experienceYears >= :minExperience)
               AND (:cursor IS NULL OR t.id < :cursor)
-
+            
             ORDER BY t.id DESC
             """)
     List<Tutor> findApprovedTutors(
@@ -69,4 +70,17 @@ public interface TutorRepository extends JpaRepository<Tutor, UUID> {
             @Param("tutorId") UUID tutorId,
             @Param("subjectId") UUID subjectId
     );
+
+
+    // BayesianRating
+    @Query("""
+            SELECT t FROM Tutor t
+            LEFT JOIN Review r ON r.tutor = t
+            WHERE t.verificationStatus = org.group3.tutorlink.features.user.enums.VerificationStatus.APPROVED
+              AND t.userStatus = org.group3.tutorlink.features.user.enums.UserStatus.ACTIVE
+            GROUP BY t
+            ORDER BY (COUNT(r) * t.averageRating + 5 * 4.0) / (COUNT(r) + 5) DESC,
+                     t.experienceYears DESC, t.id DESC
+            """)
+    List<Tutor> findTopTutorN(Pageable pageable);
 }

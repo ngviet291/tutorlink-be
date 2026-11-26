@@ -6,7 +6,8 @@
     "credentials": {
       "ADMIN": "admin@gmail.com / Admin@123",
       "STUDENT": "student@gmail.com, student2..9@gmail.com / Student@123; match.student1..20@gmail.com / Student@123",
-      "TUTOR": "tutor@gmail.com, tutor2..11@gmail.com / Tutor@123; match.tutor1..20@gmail.com / Tutor@123"
+      "TUTOR": "tutor@gmail.com, tutor2..11@gmail.com / Tutor@123; match.tutor1..20@gmail.com / Tutor@123",
+      "REC_TUTOR": "rec.tutor@gmail.com (đủ mọi case TC01-TC07) / Tutor@123; rec.tutor.pending|incomplete|nocert|unverifiedcert@gmail.com / Tutor@123; rec.student1..6@gmail.com / Student@123"
     },
     "loadOrder": [
       "roles",
@@ -31,14 +32,14 @@
     ],
     "counts": {
       "roles": 3,
-      "subjects": 12,
+      "subjects": 14,
       "admins": 1,
-      "students": 29,
-      "tutors": 31,
-      "certificates": 13,
+      "students": 35,
+      "tutors": 36,
+      "certificates": 16,
       "matchingFeeConfigs": 2,
-      "posts": 186,
-      "applications": 152,
+      "posts": 217,
+      "applications": 158,
       "wallets": 8,
       "transactions": 53,
       "reviews": 25,
@@ -89,6 +90,176 @@
           "applicants": 3,
           "note": "Piano, chỉ 3 học viên nên không chấm điểm (ranked=false)"
         }
+      }
+    },
+    "recommendationTest": {
+      "endpoint": "GET /v1/posts/me/recommended?limit=N",
+      "tutorAccount": {
+        "email": "rec.tutor@gmail.com",
+        "id": "01a21594-c100-776e-bd48-27c5dc532fa5",
+        "setup": "APPROVED, hồ sơ đầy đủ, môn Java (không có React), 1 chứng chỉ Java verified=true"
+      },
+      "note": "Index lại các post vào vector store sau khi nạp seed. Mốc thời gian: 2026-11-26.",
+      "expectedRecommendedCount": 10,
+      "expectedRecommended": [
+        {
+          "case": "TC01",
+          "id": "01a2155d-d280-75cf-b7f8-ed0651198ea9",
+          "title": "Cần gia sư Java core và OOP học online"
+        },
+        {
+          "case": "TC01",
+          "id": "01a2155d-d280-7e0f-8208-28e340d1571b",
+          "title": "Tìm gia sư Spring Boot làm đồ án tại Phường Hiệp Bình"
+        },
+        {
+          "case": "TC01",
+          "id": "01a2155d-d280-7729-8479-787042e4c79c",
+          "title": "Looking for a Java backend interview coach"
+        },
+        {
+          "case": "TC01",
+          "id": "01a2155d-d280-7d2e-b18a-5e73d5785974",
+          "title": "Gia sư Java cơ bản cho học sinh lớp 12 tại Phường Tân Bình"
+        },
+        {
+          "case": "TC01",
+          "id": "01a2155d-d280-7aad-a689-9ff7b2823333",
+          "title": "Cần gia sư Java Collections và Stream API"
+        },
+        {
+          "case": "TC01",
+          "id": "01a2155d-d280-7eab-8b0b-1f74c082b0f3",
+          "title": "Tìm gia sư Java JDBC và Hibernate (bài không có hạn)"
+        },
+        {
+          "case": "TC01",
+          "id": "01a2155d-d280-7a7d-a27a-49185c28d0ab",
+          "title": "Gia sư Java cấu trúc dữ liệu và giải thuật (ở Hà Nội)"
+        },
+        {
+          "case": "TC01",
+          "id": "01a2155d-d280-7971-9778-726b6817b651",
+          "title": "Cần gia sư Java Swing/JavaFX cho đồ án"
+        },
+        {
+          "case": "TC01",
+          "id": "01a2155d-d280-72d2-96d8-ab6ac26c7f15",
+          "title": "Tìm gia sư Java microservices với Spring Cloud"
+        },
+        {
+          "case": "TC01",
+          "id": "01a2155d-d280-75db-9278-28fd37ad06d2",
+          "title": "Cần gia sư Java unit test với JUnit và Mockito"
+        }
+      ],
+      "expectedExcluded": {
+        "TC03": [
+          {
+            "id": "01a2155d-d280-7bc5-96fb-935230fbe3d3",
+            "title": "Cần gia sư React hooks và TypeScript #1"
+          },
+          {
+            "id": "01a2155d-d280-70f5-b70a-5bd205b1aa6f",
+            "title": "Cần gia sư React hooks và TypeScript #2"
+          },
+          {
+            "id": "01a2155d-d280-7a46-b74b-fc02eca318be",
+            "title": "Cần gia sư React hooks và TypeScript #3"
+          }
+        ],
+        "TC04": [
+          {
+            "id": "01a2155d-d280-798f-9569-ff17f7dd884e",
+            "title": "Gia sư Java nhận học viên đại học #1"
+          },
+          {
+            "id": "01a2155d-d280-721d-b33a-b6a4787b0ea7",
+            "title": "Gia sư Java nhận học viên đại học #2"
+          },
+          {
+            "id": "01a2155d-d280-7e56-9d9a-c0c723d415e3",
+            "title": "Gia sư Java nhận học viên đại học #3"
+          }
+        ],
+        "TC05": [
+          {
+            "id": "01a194d5-c500-774a-8e1b-01835cf951c4",
+            "title": "Cần gia sư Java (đã quá hạn) #1"
+          },
+          {
+            "id": "01a194d5-c500-7234-9058-14eb739f161e",
+            "title": "Cần gia sư Java (đã quá hạn) #2"
+          },
+          {
+            "id": "01a194d5-c500-780e-9bc8-cc9c034587a9",
+            "title": "Cần gia sư Java (đã quá hạn) #3"
+          }
+        ],
+        "TC05-status": [
+          {
+            "id": "01a2155d-d280-74d9-b48b-ff7a5e6b99f9",
+            "title": "Cần gia sư Java (status DRAFT)"
+          },
+          {
+            "id": "01a2155d-d280-7a0c-b51a-e03dd69cadd5",
+            "title": "Cần gia sư Java (status CLOSED)"
+          },
+          {
+            "id": "01a2155d-d280-7e5a-b3bb-93641af67822",
+            "title": "Cần gia sư Java (status REMOVED)"
+          }
+        ],
+        "TC06": [
+          {
+            "id": "01a2155d-d280-7cdf-8c4a-2d9bf5ce4a52",
+            "title": "Bài Java FIND_TUTOR do chính tutor tạo #1"
+          },
+          {
+            "id": "01a2155d-d280-73c0-8c88-5f5cde69005c",
+            "title": "Bài Java FIND_TUTOR do chính tutor tạo #2"
+          },
+          {
+            "id": "01a2155d-d280-7e2b-83e8-9526dfd3f8bb",
+            "title": "Bài Java FIND_TUTOR do chính tutor tạo #3"
+          }
+        ],
+        "TC07": [
+          {
+            "id": "01a2155d-d280-7e2b-86db-2af925f9aef1",
+            "title": "Cần gia sư Java (tutor đã ứng tuyển, PENDING)"
+          },
+          {
+            "id": "01a2155d-d280-775b-8ecb-33a9de98c3b4",
+            "title": "Cần gia sư Java (tutor đã ứng tuyển, ACCEPTED)"
+          },
+          {
+            "id": "01a2155d-d280-7290-8738-79a465e554d0",
+            "title": "Cần gia sư Java (tutor đã ứng tuyển, CONFIRMED)"
+          },
+          {
+            "id": "01a2155d-d280-75ff-a7a9-d16bb71eec83",
+            "title": "Cần gia sư Java (tutor đã ứng tuyển, REJECTED)"
+          },
+          {
+            "id": "01a2155d-d280-70f0-8178-42301a983af5",
+            "title": "Cần gia sư Java (tutor đã ứng tuyển, FINISHED)"
+          }
+        ]
+      },
+      "edge": [
+        {
+          "case": "TC07-cancelled",
+          "id": "01a2155d-d280-74d7-a62a-10015e5e5077",
+          "title": "Cần gia sư Java (tutor đã HUỶ ứng tuyển)",
+          "note": "Tuỳ logic: loại mọi application => không gợi ý; chỉ loại application còn hiệu lực => được gợi ý"
+        }
+      ],
+      "otherAccounts": {
+        "rec.tutor.pending@gmail.com": "verificationStatus=PENDING -> TutorNotVerifiedException",
+        "rec.tutor.incomplete@gmail.com": "APPROVED nhưng thiếu bio/education/slots/areas/subjects -> TutorProfileIncompleteException",
+        "rec.tutor.nocert@gmail.com": "TC02: có môn Java, không có chứng chỉ -> danh sách rỗng (theo logic hiện tại)",
+        "rec.tutor.unverifiedcert@gmail.com": "Có chứng chỉ Java nhưng verified=false -> danh sách rỗng"
       }
     }
   },
@@ -211,6 +382,22 @@
       "name": "Piano",
       "description": "Piano cơ bản và nâng cao, nhạc lý",
       "category": "Năng khiếu"
+    },
+    {
+      "id": "01a21594-c100-768c-ae39-a88788388426",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "name": "Lập trình Java",
+      "description": "Java core, OOP, Collections, Spring Boot, JPA/Hibernate",
+      "category": "Tin học"
+    },
+    {
+      "id": "01a21594-c100-7073-ad8a-4ed25527b9a5",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "name": "React",
+      "description": "React, hooks, TypeScript, state management",
+      "category": "Tin học"
     }
   ],
   "admins": [
@@ -844,6 +1031,132 @@
       "roleId": "019cef38-c4e8-7c4b-90fb-864f740466f9",
       "grade": "Lớp 12",
       "learningGoal": null
+    },
+    {
+      "id": "01a21594-c100-7b40-9cdb-81fcdf5e4c94",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "fullName": "Nguyễn Minh Triết",
+      "email": "rec.student1@gmail.com",
+      "password": "$2a$10$LMCUfrSB/FUTpF81f.AUpeu9m4o0QV/TIlQRk/dAWo08NgKPq7Bde",
+      "phone": "0903000001",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/rec_student1.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "2004-05-15",
+      "address": {
+        "street": "7 Cộng Hòa",
+        "ward": "Phường Tân Bình",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c4e8-7c4b-90fb-864f740466f9",
+      "grade": "Năm 2",
+      "learningGoal": "Nắm vững Java core và OOP."
+    },
+    {
+      "id": "01a21594-c100-733e-8998-dbc7b27dc582",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "fullName": "Trần Gia Hân",
+      "email": "rec.student2@gmail.com",
+      "password": "$2a$10$LMCUfrSB/FUTpF81f.AUpeu9m4o0QV/TIlQRk/dAWo08NgKPq7Bde",
+      "phone": "0903000002",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/rec_student2.jpg",
+      "gender": "FEMALE",
+      "dateOfBirth": "2004-05-15",
+      "address": {
+        "street": "14 Cộng Hòa",
+        "ward": "Phường Hiệp Bình",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c4e8-7c4b-90fb-864f740466f9",
+      "grade": "Năm 3",
+      "learningGoal": "Làm đồ án Spring Boot."
+    },
+    {
+      "id": "01a21594-c100-7c78-81a9-a3545c32b58b",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "fullName": "Lê Quang Vinh",
+      "email": "rec.student3@gmail.com",
+      "password": "$2a$10$LMCUfrSB/FUTpF81f.AUpeu9m4o0QV/TIlQRk/dAWo08NgKPq7Bde",
+      "phone": "0903000003",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/rec_student3.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "2004-05-15",
+      "address": {
+        "street": "21 Cộng Hòa",
+        "ward": "Phường An Phú",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c4e8-7c4b-90fb-864f740466f9",
+      "grade": "Năm 4",
+      "learningGoal": "Chuẩn bị phỏng vấn Java backend."
+    },
+    {
+      "id": "01a21594-c100-7957-8608-17cac22e8ed2",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "fullName": "Phạm Thu Trang",
+      "email": "rec.student4@gmail.com",
+      "password": "$2a$10$LMCUfrSB/FUTpF81f.AUpeu9m4o0QV/TIlQRk/dAWo08NgKPq7Bde",
+      "phone": "0903000004",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/rec_student4.jpg",
+      "gender": "FEMALE",
+      "dateOfBirth": "2004-05-15",
+      "address": {
+        "street": "28 Cộng Hòa",
+        "ward": "Phường Tân Bình",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c4e8-7c4b-90fb-864f740466f9",
+      "grade": "Lớp 12",
+      "learningGoal": "Học Java cơ bản để thi tin học."
+    },
+    {
+      "id": "01a21594-c100-7ddb-ab19-520c5a804ee2",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "fullName": "Võ Anh Khoa",
+      "email": "rec.student5@gmail.com",
+      "password": "$2a$10$LMCUfrSB/FUTpF81f.AUpeu9m4o0QV/TIlQRk/dAWo08NgKPq7Bde",
+      "phone": "0903000005",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/rec_student5.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "2004-05-15",
+      "address": {
+        "street": "35 Cộng Hòa",
+        "ward": "Phường Thủ Đức",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c4e8-7c4b-90fb-864f740466f9",
+      "grade": "Năm 2",
+      "learningGoal": "Học React cho đồ án web."
+    },
+    {
+      "id": "01a21594-c100-7ed9-a7aa-dc1c6c13941d",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "fullName": "Đặng Hải Long",
+      "email": "rec.student6@gmail.com",
+      "password": "$2a$10$LMCUfrSB/FUTpF81f.AUpeu9m4o0QV/TIlQRk/dAWo08NgKPq7Bde",
+      "phone": "0903000006",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/rec_student6.jpg",
+      "gender": "FEMALE",
+      "dateOfBirth": "2004-05-15",
+      "address": {
+        "street": "42 Cộng Hòa",
+        "ward": "Phường Linh Xuân",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c4e8-7c4b-90fb-864f740466f9",
+      "grade": "Năm 3",
+      "learningGoal": "Học Java Collections và Stream API."
     }
   ],
   "tutors": [
@@ -2752,6 +3065,265 @@
       "subjectIds": [
         "019cef3d-7fd8-7881-95f9-bf62461639ef"
       ]
+    },
+    {
+      "id": "01a21594-c100-776e-bd48-27c5dc532fa5",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "fullName": "Hoàng Gia Bảo",
+      "email": "rec.tutor@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0904546155",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/rec.tutor.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-08-20",
+      "address": {
+        "street": "45 Trường Chinh",
+        "ward": "Phường Tân Bình",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Backend developer 6 năm kinh nghiệm Java/Spring Boot, dạy từ OOP đến microservices, chữa code review chi tiết.",
+      "experienceYears": 5,
+      "hourlyRate": 250000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Kỹ sư Phần mềm - ĐH Bách khoa TP.HCM",
+      "teachingLevels": [
+        "HIGH_SCHOOL",
+        "UNIVERSITY",
+        "OTHER"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2027-01-04T11:00:00Z",
+          "endTime": "2027-01-04T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2027-01-06T11:00:00Z",
+          "endTime": "2027-01-06T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2027-01-09T11:00:00Z",
+          "endTime": "2027-01-09T14:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường Tân Bình",
+        "Phường Hiệp Bình"
+      ],
+      "subjectIds": [
+        "01a21594-c100-768c-ae39-a88788388426"
+      ]
+    },
+    {
+      "id": "01a21594-c100-7510-af38-2b3212f33626",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "fullName": "Lý Thanh Tùng",
+      "email": "rec.tutor.pending@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0904809824",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/rec.tutor.pending.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-08-20",
+      "address": {
+        "street": "45 Trường Chinh",
+        "ward": "Phường Tân Bình",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Backend developer 6 năm kinh nghiệm Java/Spring Boot, dạy từ OOP đến microservices, chữa code review chi tiết.",
+      "experienceYears": 5,
+      "hourlyRate": 250000,
+      "averageRating": 0.0,
+      "verificationStatus": "PENDING",
+      "verificationNote": null,
+      "education": "Kỹ sư Phần mềm - ĐH Bách khoa TP.HCM",
+      "teachingLevels": [
+        "HIGH_SCHOOL",
+        "UNIVERSITY",
+        "OTHER"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T11:00:00Z",
+          "endTime": "2026-01-10T14:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường Tân Bình",
+        "Phường Hiệp Bình"
+      ],
+      "subjectIds": [
+        "01a21594-c100-768c-ae39-a88788388426"
+      ]
+    },
+    {
+      "id": "01a21594-c100-73dd-b388-6e9d6f0684c5",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "fullName": "Mai Đức Thịnh",
+      "email": "rec.tutor.incomplete@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0904777505",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/rec.tutor.incomplete.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-08-20",
+      "address": {
+        "street": "45 Trường Chinh",
+        "ward": "Phường Tân Bình",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": null,
+      "experienceYears": 5,
+      "hourlyRate": 250000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": null,
+      "teachingLevels": [
+        "HIGH_SCHOOL",
+        "UNIVERSITY",
+        "OTHER"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [],
+      "teachingAreas": [],
+      "subjectIds": []
+    },
+    {
+      "id": "01a21594-c100-78dd-85ca-db6ac5f3f733",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "fullName": "Ngô Hữu Phước",
+      "email": "rec.tutor.nocert@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0904472650",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/rec.tutor.nocert.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-08-20",
+      "address": {
+        "street": "45 Trường Chinh",
+        "ward": "Phường Tân Bình",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Backend developer 6 năm kinh nghiệm Java/Spring Boot, dạy từ OOP đến microservices, chữa code review chi tiết.",
+      "experienceYears": 5,
+      "hourlyRate": 250000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Kỹ sư Phần mềm - ĐH Bách khoa TP.HCM",
+      "teachingLevels": [
+        "HIGH_SCHOOL",
+        "UNIVERSITY",
+        "OTHER"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T11:00:00Z",
+          "endTime": "2026-01-10T14:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường Tân Bình",
+        "Phường Hiệp Bình"
+      ],
+      "subjectIds": [
+        "01a21594-c100-768c-ae39-a88788388426"
+      ]
+    },
+    {
+      "id": "01a21594-c100-73fa-9a59-8aba308f9cb2",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "fullName": "Bùi Quốc Đạt",
+      "email": "rec.tutor.unverifiedcert@gmail.com",
+      "password": "$2a$10$5/E7uxuzETDDh8jVkG1SpOe/3WmRlDALJduMPesM7kqxY19xVB00a",
+      "phone": "0904497338",
+      "avatarUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/avatars/rec.tutor.unverifiedcert.jpg",
+      "gender": "MALE",
+      "dateOfBirth": "1996-08-20",
+      "address": {
+        "street": "45 Trường Chinh",
+        "ward": "Phường Tân Bình",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "userStatus": "ACTIVE",
+      "roleId": "019cef38-c8d0-739f-854e-7d3e8275f4f6",
+      "bio": "Backend developer 6 năm kinh nghiệm Java/Spring Boot, dạy từ OOP đến microservices, chữa code review chi tiết.",
+      "experienceYears": 5,
+      "hourlyRate": 250000,
+      "averageRating": 0.0,
+      "verificationStatus": "APPROVED",
+      "verificationNote": null,
+      "education": "Kỹ sư Phần mềm - ĐH Bách khoa TP.HCM",
+      "teachingLevels": [
+        "HIGH_SCHOOL",
+        "UNIVERSITY",
+        "OTHER"
+      ],
+      "teachingMode": "BOTH",
+      "availableSlots": [
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "2026-01-05T11:00:00Z",
+          "endTime": "2026-01-05T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "WEDNESDAY",
+          "startTime": "2026-01-07T11:00:00Z",
+          "endTime": "2026-01-07T14:00:00Z"
+        },
+        {
+          "dayOfWeek": "SATURDAY",
+          "startTime": "2026-01-10T11:00:00Z",
+          "endTime": "2026-01-10T14:00:00Z"
+        }
+      ],
+      "teachingAreas": [
+        "Phường Tân Bình",
+        "Phường Hiệp Bình"
+      ],
+      "subjectIds": [
+        "01a21594-c100-768c-ae39-a88788388426"
+      ]
     }
   ],
   "certificates": [
@@ -2910,6 +3482,43 @@
       "fileUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/certificates/20a958f0-bc71-bb9d-a826-c069910ab842.jpg",
       "verified": true,
       "tutorId": "019d7075-2a60-7e54-9070-d3c8a487c287"
+    },
+    {
+      "id": "01a21594-c100-7f5d-b55b-d16137fe682f",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "name": "Oracle Certified Professional, Java SE 17 Developer",
+      "issuedBy": "Oracle",
+      "issuedDate": "2023-09-12",
+      "expiryDate": null,
+      "fileUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/certificates/01a21594-c100-7f5d-b55b-d16137fe682f.jpg",
+      "verified": true,
+      "tutorId": "01a21594-c100-776e-bd48-27c5dc532fa5",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426"
+    },
+    {
+      "id": "01a21594-c100-7e49-9e0a-3e399d985fd9",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "name": "Oracle Certified Professional, Java SE 17 Developer",
+      "issuedBy": "Oracle",
+      "issuedDate": "2023-09-12",
+      "expiryDate": null,
+      "fileUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/certificates/01a21594-c100-7e49-9e0a-3e399d985fd9.jpg",
+      "verified": true,
+      "tutorId": "01a21594-c100-7510-af38-2b3212f33626"
+    },
+    {
+      "id": "01a21594-c100-7ca7-adeb-6d51dc02f543",
+      "createdAt": "2026-11-26T02:00:00Z",
+      "updatedAt": "2026-11-26T02:00:00Z",
+      "name": "Oracle Certified Professional, Java SE 17 Developer",
+      "issuedBy": "Oracle",
+      "issuedDate": "2023-09-12",
+      "expiryDate": null,
+      "fileUrl": "https://res.cloudinary.com/tutorlink-demo/image/upload/certificates/01a21594-c100-7ca7-adeb-6d51dc02f543.jpg",
+      "verified": false,
+      "tutorId": "01a21594-c100-73fa-9a59-8aba308f9cb2"
     }
   ],
   "matchingFeeConfigs": [
@@ -7262,6 +7871,642 @@
       "sessionsPerWeek": 2,
       "durationMinutes": 60,
       "deadline": "2026-12-25T23:59:59Z"
+    },
+    {
+      "id": "01a2155d-d280-75cf-b7f8-ed0651198ea9",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư Java core và OOP học online",
+      "content": "Mình là sinh viên năm 2, cần gia sư Java core: OOP, exception, collections. Học online qua Google Meet, có bài tập về nhà.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7b40-9cdb-81fcdf5e4c94",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7e0f-8208-28e340d1571b",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Tìm gia sư Spring Boot làm đồ án tại Phường Hiệp Bình",
+      "content": "Cần gia sư hướng dẫn Spring Boot REST API, JPA/Hibernate, Spring Security cho đồ án cuối kỳ. Học trực tiếp hoặc online.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-733e-8998-dbc7b27dc582",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "BOTH",
+      "address": {
+        "street": "210 Quốc lộ 13",
+        "ward": "Phường Hiệp Bình",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "minBudget": 2500000.0,
+      "maxBudget": 3500000.0,
+      "budgetUnit": "PER_MONTH",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7729-8479-787042e4c79c",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Looking for a Java backend interview coach",
+      "content": "I am a final-year student preparing for Java backend interviews. I need mock interviews, data structures, Java concurrency and Spring Boot review. Online, evening sessions.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7c78-81a9-a3545c32b58b",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 250000.0,
+      "maxBudget": 400000.0,
+      "budgetUnit": "PER_HOUR",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7d2e-b18a-5e73d5785974",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Gia sư Java cơ bản cho học sinh lớp 12 tại Phường Tân Bình",
+      "content": "Em học lớp 12, cần học Java cơ bản (biến, vòng lặp, hàm, class) để thi tin học. Học trực tiếp tại nhà.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7957-8608-17cac22e8ed2",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "HIGH_SCHOOL",
+      "teachingMode": "OFFLINE",
+      "address": {
+        "street": "28 Cộng Hòa",
+        "ward": "Phường Tân Bình",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "minBudget": 150000.0,
+      "maxBudget": 220000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 60,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7aad-a689-9ff7b2823333",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư Java Collections và Stream API",
+      "content": "Muốn nắm chắc List/Map/Set, Comparator, Stream API, Optional và lambda. Học online, 1 buổi/tuần.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7ed9-a7aa-dc1c6c13941d",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 180000.0,
+      "maxBudget": 260000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 1,
+      "durationMinutes": 60,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7eab-8b0b-1f74c082b0f3",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Tìm gia sư Java JDBC và Hibernate (bài không có hạn)",
+      "content": "Cần ôn JDBC, JPA/Hibernate, quan hệ entity, N+1 query. Bài đăng không đặt hạn chót (deadline = null).",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7b40-9cdb-81fcdf5e4c94",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "BOTH",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": null
+    },
+    {
+      "id": "01a2155d-d280-7a7d-a27a-49185c28d0ab",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Gia sư Java cấu trúc dữ liệu và giải thuật (ở Hà Nội)",
+      "content": "Cần ôn cấu trúc dữ liệu và giải thuật bằng Java. Học trực tiếp tại Hà Nội (khác tỉnh với tutor, vẫn hợp lệ theo bộ lọc cơ bản).",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7c78-81a9-a3545c32b58b",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "OFFLINE",
+      "address": {
+        "street": "15 Hoàng Hoa Thám",
+        "ward": "Phường Ba Đình",
+        "province": "Thành phố Hà Nội"
+      },
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7971-9778-726b6817b651",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư Java Swing/JavaFX cho đồ án",
+      "content": "Làm ứng dụng quản lý bán hàng bằng JavaFX, kết nối MySQL. Cần người review code và kiến trúc MVC.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-733e-8998-dbc7b27dc582",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "BOTH",
+      "address": {
+        "street": "64 Quốc lộ 13",
+        "ward": "Phường Hiệp Bình",
+        "province": "Thành phố Hồ Chí Minh"
+      },
+      "minBudget": 2000000.0,
+      "maxBudget": 3000000.0,
+      "budgetUnit": "PER_MONTH",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-72d2-96d8-ab6ac26c7f15",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Tìm gia sư Java microservices với Spring Cloud",
+      "content": "Cần mentor về microservices: Spring Cloud, API gateway, Kafka, Docker. Ngân sách cao, học online buổi tối.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7c78-81a9-a3545c32b58b",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 400000.0,
+      "maxBudget": 600000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 120,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-75db-9278-28fd37ad06d2",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư Java unit test với JUnit và Mockito",
+      "content": "Muốn học viết unit test, integration test với JUnit 5, Mockito, Testcontainers cho dự án Spring Boot.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7ed9-a7aa-dc1c6c13941d",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 220000.0,
+      "maxBudget": 320000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7bc5-96fb-935230fbe3d3",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư React hooks và TypeScript #1",
+      "content": "Muốn học React, hooks, Redux Toolkit, React Query cho đồ án web. Học online.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7ddb-ab19-520c5a804ee2",
+      "subjectId": "01a21594-c100-7073-ad8a-4ed25527b9a5",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-70f5-b70a-5bd205b1aa6f",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư React hooks và TypeScript #2",
+      "content": "Muốn học React, hooks, Redux Toolkit, React Query cho đồ án web. Học online.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7ddb-ab19-520c5a804ee2",
+      "subjectId": "01a21594-c100-7073-ad8a-4ed25527b9a5",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7a46-b74b-fc02eca318be",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư React hooks và TypeScript #3",
+      "content": "Muốn học React, hooks, Redux Toolkit, React Query cho đồ án web. Học online.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7ddb-ab19-520c5a804ee2",
+      "subjectId": "01a21594-c100-7073-ad8a-4ed25527b9a5",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-798f-9569-ff17f7dd884e",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Gia sư Java nhận học viên đại học #1",
+      "content": "Giới thiệu: dạy Java core, Spring Boot, chữa code chi tiết. Nhận học viên online.",
+      "type": "FIND_STUDENT",
+      "status": "PUBLISHED",
+      "authorId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-721d-b33a-b6a4787b0ea7",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Gia sư Java nhận học viên đại học #2",
+      "content": "Giới thiệu: dạy Java core, Spring Boot, chữa code chi tiết. Nhận học viên online.",
+      "type": "FIND_STUDENT",
+      "status": "PUBLISHED",
+      "authorId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7e56-9d9a-c0c723d415e3",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Gia sư Java nhận học viên đại học #3",
+      "content": "Giới thiệu: dạy Java core, Spring Boot, chữa code chi tiết. Nhận học viên online.",
+      "type": "FIND_STUDENT",
+      "status": "PUBLISHED",
+      "authorId": "019d57b0-3920-71f5-bf7e-d3daea041255",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a194d5-c500-774a-8e1b-01835cf951c4",
+      "createdAt": "2026-11-01T02:00:00Z",
+      "updatedAt": "2026-11-01T02:00:00Z",
+      "title": "Cần gia sư Java (đã quá hạn) #1",
+      "content": "Bài PUBLISHED nhưng deadline đã qua (2026-11-20) so với ngày 2026-11-26.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-733e-8998-dbc7b27dc582",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-11-20T16:00:00Z"
+    },
+    {
+      "id": "01a194d5-c500-7234-9058-14eb739f161e",
+      "createdAt": "2026-11-01T02:00:00Z",
+      "updatedAt": "2026-11-01T02:00:00Z",
+      "title": "Cần gia sư Java (đã quá hạn) #2",
+      "content": "Bài PUBLISHED nhưng deadline đã qua (2026-11-20) so với ngày 2026-11-26.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7c78-81a9-a3545c32b58b",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-11-20T16:00:00Z"
+    },
+    {
+      "id": "01a194d5-c500-780e-9bc8-cc9c034587a9",
+      "createdAt": "2026-11-01T02:00:00Z",
+      "updatedAt": "2026-11-01T02:00:00Z",
+      "title": "Cần gia sư Java (đã quá hạn) #3",
+      "content": "Bài PUBLISHED nhưng deadline đã qua (2026-11-20) so với ngày 2026-11-26.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7957-8608-17cac22e8ed2",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2026-11-20T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-74d9-b48b-ff7a5e6b99f9",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư Java (status DRAFT)",
+      "content": "Bài Java FIND_TUTOR chưa deadline nhưng status = DRAFT.",
+      "type": "FIND_TUTOR",
+      "status": "DRAFT",
+      "authorId": "01a21594-c100-7957-8608-17cac22e8ed2",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7a0c-b51a-e03dd69cadd5",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư Java (status CLOSED)",
+      "content": "Bài Java FIND_TUTOR chưa deadline nhưng status = CLOSED.",
+      "type": "FIND_TUTOR",
+      "status": "CLOSED",
+      "authorId": "01a21594-c100-7957-8608-17cac22e8ed2",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7e5a-b3bb-93641af67822",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư Java (status REMOVED)",
+      "content": "Bài Java FIND_TUTOR chưa deadline nhưng status = REMOVED.",
+      "type": "FIND_TUTOR",
+      "status": "REMOVED",
+      "authorId": "01a21594-c100-7957-8608-17cac22e8ed2",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7cdf-8c4a-2d9bf5ce4a52",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Bài Java FIND_TUTOR do chính tutor tạo #1",
+      "content": "Bài do chính tài khoản rec.tutor đăng, không được tự gợi ý cho mình.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-776e-bd48-27c5dc532fa5",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-73c0-8c88-5f5cde69005c",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Bài Java FIND_TUTOR do chính tutor tạo #2",
+      "content": "Bài do chính tài khoản rec.tutor đăng, không được tự gợi ý cho mình.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-776e-bd48-27c5dc532fa5",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7e2b-83e8-9526dfd3f8bb",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Bài Java FIND_TUTOR do chính tutor tạo #3",
+      "content": "Bài do chính tài khoản rec.tutor đăng, không được tự gợi ý cho mình.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-776e-bd48-27c5dc532fa5",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7e2b-86db-2af925f9aef1",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư Java (tutor đã ứng tuyển, PENDING)",
+      "content": "Tutor rec.tutor đã có application trạng thái PENDING. Bài giữ PUBLISHED để cô lập đúng điều kiện 'đã ứng tuyển'.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-733e-8998-dbc7b27dc582",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-775b-8ecb-33a9de98c3b4",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư Java (tutor đã ứng tuyển, ACCEPTED)",
+      "content": "Tutor rec.tutor đã có application trạng thái ACCEPTED. Bài giữ PUBLISHED để cô lập đúng điều kiện 'đã ứng tuyển'.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7c78-81a9-a3545c32b58b",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-7290-8738-79a465e554d0",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư Java (tutor đã ứng tuyển, CONFIRMED)",
+      "content": "Tutor rec.tutor đã có application trạng thái CONFIRMED. Bài giữ PUBLISHED để cô lập đúng điều kiện 'đã ứng tuyển'.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7957-8608-17cac22e8ed2",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-75ff-a7a9-d16bb71eec83",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư Java (tutor đã ứng tuyển, REJECTED)",
+      "content": "Tutor rec.tutor đã có application trạng thái REJECTED. Bài giữ PUBLISHED để cô lập đúng điều kiện 'đã ứng tuyển'.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7ddb-ab19-520c5a804ee2",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-70f0-8178-42301a983af5",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư Java (tutor đã ứng tuyển, FINISHED)",
+      "content": "Tutor rec.tutor đã có application trạng thái FINISHED. Bài giữ PUBLISHED để cô lập đúng điều kiện 'đã ứng tuyển'.",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-7ed9-a7aa-dc1c6c13941d",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
+    },
+    {
+      "id": "01a2155d-d280-74d7-a62a-10015e5e5077",
+      "createdAt": "2026-11-26T01:00:00Z",
+      "updatedAt": "2026-11-26T01:00:00Z",
+      "title": "Cần gia sư Java (tutor đã HUỶ ứng tuyển)",
+      "content": "EDGE: application CANCELLED. Kết quả phụ thuộc logic loại trừ (loại mọi application hay chỉ application còn hiệu lực).",
+      "type": "FIND_TUTOR",
+      "status": "PUBLISHED",
+      "authorId": "01a21594-c100-733e-8998-dbc7b27dc582",
+      "subjectId": "01a21594-c100-768c-ae39-a88788388426",
+      "educationLevel": "UNIVERSITY",
+      "teachingMode": "ONLINE",
+      "address": null,
+      "minBudget": 200000.0,
+      "maxBudget": 300000.0,
+      "budgetUnit": "PER_SESSION",
+      "sessionsPerWeek": 2,
+      "durationMinutes": 90,
+      "deadline": "2027-12-31T16:00:00Z"
     }
   ],
   "applications": [
@@ -9240,6 +10485,84 @@
       "tutorId": "295f8c1b-236c-5a7e-9832-34b6a12ff220",
       "processedByAdminId": null,
       "proposedFee": null
+    },
+    {
+      "id": "01a21579-49c0-7829-91cb-95f5e63be9ff",
+      "createdAt": "2026-11-26T01:30:00Z",
+      "updatedAt": "2026-11-26T01:30:00Z",
+      "applicationStatus": "PENDING",
+      "message": "Mình có kinh nghiệm Java/Spring Boot, sẵn sàng dạy thử.",
+      "appliedAt": "2026-11-26T01:30:00Z",
+      "postId": "01a2155d-d280-7e2b-86db-2af925f9aef1",
+      "studentId": "01a21594-c100-733e-8998-dbc7b27dc582",
+      "tutorId": "01a21594-c100-776e-bd48-27c5dc532fa5",
+      "processedByAdminId": null,
+      "proposedFee": 250000.0
+    },
+    {
+      "id": "01a21579-49c0-7013-98cb-4831287cafda",
+      "createdAt": "2026-11-26T01:30:00Z",
+      "updatedAt": "2026-11-26T01:30:00Z",
+      "applicationStatus": "ACCEPTED",
+      "message": "Mình có kinh nghiệm Java/Spring Boot, sẵn sàng dạy thử.",
+      "appliedAt": "2026-11-26T01:30:00Z",
+      "postId": "01a2155d-d280-775b-8ecb-33a9de98c3b4",
+      "studentId": "01a21594-c100-7c78-81a9-a3545c32b58b",
+      "tutorId": "01a21594-c100-776e-bd48-27c5dc532fa5",
+      "processedByAdminId": null,
+      "proposedFee": 250000.0
+    },
+    {
+      "id": "01a21579-49c0-7804-815b-4215cf9405ca",
+      "createdAt": "2026-11-26T01:30:00Z",
+      "updatedAt": "2026-11-26T01:30:00Z",
+      "applicationStatus": "CONFIRMED",
+      "message": "Mình có kinh nghiệm Java/Spring Boot, sẵn sàng dạy thử.",
+      "appliedAt": "2026-11-26T01:30:00Z",
+      "postId": "01a2155d-d280-7290-8738-79a465e554d0",
+      "studentId": "01a21594-c100-7957-8608-17cac22e8ed2",
+      "tutorId": "01a21594-c100-776e-bd48-27c5dc532fa5",
+      "processedByAdminId": null,
+      "proposedFee": 250000.0
+    },
+    {
+      "id": "01a21579-49c0-70f0-94ca-56ebf28a70fe",
+      "createdAt": "2026-11-26T01:30:00Z",
+      "updatedAt": "2026-11-26T01:30:00Z",
+      "applicationStatus": "REJECTED",
+      "message": "Mình có kinh nghiệm Java/Spring Boot, sẵn sàng dạy thử.",
+      "appliedAt": "2026-11-26T01:30:00Z",
+      "postId": "01a2155d-d280-75ff-a7a9-d16bb71eec83",
+      "studentId": "01a21594-c100-7ddb-ab19-520c5a804ee2",
+      "tutorId": "01a21594-c100-776e-bd48-27c5dc532fa5",
+      "processedByAdminId": null,
+      "proposedFee": 250000.0
+    },
+    {
+      "id": "01a21579-49c0-7556-97ab-912c55b5319a",
+      "createdAt": "2026-11-26T01:30:00Z",
+      "updatedAt": "2026-11-26T01:30:00Z",
+      "applicationStatus": "FINISHED",
+      "message": "Mình có kinh nghiệm Java/Spring Boot, sẵn sàng dạy thử.",
+      "appliedAt": "2026-11-26T01:30:00Z",
+      "postId": "01a2155d-d280-70f0-8178-42301a983af5",
+      "studentId": "01a21594-c100-7ed9-a7aa-dc1c6c13941d",
+      "tutorId": "01a21594-c100-776e-bd48-27c5dc532fa5",
+      "processedByAdminId": null,
+      "proposedFee": 250000.0
+    },
+    {
+      "id": "01a21579-49c0-74b0-983a-259b4e926913",
+      "createdAt": "2026-11-26T01:30:00Z",
+      "updatedAt": "2026-11-26T01:40:00Z",
+      "applicationStatus": "CANCELLED",
+      "message": "Mình có kinh nghiệm Java.",
+      "appliedAt": "2026-11-26T01:30:00Z",
+      "postId": "01a2155d-d280-74d7-a62a-10015e5e5077",
+      "studentId": "01a21594-c100-733e-8998-dbc7b27dc582",
+      "tutorId": "01a21594-c100-776e-bd48-27c5dc532fa5",
+      "processedByAdminId": null,
+      "proposedFee": 250000.0
     }
   ],
   "wallets": [

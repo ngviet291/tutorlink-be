@@ -1,5 +1,7 @@
 package org.group3.tutorlink.features.user.service;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
@@ -75,8 +77,10 @@ public class UserService {
         userMapper.updateUserFromRequest(user, request);
         return userMapper.toBaseUserResponse(userRepository.save(user));
     }
-    
-    /** Đổi ảnh đại diện của người dùng hiện tại (mọi role). */
+
+    /**
+     * Đổi ảnh đại diện của người dùng hiện tại (mọi role).
+     */
     @Transactional
     public BaseUserResponse updateMyAvatar(MultipartFile file) {
         if (file == null || file.isEmpty()) {
@@ -307,7 +311,10 @@ public class UserService {
         eventPublisher.publishEvent(TutorProfileChangedEvent.builder().tutorId(saved.getId()).build());
         return userMapper.toTutorResponse(saved);
     }
-    /** Danh sách đầy đủ các môn: thêm/sửa theo request, môn bị bỏ thì xóa cùng chứng chỉ của môn đó. */
+
+    /**
+     * Danh sách đầy đủ các môn: thêm/sửa theo request, môn bị bỏ thì xóa cùng chứng chỉ của môn đó.
+     */
     private void applySubjectProfiles(Tutor t, List<SubjectProfileRequest> requests) {
         Set<UUID> ids = new HashSet<>();
         for (SubjectProfileRequest p : requests) {
@@ -366,7 +373,9 @@ public class UserService {
         }
     }
 
-    /** Giá trị tổng hợp trên Tutor (dùng cho tìm kiếm, chatbot...): kinh nghiệm cao nhất, giá thấp nhất, hình thức BOTH nếu khác nhau. */
+    /**
+     * Giá trị tổng hợp trên Tutor (dùng cho tìm kiếm, chatbot...): kinh nghiệm cao nhất, giá thấp nhất, hình thức BOTH nếu khác nhau.
+     */
     private void syncAggregates(Tutor t) {
         List<TutorSubjectProfile> profiles = new ArrayList<>(t.getSubjectProfiles());
         if (profiles.isEmpty()) {
@@ -387,5 +396,16 @@ public class UserService {
         } else if (modes.size() > 1) {
             t.setTeachingMode(TeachingMode.BOTH);
         }
+    }
+
+    public CursorResponse<TutorResponse> getTopTutors(int size) {
+        Pageable pageable = PageRequest.of(0, size + 1);
+        List<Tutor> topTutors = tutorRepository.findTopTutorN(pageable);
+        return appUtil.buildCursorResponse(
+                topTutors,
+                size,
+                Tutor::getId,
+                userMapper::toTutorResponse
+        );
     }
 }
