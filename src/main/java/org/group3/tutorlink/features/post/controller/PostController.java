@@ -11,7 +11,9 @@ import org.group3.tutorlink.features.post.dto.request.UpdatePostRequest;
 import org.group3.tutorlink.features.post.dto.response.PostApplicationResponse;
 import org.group3.tutorlink.features.post.dto.response.PostResponse;
 import org.group3.tutorlink.features.post.dto.response.PostStatisticsByStatus;
+import org.group3.tutorlink.features.post.recommendation.dto.RecommendedPostResponse;
 import org.group3.tutorlink.features.post.enums.*;
+import org.group3.tutorlink.features.post.service.PostRecommendationService;
 import org.group3.tutorlink.features.post.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,7 @@ import java.util.UUID;
 public class PostController {
 
     private final PostService postService;
+    private final PostRecommendationService postRecommendationService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -162,6 +165,21 @@ public class PostController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePost(@PathVariable UUID id) {
         postService.removePost(id);
+    }
+
+    /**
+     * Top N bài đăng phù hợp nhất với người dùng hiện tại.
+     * Gia sư nhận bài FIND_TUTOR, học viên nhận bài FIND_STUDENT.
+     */
+    @GetMapping("/me/recommended")
+    public ApiResponse<List<RecommendedPostResponse>> getRecommendedPosts(
+            @RequestParam(required = false) Integer limit
+    ) {
+        return ApiResponse.<List<RecommendedPostResponse>>builder()
+                .code(PostResponseCode.GET_RECOMMENDED_POSTS.getCode())
+                .message(PostResponseCode.GET_RECOMMENDED_POSTS.getMessage())
+                .data(postRecommendationService.recommend(limit))
+                .build();
     }
 
     @GetMapping("/me")

@@ -23,6 +23,7 @@ import org.group3.tutorlink.features.post.enums.EducationLevel;
 import org.group3.tutorlink.features.post.enums.PostStatus;
 import org.group3.tutorlink.features.post.enums.PostType;
 import org.group3.tutorlink.features.post.enums.TeachingMode;
+import org.group3.tutorlink.features.post.event.PostChangedEvent;
 import org.group3.tutorlink.features.post.exception.PostNotFoundException;
 import org.group3.tutorlink.features.post.exception.SubjectNotBelongToTutorException;
 import org.group3.tutorlink.features.post.exception.TutorNotVerifiedException;
@@ -40,6 +41,7 @@ import org.group3.tutorlink.features.user.entity.User;
 import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.user.repository.TutorRepository;
 import org.group3.tutorlink.features.user.repository.UserRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -72,6 +74,8 @@ public class PostServiceImpl implements PostService {
     private final ApplicationRepository applicationRepository;
     private final NotificationHelper notificationHelper;
     private final CertificateRepository certificateRepository;
+    // Đồng bộ vector store (gợi ý bài đăng) sau khi giao dịch commit
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     @Override
@@ -89,6 +93,7 @@ public class PostServiceImpl implements PostService {
 
         Post post = postMapper.toPost(appUtil.generateUUID(), user, subject, request);
         Post savedPost = postRepository.save(post);
+        publishChanged(savedPost.getId());
         systemLogPublisher.success(user.getId(), SystemAction.POST_CREATED,
                 Post.class.getSimpleName(), savedPost.getId(),
                 Map.of("type", request.getType().name(),
@@ -301,6 +306,7 @@ public class PostServiceImpl implements PostService {
         post.setSubject(subject);
 
         Post updatedPost = postRepository.save(post);
+        publishChanged(updatedPost.getId());
         return postMapper.toPostResponse(updatedPost);
     }
 
@@ -330,6 +336,7 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(PostNotFoundException::new);
 
         post.setStatus(PostStatus.REMOVED);
+        publishChanged(post.getId());
         notifyWaitingApplicants(post, NotificationMessage.POST_REMOVED_BY_AUTHOR);
     }
 
@@ -459,6 +466,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
         post.setStatus(PostStatus.REMOVED);
         post.setRemovalReason(reason);
+        publishChanged(post.getId());
         notificationHelper.notify(post.getAuthor(), NotificationMessage.POST_REMOVED_BY_ADMIN_AUTHOR,
                 NotificationTarget.MY_POSTS, null, post.getTitle(), reason);
         notifyWaitingApplicants(post, NotificationMessage.POST_REMOVED_BY_ADMIN);
@@ -475,6 +483,10 @@ public class PostServiceImpl implements PostService {
                             NotificationTarget.MY_APPLICATIONS, null, post.getTitle()));
         }
     }
+    private void publishChanged(UUID postId) {
+        eventPublisher.publishEvent(PostChangedEvent.builder().postId(postId).build());
+    }
+
     /** Gia sư chỉ được đăng bài môn đã đăng ký và có chứng chỉ xác thực cho môn đó. */
     private void checkTutorCanTeach(User user, Subject subject) {
         if (user instanceof Tutor t && !t.hasCompleteProfile()) {

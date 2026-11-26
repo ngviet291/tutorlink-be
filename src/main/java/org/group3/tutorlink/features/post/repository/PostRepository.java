@@ -2,6 +2,7 @@ package org.group3.tutorlink.features.post.repository;
 
 import org.group3.tutorlink.features.post.dto.response.PostApplicationResponse;
 import org.group3.tutorlink.features.post.entity.Post;
+import org.group3.tutorlink.features.post.enums.PostType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -109,5 +111,17 @@ public interface PostRepository extends JpaRepository<Post, UUID>, JpaSpecificat
             @Param("postId") UUID postId,
             @Param("userId") UUID userId,
             @Param("now") Instant now
+    );
+
+    // Các môn người dùng từng đăng bài thuộc loại này, dùng để suy ra môn họ quan tâm
+    @Query("""
+          SELECT DISTINCT p.subject.id FROM Post p
+          WHERE p.author.id = :authorId
+            AND p.type = :type
+            AND p.status <> org.group3.tutorlink.features.post.enums.PostStatus.REMOVED
+    """)
+    Set<UUID> findSubjectIdsByAuthor(
+            @Param("authorId") UUID authorId,
+            @Param("type") PostType type
     );
 }

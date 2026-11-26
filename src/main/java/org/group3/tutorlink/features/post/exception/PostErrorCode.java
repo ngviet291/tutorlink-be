@@ -25,6 +25,14 @@ public enum PostErrorCode implements BaseErrorCode {
             "POST_005",
             "Tutor profile is incomplete: bio, teaching levels, teaching areas and available slots are required",
             HttpStatus.FORBIDDEN
+    ),
+    INVALID_RECOMMENDATION_LIMIT(
+            "POST_006",
+            "Recommendation limit must be at least 1", HttpStatus.BAD_REQUEST
+    ),
+    RECOMMENDATION_ROLE_NOT_SUPPORTED(
+            "POST_007",
+            "Only students and tutors can get recommended posts", HttpStatus.FORBIDDEN
     );
     private final String code;
     private final String message;

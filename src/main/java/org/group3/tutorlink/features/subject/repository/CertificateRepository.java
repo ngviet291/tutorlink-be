@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -22,6 +23,12 @@ public interface CertificateRepository extends JpaRepository<Certificate, UUID> 
     // Chứng chỉ bị kẹt: chưa được AI xử lý xong, cũng chưa chuyển admin
     List<Certificate> findAllByVerifiedFalseAndPendingAdminReviewFalseAndCreatedAtBefore(java.time.Instant cutoff);
     boolean existsByTutor_IdAndSubject_IdAndVerifiedTrue(UUID tutorId, UUID subjectId);
+    // Các môn gia sư có chứng chỉ đã xác thực (điều kiện ứng tuyển bài của học viên)
+    @Query("""
+            SELECT DISTINCT c.subject.id FROM Certificate c
+            WHERE c.tutor.id = :tutorId AND c.verified = true AND c.subject IS NOT NULL
+            """)
+    Set<UUID> findVerifiedSubjectIds(@Param("tutorId") UUID tutorId);
     // Chỉ gia sư đã được duyệt (đang cập nhật hồ sơ); hồ sơ đăng ký thì admin xem trong modal hồ sơ
     List<Certificate> findAllByPendingAdminReviewTrueAndVerifiedFalseAndTutor_VerificationStatusOrderByCreatedAtAsc(
             org.group3.tutorlink.features.user.enums.VerificationStatus status);

@@ -1,6 +1,7 @@
 package org.group3.tutorlink.features.post.specification;
 
 import jakarta.persistence.criteria.JoinType;
+import org.group3.tutorlink.features.application.entity.Application;
 import org.group3.tutorlink.features.post.entity.Post;
 import org.group3.tutorlink.features.post.enums.BudgetUnit;
 import org.group3.tutorlink.features.post.enums.EducationLevel;
@@ -222,7 +223,7 @@ public class PostSpecification {
             return null;
         };
     }
-    
+
     public static Specification<Post> fetchApplications() {
         return (root, query, cb) -> {
             if (query.getResultType() != Long.class
@@ -282,6 +283,42 @@ public class PostSpecification {
             }
             subquery.select(tutor.<UUID>get("id")).where(conditions.toArray(Predicate[]::new));
             return cb.exists(subquery);
+        };
+    }
+
+    /** Loại bài do chính người dùng đăng. */
+    public static Specification<Post> notAuthoredBy(UUID userId) {
+        return (root, query, cb) -> userId == null ? null
+                : cb.notEqual(root.get("author").get("id"), userId);
+    }
+
+    /** Loại bài người dùng đã ứng tuyển (mọi trạng thái) để không gợi ý lại. */
+    public static Specification<Post> notAppliedBy(UUID userId) {
+        return (root, query, cb) -> {
+            if (userId == null) {
+                return null;
+            }
+            Subquery<Integer> applied = query.subquery(Integer.class);
+            Root<Application> application = applied.from(Application.class);
+            applied.select(cb.literal(1)).where(
+                    cb.equal(application.get("post"), root),
+                    cb.or(
+                            cb.equal(application.get("tutor").get("id"), userId),
+                            cb.equal(application.get("student").get("id"), userId)));
+            return cb.not(cb.exists(applied));
+        };
+    }
+
+    /** null: không giới hạn môn; rỗng: không bài nào khớp. */
+    public static Specification<Post> subjectIdIn(Collection<UUID> subjectIds) {
+        return (root, query, cb) -> {
+            if (subjectIds == null) {
+                return null;
+            }
+            if (subjectIds.isEmpty()) {
+                return cb.disjunction();
+            }
+            return root.get("subject").get("id").in(subjectIds);
         };
     }
 
