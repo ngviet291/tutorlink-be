@@ -8,6 +8,7 @@ import org.group3.tutorlink.features.subject.dto.request.SubjectRequest;
 import org.group3.tutorlink.features.subject.dto.response.SubjectResponse;
 import org.group3.tutorlink.features.subject.entity.Subject;
 import org.group3.tutorlink.features.subject.exception.SubjectInUseException;
+import org.group3.tutorlink.features.subject.exception.SubjectNameExistsException;
 import org.group3.tutorlink.features.subject.exception.SubjectNotFoundException;
 import org.group3.tutorlink.features.subject.mapper.SubjectMapper;
 import org.group3.tutorlink.features.subject.repository.SubjectRepository;
@@ -65,6 +66,11 @@ public class SubjectServiceImpl implements SubjectService {
     @Transactional
     @PreAuthorize("hasAuthority('ADMIN')")
     public SubjectResponse createSubject(SubjectRequest request) {
+        String name = normalizeName(request.getName());
+        if (subjectRepository.existsByNameIgnoreCase(name)) {
+            throw new SubjectNameExistsException();
+        }
+        request.setName(name);
         Subject subject = subjectMapper.toSubject(request);
         subject.setId(appUtil.generateUUID());
         Subject savedSubject = subjectRepository.save(subject);
@@ -78,6 +84,11 @@ public class SubjectServiceImpl implements SubjectService {
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(SubjectNotFoundException::new);
 
+        String name = normalizeName(request.getName());
+        if (subjectRepository.existsByNameIgnoreCaseAndIdNot(name, id)) {
+            throw new SubjectNameExistsException();
+        }
+        request.setName(name);
         subjectMapper.updateSubjectFromRequest(request, subject);
         Subject updatedSubject = subjectRepository.save(subject);
 
@@ -96,5 +107,8 @@ public class SubjectServiceImpl implements SubjectService {
         }
 
         subjectRepository.delete(subject);
+    }
+    private static String normalizeName(String name) {
+        return name == null ? null : name.trim().replaceAll("\\s+", " ");
     }
 }

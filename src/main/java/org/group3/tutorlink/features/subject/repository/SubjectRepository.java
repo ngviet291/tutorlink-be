@@ -18,6 +18,8 @@ public interface SubjectRepository extends JpaRepository<Subject, UUID> {
     WHERE s.id = :subjectId
     """)
     boolean isUsedByTutor(@Param("subjectId") UUID subjectId);
+    boolean existsByNameIgnoreCase(String name);
+    boolean existsByNameIgnoreCaseAndIdNot(String name, UUID id);
     @Query("""
         SELECT s FROM Subject s
         WHERE (:cursor IS NULL OR s.id < :cursor)
