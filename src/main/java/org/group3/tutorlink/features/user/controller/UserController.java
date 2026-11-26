@@ -1,6 +1,8 @@
 package org.group3.tutorlink.features.user.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.group3.tutorlink.common.dto.response.ApiResponse;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
@@ -17,11 +19,13 @@ import org.group3.tutorlink.features.user.enums.VerificationStatus;
 import org.group3.tutorlink.features.user.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
+@Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/users")
@@ -101,6 +105,15 @@ public class UserController {
                 .code(UserResponseCode.GET_USERS.getCode())
                 .message(UserResponseCode.GET_USERS.getMessage())
                 .data(userService.getTutors(name, subjectName, province, minRate, maxRate, minRating, minExperience, cursor, limit))
+                .build();
+    }
+
+    @GetMapping("/tutors/top/{size}")
+    public  ApiResponse<CursorResponse<TutorResponse>> getTopTutorsN(@PathVariable @Max(20) @Min(3) int size) {
+        return ApiResponse.<CursorResponse<TutorResponse>>builder()
+                .code(UserResponseCode.GET_USERS.getCode())
+                .message(UserResponseCode.GET_USERS.getMessage())
+                .data(userService.getTopTutors(size))
                 .build();
     }
 
