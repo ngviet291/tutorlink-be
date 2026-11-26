@@ -200,6 +200,7 @@ public class InitData implements CommandLineRunner {
                     .id(id(n, "id")).name(s(n, "name")).issuedBy(s(n, "issuedBy"))
                     .issuedDate(date(n, "issuedDate")).expiryDate(date(n, "expiryDate"))
                     .fileUrl(s(n, "fileUrl")).verified(n.get("verified").asBoolean())
+                    .subject(subjects.get(id(n, "subjectId")))
                     .tutor(tutors.get(id(n, "tutorId"))).build());
         }
         for (JsonNode n : root.get("matchingFeeConfigs")) {
