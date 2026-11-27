@@ -17,7 +17,7 @@ public enum UserErrorCode implements BaseErrorCode {
     AVATAR_FILE_REQUIRED("USER_ERR_008", "Avatar image is required", HttpStatus.BAD_REQUEST),
     CERTIFICATE_NOT_PENDING_ADMIN("USER_ERR_010", "Certificate is not waiting for admin review", HttpStatus.BAD_REQUEST),
     AVATAR_FILE_INVALID("USER_ERR_009", "Avatar must be an image file of at most 5MB", HttpStatus.BAD_REQUEST),
-    ;
+    AVAILABLE_SLOT_DUPLICATED("USER_ERR_010", "Available slot duplicate",HttpStatus.BAD_REQUEST );
     private final String code;
     private final String message;
     private final HttpStatus httpStatus;
