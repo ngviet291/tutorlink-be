@@ -90,6 +90,12 @@ public class ReviewComplaintServiceImpl implements ReviewComplaintService {
         complaint.setStatus(status);
         complaint.setAdmin(admin);
         ReviewComplaint saved = complaintRepository.save(complaint);
+        if (status == ComplaintStatus.APPROVED) {
+            Tutor reviewedTutor = saved.getTutor();
+            Double avg = reviewRepository.averageRatingByTutorId(reviewedTutor.getId());
+            reviewedTutor.setAverageRating(avg == null ? 0.0 : Math.round(avg * 100.0) / 100.0);
+            tutorRepository.save(reviewedTutor);
+        }
         NotificationMessage message = status == ComplaintStatus.APPROVED
                 ? NotificationMessage.COMPLAINT_APPROVED
                 : NotificationMessage.COMPLAINT_REJECTED;
