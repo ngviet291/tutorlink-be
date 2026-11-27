@@ -281,35 +281,43 @@ public class UserService {
     public TutorResponse updateMyTutorProfile(UpdateTutorProfileRequest r) {
         Tutor t = tutorRepository.findById(appUtil.userIdFromAuthentication())
                 .orElseThrow(UserNotFoundException::new);
-        if (r.getBio() != null) t.setBio(r.getBio());
-        if (r.getEducation() != null) t.setEducation(r.getEducation());
+
+        userMapper.updateTutorBasic(r, t);
+
         // Khi hồ sơ đã có dữ liệu theo môn thì giá trị chung do syncAggregates tính, không nhận từ request
         boolean perSubject = r.getSubjectProfiles() != null
                 || (t.getSubjectProfiles() != null && !t.getSubjectProfiles().isEmpty());
         if (!perSubject) {
-            if (r.getExperienceYears() != null) t.setExperienceYears(r.getExperienceYears());
-            if (r.getHourlyRate() != null) t.setHourlyRate(r.getHourlyRate());
-            if (r.getTeachingMode() != null) t.setTeachingMode(r.getTeachingMode());
+            userMapper.updateTutorGeneral(r, t);
         }
-        if (r.getTeachingLevels() != null) t.setTeachingLevels(new HashSet<>(r.getTeachingLevels()));
-        if (r.getTeachingAreas() != null) t.setTeachingAreas(new ArrayList<>(r.getTeachingAreas()));
+
         if (r.getAvailableSlots() != null) {
-            List<AvailableSlot> slots = new ArrayList<>();
-            for (AvailableSlotRequest s : r.getAvailableSlots()) {
-                if (!s.getEndTime().isAfter(s.getStartTime())) {
-                    throw new UserValidationException(UserErrorCode.USER_VALIDATION_FAILED);
-                }
-                slots.add(AvailableSlot.builder().dayOfWeek(s.getDayOfWeek())
-                        .startTime(s.getStartTime()).endTime(s.getEndTime()).build());
-            }
-            t.setAvailableSlots(slots);
+            validateSlots(r.getAvailableSlots());
+            t.setAvailableSlots(r.getAvailableSlots().stream()
+                    .map(userMapper::toAvailableSlot)
+                    .collect(Collectors.toCollection(ArrayList::new)));
         }
+
         if (r.getSubjectProfiles() != null) {
             applySubjectProfiles(t, r.getSubjectProfiles());
         }
+
         Tutor saved = tutorRepository.save(t);
         eventPublisher.publishEvent(TutorProfileChangedEvent.builder().tutorId(saved.getId()).build());
         return userMapper.toTutorResponse(saved);
+    }
+
+    private void validateSlots(List<AvailableSlotRequest> slots) {
+        Set<List<Object>> seen = new HashSet<>();
+        for (AvailableSlotRequest s : slots) {
+            if (!s.getEndTime().isAfter(s.getStartTime())) {
+                throw new UserValidationException(UserErrorCode.USER_VALIDATION_FAILED);
+            }
+            // Khóa so sánh: ngày + giờ bắt đầu + giờ kết thúc (bỏ qua ID)
+            if (!seen.add(List.of(s.getDayOfWeek(), s.getStartTime(), s.getEndTime()))) {
+                throw new UserValidationException(UserErrorCode.AVAILABLE_SLOT_DUPLICATED);
+            }
+        }
     }
 
     /**

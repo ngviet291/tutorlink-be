@@ -19,6 +19,7 @@ public class TutorResponse extends BaseUserResponse {
     private Integer experienceYears;
     private String education;
     private List<SubjectResponse> subjects;
+    private List<CertificateResponse> certificates;
     private Double averageRating;
     private VerificationStatus verificationStatus;
     private String verificationNote;

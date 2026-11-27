@@ -4,12 +4,15 @@ import org.group3.tutorlink.common.entity.Address;
 import org.group3.tutorlink.features.auth.dto.request.RegisterStudentRequest;
 import org.group3.tutorlink.features.auth.dto.request.RegisterTutorRequest;
 import org.group3.tutorlink.features.subject.entity.Subject;
+import org.group3.tutorlink.features.user.dto.request.AvailableSlotRequest;
 import org.group3.tutorlink.features.user.dto.request.UpdateProfileRequest;
+import org.group3.tutorlink.features.user.dto.request.UpdateTutorProfileRequest;
 import org.group3.tutorlink.features.user.dto.response.AddressResponse;
 import org.group3.tutorlink.features.user.dto.response.BaseUserResponse;
 import org.group3.tutorlink.features.user.dto.response.StudentResponse;
 import org.group3.tutorlink.features.user.dto.response.SubjectResponse;
 import org.group3.tutorlink.features.user.dto.response.TutorResponse;
+import org.group3.tutorlink.features.user.entity.AvailableSlot;
 import org.group3.tutorlink.features.user.entity.Student;
 import org.group3.tutorlink.features.user.entity.Tutor;
 import org.group3.tutorlink.features.user.entity.User;
@@ -21,7 +24,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.SubclassMapping;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -93,4 +96,19 @@ public interface UserMapper {
     @Mapping(target = "sentChannels", ignore = true)
     @Mapping(target = "receivedChannels", ignore = true)
     void updateUserFromRequest(@MappingTarget User user, UpdateProfileRequest request);
+
+
+    // Field null trong request thì giữ nguyên giá trị cũ
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "availableSlots", ignore = true)
+    @Mapping(target = "subjectProfiles", ignore = true)
+    @Mapping(target = "experienceYears", ignore = true)
+    @Mapping(target = "hourlyRate", ignore = true)
+    @Mapping(target = "teachingMode", ignore = true)
+    void updateTutorBasic(UpdateTutorProfileRequest r, @MappingTarget Tutor t);
+
+    // Chỉ gọi khi hồ sơ chưa tính theo môn (syncAggregates không quản lý các giá trị chung)
+    void updateTutorGeneral(UpdateTutorProfileRequest r, @MappingTarget Tutor t);
+
+    AvailableSlot toAvailableSlot(AvailableSlotRequest s);
 }

@@ -12,7 +12,7 @@ public class BudgetRangeValidator
         implements ConstraintValidator<ValidBudgetRange, Object> {
 
     private static final BigDecimal MIN = new BigDecimal("10000");
-    private static final BigDecimal MAX = new BigDecimal("5000000");
+    private static final BigDecimal MAX = new BigDecimal("50000000");
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {

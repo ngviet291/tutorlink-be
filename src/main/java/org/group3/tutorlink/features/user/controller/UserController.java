@@ -109,7 +109,7 @@ public class UserController {
     }
 
     @GetMapping("/tutors/top/{size}")
-    public  ApiResponse<CursorResponse<TutorResponse>> getTopTutorsN(@PathVariable @Max(20) @Min(3) int size) {
+    public  ApiResponse<CursorResponse<TutorResponse>> getTopTutorsN(@PathVariable @Max(20) @Min(1) int size) {
         return ApiResponse.<CursorResponse<TutorResponse>>builder()
                 .code(UserResponseCode.GET_USERS.getCode())
                 .message(UserResponseCode.GET_USERS.getMessage())

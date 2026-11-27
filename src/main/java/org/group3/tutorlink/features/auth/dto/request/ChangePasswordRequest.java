@@ -5,8 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.group3.tutorlink.features.auth.validation.annotation.DifferentPassword;
 import org.group3.tutorlink.features.auth.validation.annotation.ValidPassword;
-
+@DifferentPassword
 @Data
 @Builder
 @NoArgsConstructor
