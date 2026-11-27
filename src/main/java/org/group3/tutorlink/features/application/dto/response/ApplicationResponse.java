@@ -61,4 +61,6 @@ public class ApplicationResponse {
     private Boolean paid;
 
     private BigDecimal proposedFee;
+    private Instant finishRequestedAt;
+    private UUID finishRequestedBy;
 }

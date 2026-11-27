@@ -6,5 +6,7 @@ public enum ApplicationStatus {
     PENDING,
     ACCEPTED,
     REJECTED,
-    CANCELLED
+    CANCELLED,
+    FINISH_REQUESTED,
+    DISPUTED
 }

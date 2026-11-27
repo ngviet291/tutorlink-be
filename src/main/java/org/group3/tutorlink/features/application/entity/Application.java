@@ -69,4 +69,6 @@ public class Application extends BaseEntity {
 
     @Column(precision = 15, scale = 2)
     private BigDecimal proposedFee;
+    private Instant finishRequestedAt;
+    private UUID finishRequestedBy;
 }

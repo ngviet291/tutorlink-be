@@ -36,7 +36,8 @@ public class ApplicationExpiryReconciler {
 
     @Value("${application.expiry.confirm-window-minutes:1440}")
     private long confirmWindowMinutes;
-
+    @Value("${application.expiry.finish-window-minutes:1440}")
+    private long finishWindowMinutes;
     @Scheduled(fixedDelayString = "${application.expiry.reconcile.interval-ms}")
     public void reconcile() {
         Instant paymentCutoff = Instant.now().minus(paymentWindowMinutes, ChronoUnit.MINUTES);
@@ -48,6 +49,10 @@ public class ApplicationExpiryReconciler {
         applicationRepository.findExpiredConfirmations(
                         ApplicationStatus.ACCEPTED, TransactionStatus.SUCCESS, confirmCutoff)
                 .forEach(a -> safe(a.getId(), ApplicationExpiryQueue.Stage.CONFIRM));
+
+        Instant finishCutoff = Instant.now().minus(finishWindowMinutes, ChronoUnit.MINUTES);
+        applicationRepository.findExpiredFinishRequests(ApplicationStatus.FINISH_REQUESTED, finishCutoff)
+                .forEach(a -> safe(a.getId(), ApplicationExpiryQueue.Stage.FINISH));
     }
 
     private void safe(UUID id, ApplicationExpiryQueue.Stage stage) {

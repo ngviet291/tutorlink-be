@@ -326,9 +326,6 @@ public class PaymentServiceImpl implements PaymentService {
         String postTitle = application.getPost().getTitle();
         notificationHelper.notify(wallet.getTutor(), NotificationMessage.FEE_PAID_TUTOR,
                 NotificationTarget.WALLET, null, notificationHelper.money(amount), postTitle);
-        // Học viên của đơn: kênh chat vừa được mở
-        notificationHelper.notify(application.getStudent(), NotificationMessage.FEE_PAID_STUDENT,
-                NotificationTarget.CHAT, null, postTitle);
         boolean autoConfirm = applicationStatus == ApplicationStatus.ACCEPTED
                 && application.getPost().getType() == PostType.FIND_TUTOR;
         if (autoConfirm) {
@@ -350,6 +347,9 @@ public class PaymentServiceImpl implements PaymentService {
                     NotificationMessage.APPLICATION_CONFIRMED,
                     NotificationTarget.POST, application.getPost().getId(),
                     wallet.getTutor().getFullName(), postTitle);
+            // Học viên của đơn: kênh chat vừa được mở
+            notificationHelper.notify(application.getStudent(), NotificationMessage.FEE_PAID_STUDENT,
+                    NotificationTarget.CHAT, null, postTitle);
         } else {
             // Người ứng tuyển cần xác nhận lớp
             notificationHelper.notify(ApplicationParties.applicantOf(application),

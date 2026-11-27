@@ -128,14 +128,50 @@ public class ApplicationController {
                 .build();
     }
 
+    // Bấm "Hoàn thành" (giữ nguyên URL cũ để FE gateway không đổi)
     @PostMapping("/{applicationId}/finish")
-    public ApiResponse<ApplicationResponse> finishApplication(
+    public ApiResponse<ApplicationResponse> requestFinish(
             @PathVariable UUID applicationId) {
 
         return ApiResponse.<ApplicationResponse>builder()
                 .code(ApplicationResponseCode.FINISH_SUCCESS.getCode())
                 .message(ApplicationResponseCode.FINISH_SUCCESS.getMessage())
-                .data(applicationService.finishApplication(applicationId))
+                .data(applicationService.requestFinish(applicationId))
+                .build();
+    }
+
+    @PostMapping("/{applicationId}/finish/confirm")
+    public ApiResponse<ApplicationResponse> confirmFinish(
+            @PathVariable UUID applicationId) {
+
+        return ApiResponse.<ApplicationResponse>builder()
+                .code(ApplicationResponseCode.FINISH_SUCCESS.getCode())
+                .message(ApplicationResponseCode.FINISH_SUCCESS.getMessage())
+                .data(applicationService.confirmFinish(applicationId))
+                .build();
+    }
+
+    @PostMapping("/{applicationId}/finish/reject")
+    public ApiResponse<ApplicationResponse> rejectFinish(
+            @PathVariable UUID applicationId) {
+
+        return ApiResponse.<ApplicationResponse>builder()
+                .code(ApplicationResponseCode.FINISH_SUCCESS.getCode())
+                .message(ApplicationResponseCode.FINISH_SUCCESS.getMessage())
+                .data(applicationService.rejectFinish(applicationId))
+                .build();
+    }
+
+    // Admin xử lý tranh chấp: refund=true hoàn phí cho gia sư, false bác khiếu nại
+    @PostMapping("/{applicationId}/dispute/resolve")
+    public ApiResponse<ApplicationResponse> resolveDispute(
+            @PathVariable UUID applicationId,
+            @RequestParam boolean refund) {
+
+        return ApiResponse.<ApplicationResponse>builder()
+                .code(ApplicationResponseCode.FINISH_SUCCESS.getCode())
+                .message(ApplicationResponseCode.FINISH_SUCCESS.getMessage())
+                .data(applicationService.resolveDispute(applicationId, refund))
                 .build();
     }
 

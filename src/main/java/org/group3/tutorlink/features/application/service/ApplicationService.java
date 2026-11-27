@@ -56,11 +56,6 @@ public interface ApplicationService {
     ApplicationResponse unselectApplication(
             UUID applicationId
     );
-
-    ApplicationResponse finishApplication(
-            UUID applicationId
-    );
-
     ApplicationResponse cancelApplication(
             UUID applicationId
     );
@@ -70,4 +65,11 @@ public interface ApplicationService {
             UUID cursor,
             int limit
     );
+    ApplicationResponse requestFinish(UUID applicationId);
+
+    ApplicationResponse confirmFinish(UUID applicationId);
+
+    ApplicationResponse rejectFinish(UUID applicationId);
+
+    ApplicationResponse resolveDispute(UUID applicationId, boolean refund);
 }

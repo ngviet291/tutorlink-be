@@ -63,6 +63,13 @@ public enum NotificationMessage {
     APPLICATION_FINISHED(NotificationType.APPLICATION),
     APPLICATION_CANCELLED(NotificationType.APPLICATION),
     APPLICATION_CONFIRM_REQUIRED(NotificationType.APPLICATION),
+    // 2.8b Xác nhận hoàn thành lớp
+    APPLICATION_FINISH_REQUESTED(NotificationType.APPLICATION),
+    APPLICATION_FINISH_REJECTED(NotificationType.APPLICATION),
+    APPLICATION_AUTO_FINISHED(NotificationType.APPLICATION),
+    APPLICATION_DISPUTED_ADMIN(NotificationType.APPLICATION),
+    APPLICATION_DISPUTE_REFUNDED(NotificationType.APPLICATION),
+    APPLICATION_DISPUTE_DISMISSED(NotificationType.APPLICATION),
 
     // 2.9 Duyệt chứng chỉ bằng AI (TutorCertificateReviewService)
     TUTOR_APPROVED_BY_AI(NotificationType.SYSTEM),

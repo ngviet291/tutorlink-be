@@ -343,5 +343,12 @@ public interface ApplicationRepository
             """)
     List<StudentCountRow> countByStudentIdsAndStatuses(@Param("studentIds") Collection<UUID> studentIds,
                                                        @Param("statuses") Collection<ApplicationStatus> statuses);
-
+    @Query("""
+            select a from Application a
+            where a.applicationStatus = :status
+              and a.finishRequestedAt <= :cutoff
+            """)
+    List<Application> findExpiredFinishRequests(
+            @Param("status") ApplicationStatus status,
+            @Param("cutoff") Instant cutoff);
 }

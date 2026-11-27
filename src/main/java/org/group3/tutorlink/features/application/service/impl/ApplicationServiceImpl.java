@@ -1,5 +1,6 @@
 package org.group3.tutorlink.features.application.service.impl;
 
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.group3.tutorlink.common.dto.response.CursorResponse;
@@ -21,6 +22,7 @@ import org.group3.tutorlink.features.application.repository.ApplicationRepositor
 import org.group3.tutorlink.features.application.scheduler.ApplicationExpiryQueue;
 import org.group3.tutorlink.features.application.service.ApplicationRestoreService;
 import org.group3.tutorlink.features.application.service.ApplicationService;
+import org.group3.tutorlink.features.payment.service.RefundService;
 import org.group3.tutorlink.features.application.util.ApplicationParties;
 import org.group3.tutorlink.features.auth.exception.UserNotFoundException;
 import org.group3.tutorlink.features.notification.enums.NotificationMessage;
@@ -77,7 +79,10 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final TutorRepository tutorRepository;
     private final CertificateRepository certificateRepository;
     private final ApplicationRestoreService applicationRestoreService;
+    private final RefundService refundService;
 
+    @Value("${application.expiry.finish-window-minutes:1440}")
+    private long finishWindowMinutes;
     @Value("${application.expiry.payment-window-minutes:1440}")
     private long paymentWindowMinutes;
 
@@ -85,6 +90,8 @@ public class ApplicationServiceImpl implements ApplicationService {
             ApplicationStatus.PENDING,
             ApplicationStatus.ACCEPTED,
             ApplicationStatus.CONFIRMED,
+            ApplicationStatus.FINISH_REQUESTED,
+            ApplicationStatus.DISPUTED,
             ApplicationStatus.FINISHED
     );
 
@@ -398,50 +405,153 @@ public class ApplicationServiceImpl implements ApplicationService {
                 NotificationTarget.POST, post.getId(), post.getTitle());
         return applicationMapper.toApplicationResponse(saved);
     }
-
     @Override
     @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
-    public ApplicationResponse finishApplication(UUID applicationId) {
+    public ApplicationResponse requestFinish(UUID applicationId) {
         UUID userId = appUtil.userIdFromAuthentication();
         User currentUser = getUserOrThrow(userId);
         Application application = getApplicationOrThrow(applicationId);
+        User other = counterpartOf(application, userId);
+        ApplicationStatus status = application.getApplicationStatus();
 
-        if (application.getStudent() == null && application.getTutor() == null) {
-            throw new ApplicationNotAllowedException();
+        if (status == ApplicationStatus.FINISH_REQUESTED) {
+            // Bên kia bấm "Hoàn thành" khi đã có yêu cầu -> coi như xác nhận
+            if (userId.equals(application.getFinishRequestedBy())) {
+                return applicationMapper.toApplicationResponse(application);
+            }
+            return confirmFinish(applicationId);
         }
-        boolean isParticipant = isApplicationParticipant(application, userId);
-        boolean isStudentOrTutor = currentUser instanceof Student
-                || currentUser instanceof Tutor;
-        if (!isParticipant || !isStudentOrTutor) {
-            throw new ApplicationNotAllowedException();
-        }
-        if (application.getApplicationStatus() != ApplicationStatus.CONFIRMED
-                && application.getApplicationStatus() != ApplicationStatus.FINISHED) {
+        if (status != ApplicationStatus.CONFIRMED) {
             throw new ApplicationInvalidStatusException();
         }
-        if (application.getApplicationStatus() == ApplicationStatus.FINISHED) {
-            return applicationMapper.toApplicationResponse(application);
-        }
-        application.setApplicationStatus(ApplicationStatus.FINISHED);
+
+        application.setApplicationStatus(ApplicationStatus.FINISH_REQUESTED);
+        application.setFinishRequestedAt(Instant.now());
+        application.setFinishRequestedBy(userId);
         Application saved = applicationRepository.save(application);
-        Post finishedPost = saved.getPost();
-        boolean finisherIsAuthor = finishedPost != null && finishedPost.getAuthor() != null
-                && finishedPost.getAuthor().getId().equals(userId);
-        User other = finisherIsAuthor
-                ? ApplicationParties.applicantOf(saved)
-                : finishedPost != null ? finishedPost.getAuthor() : null;
-        // Người nhận là applicant → xem đơn của tôi; người nhận là chủ bài → xem chi tiết bài
-        NotificationTarget finishedTarget = finisherIsAuthor ? NotificationTarget.MY_APPLICATIONS : NotificationTarget.POST;
-        UUID finishedTargetId = finisherIsAuthor ? saved.getId() : finishedPost != null ? finishedPost.getId() : null;
-        notificationHelper.notify(other, NotificationMessage.APPLICATION_FINISHED,
-                finishedTarget, finishedTargetId, finishedPost != null ? finishedPost.getTitle() : "");
+        scheduleFinishExpiry(saved);
+
+        notificationHelper.notify(other, NotificationMessage.APPLICATION_FINISH_REQUESTED,
+                NotificationTarget.MY_APPLICATIONS, saved.getId(),
+                currentUser.getFullName(), saved.getPost().getTitle());
         return applicationMapper.toApplicationResponse(saved);
     }
+    @Override
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
+    public ApplicationResponse confirmFinish(UUID applicationId) {
+        UUID userId = appUtil.userIdFromAuthentication();
+        Application application = getApplicationOrThrow(applicationId);
+        User requester = requireResponder(application, userId);
 
-    private boolean isApplicationParticipant(Application application, UUID userId) {
-        return isUserMatch(application.getStudent(), userId) || isUserMatch(application.getTutor(), userId) || isUserMatch(application.getPost().getAuthor(), userId);
+        application.setApplicationStatus(ApplicationStatus.FINISHED);
+        Application saved = applicationRepository.save(application);
+        cancelFinishExpiry(saved);
+
+        notificationHelper.notify(requester, NotificationMessage.APPLICATION_FINISHED,
+                NotificationTarget.MY_APPLICATIONS, saved.getId(), saved.getPost().getTitle());
+        return applicationMapper.toApplicationResponse(saved);
+    }
+    @Override
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'TUTOR')")
+    public ApplicationResponse rejectFinish(UUID applicationId) {
+        UUID userId = appUtil.userIdFromAuthentication();
+        User currentUser = getUserOrThrow(userId);
+        Application application = getApplicationOrThrow(applicationId);
+        User requester = requireResponder(application, userId);
+
+        application.setApplicationStatus(ApplicationStatus.DISPUTED);
+        Application saved = applicationRepository.save(application);
+        cancelFinishExpiry(saved);
+
+        String title = saved.getPost().getTitle();
+        notificationHelper.notify(requester, NotificationMessage.APPLICATION_FINISH_REJECTED,
+                NotificationTarget.MY_APPLICATIONS, saved.getId(), currentUser.getFullName(), title);
+        notificationHelper.notifyAdmins(NotificationMessage.APPLICATION_DISPUTED_ADMIN,
+                NotificationTarget.NONE, saved.getId(), title);
+        return applicationMapper.toApplicationResponse(saved);
+    }
+    @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ApplicationResponse resolveDispute(UUID applicationId, boolean refund) {
+        UUID adminId = appUtil.userIdFromAuthentication();
+        User admin = getUserOrThrow(adminId);
+        Application application = getApplicationOrThrow(applicationId);
+        if (application.getApplicationStatus() != ApplicationStatus.DISPUTED) {
+            throw new ApplicationInvalidStatusException();
+        }
+
+        if (refund) {
+            if (application.getTransaction() != null
+                    && application.getTransaction().getStatus() == TransactionStatus.SUCCESS) {
+                refundService.refundCommission(application);
+            }
+            application.setApplicationStatus(ApplicationStatus.CANCELLED);
+        } else {
+            application.setApplicationStatus(ApplicationStatus.FINISHED);
+        }
+        if (admin instanceof Admin a) {
+            application.setProcessedByAdmin(a);
+        }
+        Application saved = applicationRepository.save(application);
+
+        NotificationMessage msg = refund
+                ? NotificationMessage.APPLICATION_DISPUTE_REFUNDED
+                : NotificationMessage.APPLICATION_DISPUTE_DISMISSED;
+        String title = saved.getPost().getTitle();
+        notificationHelper.notify(saved.getStudent(), msg,
+                NotificationTarget.MY_APPLICATIONS, saved.getId(), title);
+        notificationHelper.notify(saved.getTutor(), msg,
+                NotificationTarget.MY_APPLICATIONS, saved.getId(), title);
+        return applicationMapper.toApplicationResponse(saved);
+    }
+    private User counterpartOf(Application application, UUID userId) {
+        if (isUserMatch(application.getStudent(), userId)) {
+            return application.getTutor();
+        }
+        if (isUserMatch(application.getTutor(), userId)) {
+            return application.getStudent();
+        }
+        throw new ApplicationNotAllowedException();
+    }
+    // Kiểm tra user là bên phải phản hồi (không phải người bấm trước), trả về người bấm trước
+    private User requireResponder(Application application, UUID userId) {
+        User requester = counterpartOf(application, userId);
+        if (application.getApplicationStatus() != ApplicationStatus.FINISH_REQUESTED
+                || userId.equals(application.getFinishRequestedBy())) {
+            throw new ApplicationInvalidStatusException();
+        }
+        return requester;
     }
 
+    private void scheduleFinishExpiry(Application application) {
+        UUID id = application.getId();
+        Instant at = application.getFinishRequestedAt();
+        if (id == null || at == null) {
+            return;
+        }
+        Instant expireAt = at.plus(finishWindowMinutes, ChronoUnit.MINUTES);
+        afterCommit.run(() -> {
+            try {
+                expiryQueue.schedule(ApplicationExpiryQueue.Stage.FINISH, id, expireAt);
+            } catch (Exception e) {
+                log.warn("Failed to schedule finish expiry for application {}", id, e);
+            }
+        });
+    }
+
+    private void cancelFinishExpiry(Application application) {
+        UUID id = application.getId();
+        if (id == null) {
+            return;
+        }
+        afterCommit.run(() -> {
+            try {
+                expiryQueue.cancel(ApplicationExpiryQueue.Stage.FINISH, id);
+            } catch (Exception e) {
+                log.warn("Failed to cancel finish expiry for application {}", id, e);
+            }
+        });
+    }
     private boolean isUserMatch(User user, UUID userId) {
         return user != null && user.getId().equals(userId);
     }

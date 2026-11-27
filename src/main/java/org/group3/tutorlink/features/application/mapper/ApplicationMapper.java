@@ -24,6 +24,8 @@ public abstract class ApplicationMapper {
 
     @Value("${application.expiry.confirm-window-minutes:1440}")
     private long confirmWindowMinutes;
+    @Value("${application.expiry.finish-window-minutes:1440}")
+    private long finishWindowMinutes;
 
     @Mapping(target = "postId", source = "post.id")
     @Mapping(target = "processedByAdminId", source = "processedByAdmin.id")
@@ -45,6 +47,12 @@ public abstract class ApplicationMapper {
      */
     @AfterMapping
     protected void fillExpiresAt(Application application, @MappingTarget ApplicationResponse response) {
+        if (application.getApplicationStatus() == ApplicationStatus.FINISH_REQUESTED
+                && application.getFinishRequestedAt() != null) {
+            response.setExpiresAt(application.getFinishRequestedAt()
+                    .plus(finishWindowMinutes, ChronoUnit.MINUTES));
+            return;
+        }
         if (application.getApplicationStatus() != ApplicationStatus.ACCEPTED) {
             return;
         }

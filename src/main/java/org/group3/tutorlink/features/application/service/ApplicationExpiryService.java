@@ -38,11 +38,20 @@ public class ApplicationExpiryService {
 
     @Value("${application.expiry.confirm-window-minutes:1440}")
     private long confirmWindowMinutes;
+    @Value("${application.expiry.finish-window-minutes:1440}")
+    private long finishWindowMinutes;
 
     @Transactional
     public void expire(UUID applicationId, ApplicationExpiryQueue.Stage stage) {
         Application application = applicationRepository.findById(applicationId).orElse(null);
-        if (application == null || application.getApplicationStatus() != ApplicationStatus.ACCEPTED) {
+        if (application == null) {
+            return;
+        }
+        if (stage == ApplicationExpiryQueue.Stage.FINISH) {
+            autoFinish(application);
+            return;
+        }
+        if (application.getApplicationStatus() != ApplicationStatus.ACCEPTED) {
             return;
         }
 
@@ -99,5 +108,23 @@ public class ApplicationExpiryService {
                 target, targetId, postTitle);
         notificationHelper.notify(application.getStudent(), NotificationMessage.APPLICATION_EXPIRED_STUDENT,
                 target, targetId, postTitle);
+    }
+    // Quá 24h bên kia không phản hồi -> tự động hoàn thành
+    private void autoFinish(Application application) {
+        if (application.getApplicationStatus() != ApplicationStatus.FINISH_REQUESTED
+                || application.getFinishRequestedAt() == null
+                || application.getFinishRequestedAt()
+                .plus(finishWindowMinutes, ChronoUnit.MINUTES).isAfter(Instant.now())) {
+            return;
+        }
+        application.setApplicationStatus(ApplicationStatus.FINISHED);
+        applicationRepository.save(application);
+        log.info("Application {} auto-finished", application.getId());
+
+        String title = application.getPost() != null ? application.getPost().getTitle() : "";
+        notificationHelper.notify(application.getStudent(), NotificationMessage.APPLICATION_AUTO_FINISHED,
+                NotificationTarget.MY_APPLICATIONS, application.getId(), title);
+        notificationHelper.notify(application.getTutor(), NotificationMessage.APPLICATION_AUTO_FINISHED,
+                NotificationTarget.MY_APPLICATIONS, application.getId(), title);
     }
 }

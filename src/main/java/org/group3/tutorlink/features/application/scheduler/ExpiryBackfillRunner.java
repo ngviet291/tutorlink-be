@@ -36,6 +36,8 @@ public class ExpiryBackfillRunner implements ApplicationRunner {
 
     @Value("${application.expiry.confirm-window-minutes:1440}")
     private long confirmWindowMinutes;
+    @Value("${application.expiry.finish-window-minutes:1440}")
+    private long finishWindowMinutes;
 
     @Override
     @Transactional(readOnly = true)
@@ -60,6 +62,17 @@ public class ExpiryBackfillRunner implements ApplicationRunner {
                 }
             } catch (Exception e) {
                 log.error("Backfill expiry failed for application {}", a.getId(), e);
+            }
+        }
+        for (Application a : applicationRepository.findAllByApplicationStatus(ApplicationStatus.FINISH_REQUESTED)) {
+            try {
+                if (a.getFinishRequestedAt() != null) {
+                    queue.schedule(ApplicationExpiryQueue.Stage.FINISH, a.getId(),
+                            a.getFinishRequestedAt().plus(finishWindowMinutes, ChronoUnit.MINUTES));
+                    scheduled++;
+                }
+            } catch (Exception e) {
+                log.error("Backfill finish expiry failed for application {}", a.getId(), e);
             }
         }
         log.info("Expiry backfill done: {} applications scheduled", scheduled);

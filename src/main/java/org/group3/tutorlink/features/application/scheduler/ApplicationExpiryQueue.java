@@ -20,7 +20,8 @@ public class ApplicationExpiryQueue {
 
     public enum Stage {
         PAYMENT("application:expiry:payment"),
-        CONFIRM("application:expiry:confirm");
+        CONFIRM("application:expiry:confirm"),
+        FINISH("application:expiry:finish");
 
         final String key;
 
