@@ -63,7 +63,6 @@ public class Application extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "processed_by_admin_id")
     private Admin processedByAdmin;
-
     // Application 1 -- 0..1 Transaction
     @OneToOne(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private Transaction transaction;

@@ -343,4 +343,5 @@ public interface ApplicationRepository
             """)
     List<StudentCountRow> countByStudentIdsAndStatuses(@Param("studentIds") Collection<UUID> studentIds,
                                                        @Param("statuses") Collection<ApplicationStatus> statuses);
+
 }

@@ -48,6 +48,7 @@ public class ApplicationResponse {
     // - ACCEPTED + chưa trả -> selectedAt + payment-window (W1, chờ tutor thanh toán)
     // - Trạng thái khác -> null
     private Instant expiresAt;
+    private BigDecimal feeAmount;
 
     private UUID processedByAdminId;
 

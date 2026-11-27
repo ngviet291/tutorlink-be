@@ -30,6 +30,7 @@ public abstract class ApplicationMapper {
     @Mapping(target = "transactionId", source = "transaction.id")
     @Mapping(target = "transactionStatus", expression = "java(application.getTransaction() != null ? application.getTransaction().getStatus().name() : null)")
     @Mapping(target = "paidAt", expression = "java(application.getTransaction() != null && application.getTransaction().getStatus() == org.group3.tutorlink.features.payment.enums.TransactionStatus.SUCCESS ? application.getTransaction().getTransactionDate() : null)")
+    @Mapping(target = "feeAmount", expression = "java(application.getTransaction() != null && application.getTransaction().getStatus() == org.group3.tutorlink.features.payment.enums.TransactionStatus.SUCCESS ? application.getTransaction().getAmount() : null)")
     @Mapping(target = "expiresAt", ignore = true)
     @Mapping(target = "paid", ignore = true)
     public abstract ApplicationResponse toApplicationResponse(Application application);
