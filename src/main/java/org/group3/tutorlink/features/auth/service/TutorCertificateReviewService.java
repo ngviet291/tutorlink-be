@@ -230,6 +230,9 @@ public class TutorCertificateReviewService {
                     .map(Subject::getId)
                     .collect(Collectors.toSet());
 
+            String acceptedSubjectNames = subjectNames(tutor, accepted.keySet());
+            String invalidSubjectNames = subjectNames(tutor, invalidIds);
+
             tutor.getCertificates().removeIf(c -> invalidIds.contains(c.getId()));
 
             // Môn nào mất hết chứng chỉ thì bỏ khỏi hồ sơ
@@ -272,7 +275,8 @@ public class TutorCertificateReviewService {
                     tutor.setVerificationNote(joinReasons(reasons));
                 }
             }
-            notifyResult(tutor, wasPending, hasVerified, accepted.size(), invalidIds.size(), reasons);
+            notifyResult(tutor, wasPending, hasVerified, accepted.size(), invalidIds.size(), reasons,
+                    acceptedSubjectNames, invalidSubjectNames);
             notifyEscalated(tutor, escalatedCount);
         });
     }
@@ -316,14 +320,16 @@ public class TutorCertificateReviewService {
     }
 
     private void notifyResult(Tutor tutor, boolean wasPending, boolean hasVerified,
-                              int acceptedCount, int invalidCount, List<String> reasons) {
+                              int acceptedCount, int invalidCount, List<String> reasons,
+                              String acceptedSubjectNames, String invalidSubjectNames) {
         if (acceptedCount > 0) {
             if (wasPending && hasVerified) {
                 notificationHelper.notify(tutor, NotificationMessage.TUTOR_APPROVED_BY_AI,
-                        NotificationTarget.TUTOR_PROFILE, null);
+                        NotificationTarget.TUTOR_PROFILE, null, acceptedSubjectNames);
             } else {
                 notificationHelper.notify(tutor, NotificationMessage.CERTIFICATE_VERIFIED,
-                        NotificationTarget.TUTOR_PROFILE, null, acceptedCount);
+                        NotificationTarget.TUTOR_PROFILE, null,
+                        acceptedCount + " (môn " + acceptedSubjectNames + ")");
             }
         }
         if (invalidCount > 0) {
@@ -331,8 +337,20 @@ public class TutorCertificateReviewService {
                     ? NotificationMessage.TUTOR_REJECTED_BY_AI
                     : NotificationMessage.CERTIFICATE_INVALID;
             notificationHelper.notify(tutor, message, NotificationTarget.TUTOR_PROFILE, null,
-                    invalidCount, shortReasons(reasons));
+                    invalidCount, "Môn " + invalidSubjectNames + ": " + shortReasons(reasons));
         }
+    }
+
+    private String subjectNames(Tutor tutor, Set<UUID> certificateIds) {
+        String names = tutor.getCertificates().stream()
+                .filter(certificate -> certificateIds.contains(certificate.getId()))
+                .map(Certificate::getSubject)
+                .filter(Objects::nonNull)
+                .map(Subject::getName)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.joining(", "));
+        return names.isBlank() ? "chưa xác định" : names;
     }
 
     private void notifyReviewFailed(UUID tutorId) {
