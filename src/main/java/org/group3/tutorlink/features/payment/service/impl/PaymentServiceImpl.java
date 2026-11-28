@@ -537,10 +537,7 @@ public class PaymentServiceImpl implements PaymentService {
             for (MatchingFeeConfig old : overlapping) {
                 if (old.getEffectiveTo() == null
                         || old.getEffectiveTo().isAfter(effectiveFrom)) {
-
-                    old.setEffectiveTo(
-                            effectiveFrom.minus(1, ChronoUnit.DAYS)
-                    );
+                    old.setEffectiveTo(effectiveFrom);
 
                     feeConfigRepository.save(old);
                 }
